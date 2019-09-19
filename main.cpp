@@ -60,23 +60,6 @@ int main()
 	fout.clear();
 
 
-	//{
-	//	ofstream fout;
-	//	fout.open("mesh1.dat");
-	//	for (int i = 0; i < A.size(); i++)
-	//	{
-	//		for (int j = 0; j < A[i].size(); j++)
-	//		{
-	//			if (i == 0 && A[i][j]->section == 1)
-	//			{
-	//				fout << A[i][j]->x << "  " << A[i][j]->y << endl;
-	//				continue;
-	//			}
-	//			else if(i==1||i==2)
-	//			fout << A[i][j]->x << "  " << A[i][j]->y << endl;
-	//		}
-	//	}
-	//}
 
 	//out_M("mesh/" + methodType + "/step = " + to_string(step));
 	start = clock();
@@ -91,8 +74,6 @@ int main()
 		//	dt = 2.5e-4;
 		update_IN();
 		update_bound_shockwave();
-
-
 		step++;
 		t_sim = t_sim + dt;
 		if (step % 100 == 0)
@@ -119,7 +100,6 @@ int main()
 			}
 			fout.close();
 			fout.clear();
-
 		}
 
 		//if (step % 10 == 0)

@@ -64,23 +64,6 @@ namespace MeshPara
 {0,1,2,0},//方法4
 {2,0,1,2},
 {1,2,0,1},
-
-//{2,1,1,0},//方法22
-//{0,2,2,1},
-//{1,0,0,2},
-//
-//{2,1,0,0},//方法32
-//{1,0,2,2},
-//{0,2,1,1},
-//
-//{0,0,2,1},//方法12
-//{1,1,0,2},
-//{2,2,1,0},
-//
-//{0,2,1,0},//方法42
-//{2,1,0,2},
-//{1,0,2,1},
-
 	};
 
 	const int Xnum = 101;//x方向点的个数20,40,150
@@ -110,7 +93,7 @@ struct mesh
 	double y0;
 	double um;//格点运动速度
 	double vm;
-	int section=1;//分区
+	int section = 1;//分区
 	int sec_num;//分区后计算的参数1或0
 	int step = 0;//表明该点在何步骤更新的
 	int neiborsec = -1;//相邻分区，如果该值为负，则表示该点不是激波点，反之为相邻分区共用的激波点
@@ -123,14 +106,13 @@ struct mesh
 	vector <double> etat;
 	vector <double> xxi;
 	vector <double> xeta;
-	vector <double> xτ;
+	vector <double> xtau;
 	vector <double> yxi;
 	vector <double> yeta;
-	vector <double> yτ;
+	vector <double> ytau;
 	vector <double> J;//雅可比行列式
 	vector <mesh*>neibor;//记录该格点的相邻格点位置信息
 	vector <int>moveConnct;//运动关联点，即本点运动与该moveConnect点有关
-	int neibor1[4] = { 0 };//当相邻格点超过四个，筛选四个入此处，坐标变换和计算所用到的相邻格点都用此处
 	string type;//格点类型，分为上下左右边界以及内部，U，D,L,R,IN,激波点SHOCK，接触间断点DISCON（contact discontinuity）,激波相交点CENTER
 	string change = "Y";//周围网格物理量是否改变，没有“N”，改变“Y”；用于计算加速
 	Flux alpha = { 0 };

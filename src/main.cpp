@@ -46,7 +46,6 @@ int main()
 	//out_neighbor();
 	reorder_neighbor();
 	coordinate_trans();
-	//init_flow_shockwaveCross();
 	initFlow();
 	ofstream fout;
 	fout.open("mesh1.dat");

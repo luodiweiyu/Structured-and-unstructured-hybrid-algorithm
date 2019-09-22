@@ -1,4 +1,4 @@
-//分区文件，用于激波装配法，将原网格分成若干区域
+//Partition file for computing , divid the original mesh into several regions
 #include<iostream>
 #include"/Structured-and-unstructured-hybrid-algorithm/include/const.h"
 #include"/Structured-and-unstructured-hybrid-algorithm/include/functions.h"
@@ -29,7 +29,7 @@ int findAd(mesh A, vector <mesh> An)
 	return s;
 }
 
-void partition_Point()//对已有的网格点进行分区
+void partition_Point()//Partition existing grid points
 {
 	using namespace MeshPara;
 	if (methodType == "C")
@@ -50,6 +50,11 @@ void partition_Point()//对已有的网格点进行分区
 			for (i = 0; i < A0.size(); i++)
 				A[0].push_back(&A0[i]), A[0][i]->id = i;
 			double x, y, xl, yl, xr, yr, xu, yu, xd, yd;
+			double a, b, r, r1;
+			a = 0.02;
+			b = 0.01;
+			r = 0.55 / 75;
+			//the 2D cylinder (x-a)^2+(y-b)^2=r^2
 			int n1, n2, n3, n4, n, size;
 			for (i = 0; i < A[0].size(); i++)
 			{
@@ -64,18 +69,22 @@ void partition_Point()//对已有的网格点进行分区
 				xd = x;
 				yd = y - dy;
 				n1 = n2 = n3 = n4 = 0;
-				if ((xl - 0.02)*(xl - 0.02) + (yl - 0.01)*(yl - 0.01) > (0.55 / 75)*(0.55 / 75))
+				r1 = r + sqrt(dx * dx + dy * dy);
+				//r1 decides the unstructural grid region 
+				//r1 is larger than r
+				//the larger of r1, the larger of the unstructural grid region
+				if ((xl - a) * (xl - a) + (yl - b) * (yl - b) > r1 * r1)
 					n1 = 1;
-				if ((xr - 0.02)*(xr - 0.02) + (yr - 0.01)*(yr - 0.01) > (0.55 / 75)*(0.55 / 75))
+				if ((xr - a) * (xr - a) + (yr - b) * (yr - b) > r1 * r1)
 					n2 = 1;
-				if ((xu - 0.02)*(xu - 0.02) + (yu - 0.01)*(yu - 0.01) > (0.55 / 75)*(0.55 / 75))
+				if ((xu - a) * (xu - a) + (yu - b) * (yu - b) > r1 * r1)
 					n3 = 1;
-				if ((xd - 0.02)*(xd - 0.02) + (yd - 0.01)*(yd - 0.01) > (0.55 / 75)*(0.55 / 75))
+				if ((xd - a) * (xd - a) + (yd - b) * (yd - b) > r1 * r1)
 					n4 = 1;
 				n = n1 + n2 + n3 + n4;
-				if ((x - 0.02)*(x - 0.02) + (y - 0.01)*(y - 0.01) <= (0.55 / 75)*(0.55 / 75))
+				if ((x - a) * (x - a) + (y - b) * (y - b) <= r1 * r1)
 					A[0][i]->section = 0, A[0][i]->sec_num = 0;
-				if ((x - 0.02)*(x - 0.02) + (y - 0.01)*(y - 0.01) > (0.55 / 75)*(0.55 / 75))
+				if ((x - a) * (x - a) + (y - b) * (y - b) > r1 * r1)
 				{
 					if (n == 4)
 					{
@@ -95,7 +104,7 @@ void partition_Point()//对已有的网格点进行分区
 						size = A[1].size() - 1;
 						A[1][size]->neiborsec = 0;
 						A[1][size]->neiborsec_ad = i;
-						A0.push_back(getCrossPoint(*A[1][size], 0.02, 0.01, 0.55 / 75));
+						A0.push_back(getCrossPoint(*A[1][size], a, b, r));
 						A[1][size]->id = i;
 						A0[A0.size() - 1].id = A0.size() - 1;
 						A0[A0.size() - 1].type = "Cy";
@@ -108,7 +117,7 @@ void partition_Point()//对已有的网格点进行分区
 							A[1][size]->neibor.push_back(&A0[i - Xnum]);
 						}
 						else if (n2 == 0)
-						{ 
+						{
 							A[1][size]->neibor.push_back(&A0[A0.size() - 1]);
 							A[1][size]->neibor.push_back(&A0[i + Xnum]);
 							A[1][size]->neibor.push_back(&A0[i - 1]);
@@ -136,7 +145,7 @@ void partition_Point()//对已有的网格点进行分区
 						size = A[2].size() - 1;
 						A[2][size]->neiborsec = 0;
 						A[2][size]->neiborsec_ad = i;
-						A0.push_back(getCrossPoint(*A[2][size], 0.02, 0.01, 0.55 / 75));
+						A0.push_back(getCrossPoint(*A[2][size], a, b, r));
 						A[2][size]->id = i;
 						A0[A0.size() - 1].id = A0.size() - 1;
 						A0[A0.size() - 1].type = "Cy";

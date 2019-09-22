@@ -1285,7 +1285,7 @@ void update_IN()
 				U[3] = U[3] - dt * (F2.f4 - F1.f4) - dt * (G2.f4 - G1.f4);
 			}
 
-			else if (A[i][j]->neibor.size() == 4)
+			else if (A[i][j]->neibor.size() >= 4)
 			{
 				F1 = F2 = G1 = G2 = { 0 };
 				n1 = A[i][j]->neibor[0]->id;
@@ -1311,17 +1311,6 @@ void update_IN()
 				U[2] = U[2] - dt * A[i][j]->J[0] * (Fcr.f3 - Flr.f3 + Frl.f3 - Fcl.f3 + Gcu.f3 - Gdu.f3 + Gud.f3 - Gcd.f3);
 				U[3] = U[3] - dt * A[i][j]->J[0] * (Fcr.f4 - Flr.f4 + Frl.f4 - Fcl.f4 + Gcu.f4 - Gdu.f4 + Gud.f4 - Gcd.f4);
 			}
-			else if (A[i][j]->neibor.size() > 4)
-			{
-				F1 = HLLC_Χ(*A[i][A[i][j]->neibor1[2]], *A[i][j], *A[i][j], 0);
-				F2 = HLLC_Χ(*A[i][j], *A[i][A[i][j]->neibor1[0]], *A[i][j], 0);
-				G1 = HLLC_Υ(*A[i][A[i][j]->neibor1[3]], *A[i][j], *A[i][j], 0);
-				G2 = HLLC_Υ(*A[i][j], *A[i][A[i][j]->neibor1[1]], *A[i][j], 0);
-				U[0] = U[0] - dt * (F2.f1 - F1.f1 + G2.f1 - G1.f1);
-				U[1] = U[1] - dt * (F2.f2 - F1.f2 + G2.f2 - G1.f2);
-				U[2] = U[2] - dt * (F2.f3 - F1.f3 + G2.f3 - G1.f3);
-				U[3] = U[3] - dt * (F2.f4 - F1.f4 + G2.f4 - G1.f4);
-			}
 			else if (A[i][j]->neibor.size() == 2)
 			{
 				if (A[i][j]->type == "SHOCK")
@@ -1342,21 +1331,13 @@ void update_IN()
 			A[i][j]->u = U[1] / U[0];
 			A[i][j]->v = U[2] / U[0];
 			A[i][j]->p = (gama - 1) * (U[3] - 0.5 * A[i][j]->ρ * (A[i][j]->u * A[i][j]->u + A[i][j]->v * A[i][j]->v));
-			if (i == 0)
+			if (i == 0&FlowType=="cylinder")
 			{
 				A[i][j]->ρ = A[i][j]->ρ * A[i][j]->sec_num;
 				A[i][j]->u = A[i][j]->u * A[i][j]->sec_num;
 				A[i][j]->v = A[i][j]->v * A[i][j]->sec_num;
 				A[i][j]->p = A[i][j]->p * A[i][j]->sec_num;
 			}
-			//if (A[i][j]->p < 0)
-			//{
-			//	std::cout << j << std::endl;
-			//	std::cout << A[i][j]->alpha.f1 << "   " << A[i][j]->alpha.f2 << "   " << A[i][j]->alpha.f3 << "   " << A[i][j]->alpha.f4 << std::endl;
-			//	std::cout << A[i][j]->beta.f1 << "   " << A[i][j]->beta.f2 << "   " << A[i][j]->beta.f3 << "   " << A[i][j]->beta.f4 << std::endl;
-			//	std::cout << std::endl;
-			//}
-
 		}
 	}
 
@@ -1534,6 +1515,8 @@ double get_beta(mesh A, mesh B)//求出两个网格点与x轴的夹角
 	return beta;
 }
 void reorder_neighbor()
+//make the neighbor point store in this order
+//R,U,L,D
 {
 	extern vector<vector <mesh*>> A;
 	double maxy, miny, maxx, minx;
@@ -1591,10 +1574,10 @@ void reorder_neighbor()
 				maxx = max(n1->x, n3->x);
 				if (n3->x == maxx)
 					t = n1, n1 = n3, n3 = t;
-				A[i][j]->neibor1[0] = n1->id;
-				A[i][j]->neibor1[1] = n2->id;
-				A[i][j]->neibor1[2] = n3->id;
-				A[i][j]->neibor1[3] = n4->id;
+				A[i][j]->neibor[0] = n1;
+				A[i][j]->neibor[1] = n2;
+				A[i][j]->neibor[2] = n3;
+				A[i][j]->neibor[3] = n4;
 			}
 
 		}

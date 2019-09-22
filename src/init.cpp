@@ -98,8 +98,8 @@ void init_mesh()
 		//左边结构网格生成
 		double dx;
 		double dl = LineLength / Ynum;
-		double ex = cos(μ1);
-		double ey = sin(μ1);
+		double ex = cos(mu1);
+		double ey = sin(mu1);
 		double xend, yend;
 		while (i < Pnum)
 		{
@@ -149,10 +149,10 @@ void init_mesh()
 			}
 		}
 		//右边结构网格生成
-		ex = cos(μ2 - δ2);
-		ey = sin(μ2 - δ2);
+		ex = cos(mu2 - delta2);
+		ey = sin(mu2 - delta2);
 		double xstart, ystart;
-		double dl2 = 1.5 * LineLength * sin(μ2) / Ynum;
+		double dl2 = 1.5 * LineLength * sin(mu2) / Ynum;
 		s = 0;
 		while (i < 2 * Pnum - 2)
 		{
@@ -160,8 +160,8 @@ void init_mesh()
 			{
 				xstart = LineLength;
 				ystart = 0;
-				xend = LineLength + 2 * LineLength * cos(δ2);
-				yend = -2 * LineLength * sin(δ2);
+				xend = LineLength + 2 * LineLength * cos(delta2);
+				yend = -2 * LineLength * sin(delta2);
 			}
 			else
 			{
@@ -175,8 +175,8 @@ void init_mesh()
 					xstart = 1.3 * dl * ex + A0[i - Xnum].x;
 					ystart = 1.3 * dl * ey + A0[i - Xnum].y;
 				}
-				xend = dl2 * sin(δ2) + A0[i - 1].x;
-				yend = dl2 * cos(δ2) + A0[i - 1].y;
+				xend = dl2 * sin(delta2) + A0[i - 1].x;
+				yend = dl2 * cos(delta2) + A0[i - 1].y;
 			}
 			double d = sqrt((xend - xstart) * (xend - xstart) + (yend - ystart) * (yend - ystart)) / (Xnum - 1);
 			double ex1 = (xend - xstart) / sqrt((xend - xstart) * (xend - xstart) + (yend - ystart) * (yend - ystart));
@@ -640,8 +640,8 @@ void initFlow()
 			double beta40 = 45 * pi / 180, beta41 = 50 * pi / 180, beta42 = 60 * pi / 180;
 			double p41, p40;
 			double p51, p50;
-			double δ41, δ40;
-			double δ51, δ50;
+			double delta41, delta40;
+			double delta51, delta50;
 			double beta51, beta50;
 			double fbeta41, fbeta40;
 			double un20, un21, Mu20, Mu21;
@@ -691,12 +691,12 @@ void initFlow()
 				beta51 = get_beta(A3, A51.p, -1);
 				get_down(A3, A51, beta51);
 
-				δ40 = get_δ(A40.u, A40.v);
-				δ41 = get_δ(A41.u, A41.v);
-				δ50 = get_δ(A50.u, A50.v);
-				δ51 = get_δ(A51.u, A51.v);
-				fbeta41 = δ41 - δ51;
-				fbeta40 = δ40 - δ50;
+				delta40 = get_delta(A40.u, A40.v);
+				delta41 = get_delta(A41.u, A41.v);
+				delta50 = get_delta(A50.u, A50.v);
+				delta51 = get_delta(A51.u, A51.v);
+				fbeta41 = delta41 - delta51;
+				fbeta40 = delta40 - delta50;
 				if (abs(fbeta41 - fbeta40) <= 1e-20)
 				{
 					beta42 = beta41;
@@ -709,8 +709,8 @@ void initFlow()
 			A51.p = A41.p;
 			beta5 = get_beta(A3, A51.p, -1);
 			get_down(A3, A51, beta5);
-			δ4 = get_δ(A41.u, A41.v);
-			δ5 = get_δ(A51.u, A51.v);
+			delta4 = get_delta(A41.u, A41.v);
+			delta5 = get_delta(A51.u, A51.v);
 
 			double un2 = u2 * sin(beta4) - v2 * cos(beta4);
 			double ut2 = u2 * cos(beta4) + v2 * sin(beta4);
@@ -742,7 +742,7 @@ void initFlow()
 			std::cout << "v2= " << v2 << "   v3= " << v3 << std::endl;
 			std::cout << "rho2= " << rho2 << "   rho3= " << rho3 << std::endl;
 			std::cout << "beta4= " << beta4 * 180 / pi << "   beta5= " << beta5 * 180 / pi << std::endl;
-			std::cout << "δ4= " << δ4 * 180 / pi << "   δ5= " << δ5 * 180 / pi << std::endl;
+			std::cout << "delta4= " << delta4 * 180 / pi << "   delta5= " << delta5 * 180 / pi << std::endl;
 			std::cout << "p4= " << p4 << "   p5= " << p5 << std::endl;
 			std::cout << "u4= " << u4 << "   u5= " << u5 << std::endl;
 			std::cout << "v4= " << v4 << "   v5= " << v5 << std::endl;

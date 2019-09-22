@@ -142,24 +142,24 @@ struct polygon_mesh
 namespace Oblique//Ð±¼¤²¨
 {
 	extern double beta;
-	extern double ¦Ä;
+	extern double delta;
 	extern int startpoint;
 	extern double  rho1, p1, Ma1, u1, v1;
 	extern double  rho2, p2, Ma2, u2, v2;
 }
 namespace Prandtl_Meyer//ÆÕÀÊÌØÂóÒ®¶ûÁ÷¶¯
 {
-	extern double  rho0, p0, theta0, ¦Ë0, ¦Ä0, ¦Ì0, Ma0, u0, v0;
-	extern double  rho1, p1, theta1, ¦Ë1, ¦Ä1, ¦Ì1, Ma1, u1, v1;
-	extern double  rho2, p2, theta2, ¦Ë2, ¦Ä2, ¦Ì2, Ma2, u2, v2;
+	extern double  rho0, p0, theta0, lambda0, delta0, mu0, Ma0, u0, v0;
+	extern double  rho1, p1, theta1, lambda1, delta1, mu1, Ma1, u1, v1;
+	extern double  rho2, p2, theta2, lambda2, delta2, mu2, Ma2, u2, v2;
 }
 namespace ShockwaveCross//¼¤²¨Ïà½»
 {
 
-	extern double  rho1, p1, beta1, ¦Ä1, Ma1, u1, v1;
-	extern double  rho2, p2, beta2, ¦Ä2, Ma2, u2, v2;
-	extern double  rho3, p3, beta3, ¦Ä3, Ma3, u3, v3;
-	extern double  rho4, p4, beta4, ¦Ä4, Ma4, u4, v4;
-	extern double  rho5, p5, beta5, ¦Ä5, Ma5, u5, v5;
+	extern double  rho1, p1, beta1, delta1, Ma1, u1, v1;
+	extern double  rho2, p2, beta2, delta2, Ma2, u2, v2;
+	extern double  rho3, p3, beta3, delta3, Ma3, u3, v3;
+	extern double  rho4, p4, beta4, delta4, Ma4, u4, v4;
+	extern double  rho5, p5, beta5, delta5, Ma5, u5, v5;
 }
 

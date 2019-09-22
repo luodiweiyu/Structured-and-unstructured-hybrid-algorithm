@@ -2,72 +2,72 @@
 #include"/Structured-and-unstructured-hybrid-algorithm/include/const.h"
 #include"/Structured-and-unstructured-hybrid-algorithm/include/shockwave.h"
 using ConstPara::gama;
-double getδfromλ(double λ)
+double getdeltafromlambda(double lambda)
 {
 	double k = (gama - 1) / (gama + 1);
-	double λ2 = λ * λ;
-	return sqrt(1 / k)*atan(sqrt((k*(λ2 - 1)) / (1 - k * λ2))) - atan(sqrt((λ2 - 1) / (1 - k * λ2)));
+	double lambda2 = lambda * lambda;
+	return sqrt(1 / k)*atan(sqrt((k*(lambda2 - 1)) / (1 - k * lambda2))) - atan(sqrt((lambda2 - 1) / (1 - k * lambda2)));
 }
-double getμfromMa(double Ma)
+double getmufromMa(double Ma)
 {
 	return asin(1 / Ma);
 }
 double getthetafromMa(double Ma)
 {
-	double λ = getλfromMa(Ma);
-	return sqrt((gama + 1) / (gama - 1))*asin(sqrt((gama - 1)*(λ*λ - 1) / 2));
+	double lambda = getlambdafromMa(Ma);
+	return sqrt((gama + 1) / (gama - 1))*asin(sqrt((gama - 1)*(lambda*lambda - 1) / 2));
 }
-double getλfromδ(double δ)
+double getlambdafromdelta(double delta)
 {
-	double Δ = 1e-6;
-	double λ1 = 1, λ2 = sqrt((gama + 1) / (gama - 1));
-	double λM = (λ1 + λ2) / 2;
-	double δ1, δM=0, δ2;
-	while (abs(δM - δ) > 1e-6)
+	double m = 1e-6;
+	double lambda1 = 1, lambda2 = sqrt((gama + 1) / (gama - 1));
+	double lambdaM = (lambda1 + lambda2) / 2;
+	double delta1, deltaM=0, delta2;
+	while (abs(deltaM - delta) > 1e-6)
 	{
-		λM = (λ1 + λ2) / 2;
-		δ1 = getδfromλ(λ1);
-		δM = getδfromλ(λM);
-		δ2 = getδfromλ(λ2);
-		if ((δ1 - δ)*(δM - δ) < 0)
-			λ1 = λ1, λ2 = λM;
+		lambdaM = (lambda1 + lambda2) / 2;
+		delta1 = getdeltafromlambda(lambda1);
+		deltaM = getdeltafromlambda(lambdaM);
+		delta2 = getdeltafromlambda(lambda2);
+		if ((delta1 - delta)*(deltaM - delta) < 0)
+			lambda1 = lambda1, lambda2 = lambdaM;
 		else
-			λ1 = λM, λ2 = λ2;
+			lambda1 = lambdaM, lambda2 = lambda2;
 	}
-	return (λ1 + λ2) / 2;
+	return (lambda1 + lambda2) / 2;
 }
 //以下为等熵流公式，可以用于膨胀波计算
-double getTfromλ(double λ,double T0)
+double getTfromlambda(double lambda,double T0)
 {
-	double temp = 1 - (gama - 1)*λ*λ / (gama + 1);
+	double temp = 1 - (gama - 1)*lambda*lambda / (gama + 1);
 	return temp*T0;
 }
-double getT0fromλandT(double λ, double T)
+double getT0fromlambdaandT(double lambda, double T)
 {
-	double temp = 1 - (gama - 1)*λ*λ / (gama + 1);
+	double temp = 1 - (gama - 1)*lambda*lambda / (gama + 1);
 	return T / temp;
 }
-double getpfromλ(double λ, double p0)
+double getpfromlambda(double lambda, double p0)
 {
-	double temp = 1 - (gama - 1)*λ*λ / (gama + 1);
+	double temp = 1 - (gama - 1)*lambda*lambda / (gama + 1);
 	temp = pow(temp, gama / (gama - 1));
 	return temp * p0;
 }
-double getp0fromλandp(double λ, double p)
+double getp0fromlambdaandp(double lambda, double p)
 {
-	double temp = 1 - (gama - 1)*λ*λ / (gama + 1);
+	double temp = 1 - (gama - 1)*lambda*lambda / (gama + 1);
 	temp = pow(temp, gama / (gama - 1));
 	return p / temp;
 }
-double getrhofromλ(double λ, double rho0)
+double getrhofromlambda(double lambda, double rho0)
 {
-	double temp = 1 - (gama - 1)*λ*λ / (gama + 1);
+	double temp = 1 - (gama - 1)*lambda*lambda / (gama + 1);
 	temp = pow(temp, 1 / (gama - 1)); 
 	return temp * rho0;
 }
-double getrho0fromλandrho(double λ, double rho)
+double getrho0fromlambdaandrho(double lambda, double rho)
 {
-	double temp = 1 - (gama - 1)*λ*λ / (gama + 1);
+	double temp = 1 - (gama - 1)*lambda*lambda / (gama + 1);
 	temp = pow(temp, 1 / (gama - 1));
 	return rho / temp;
 }

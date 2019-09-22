@@ -38,7 +38,7 @@ double get_Ma2(double Ma1)
 double get_Mu(mesh & U, mesh & D, double theta)
 {
 	using namespace ConstPara;
-	double δ = 1e-10;
+	double delta = 1e-10;
 	double Mu = 2, Mu1 = 20;
 	double udn, uun, udt, uut;
 	uun = get_un(U, theta);
@@ -48,7 +48,7 @@ double get_Mu(mesh & U, mesh & D, double theta)
 	double cu = sqrt(gama * U.p / U.rho);
 	double J, Fx, fx;
 	double a, b;
-	while (abs(Mu - Mu1) >= δ)
+	while (abs(Mu - Mu1) >= delta)
 	{
 		Mu = Mu1;
 		double J = 2 * sqrt(gama * D.p / D.rho) / (gama - 1) - udn;
@@ -63,9 +63,9 @@ double get_Mu(mesh & U, mesh & D, double theta)
 //3.4
 double get_udn(mesh & U, mesh & D, double Ma1, double Vs, double theta)
 {
-	double λ1 = getλfromMa(Ma1);
-	double λ2 = 1 / λ1;
-	double Ma2 = getMafromλ(λ2);
+	double lambda1 = getlambdafromMa(Ma1);
+	double lambda2 = 1 / lambda1;
+	double Ma2 = getMafromlambda(lambda2);
 	double c2 = sqrt(gama * D.p / D.rho);
 	double V2 = Ma2 * c2;
 	return V2 + Vs;
@@ -77,17 +77,17 @@ double get_udn(mesh & U, mesh & D, double Ma1, double Vs, double theta)
 	//return udn;
 }
 
-double getλfromMa(double Ma)
+double getlambdafromMa(double Ma)
 {
 	double a = 2 + (gama - 1) * Ma * Ma;
 	double b = 0;
 	double c = -(gama + 1) * Ma * Ma;
 	return (-b + sqrt(b * b - 4 * a * c)) / (2 * a);
 }
-double getMafromλ(double λ)
+double getMafromlambda(double lambda)
 {
-	double λ2 = λ * λ;
-	return sqrt((2 * λ2 / (gama + 1)) / (1 - (gama - 1) / (gama + 1) * λ2));
+	double lambda2 = lambda * lambda;
+	return sqrt((2 * lambda2 / (gama + 1)) / (1 - (gama - 1) / (gama + 1) * lambda2));
 }
 
 //以下为斜激波,经验证只适合波前速度水平，v=0,不具有通用性
@@ -97,22 +97,22 @@ double get_Ma2(double Ma1, double beta)//斜激波波后马赫数，钱翼稷《空气动力学》p
 	Ma2 = sqrt(Ma2);
 	return Ma2;
 }
-//double get_δ(double Ma1, double beta)//气流折射角
+//double get_delta(double Ma1, double beta)//气流折射角
 //{
 //
-//	double tanδ = (Ma1 * Ma1 * sin(beta) * sin(beta) - 1) / ((Ma1 * Ma1 * ((gama + 1) / 2 - sin(beta) * sin(beta)) + 1) * tan(beta));
-//	double δ = atan(tanδ);
-//	//if (δ < 0)
-//	//	δ = δ + pi;
-//	return δ;
+//	double tandelta = (Ma1 * Ma1 * sin(beta) * sin(beta) - 1) / ((Ma1 * Ma1 * ((gama + 1) / 2 - sin(beta) * sin(beta)) + 1) * tan(beta));
+//	double delta = atan(tandelta);
+//	//if (delta < 0)
+//	//	delta = delta + pi;
+//	return delta;
 //}
-double get_betafromδ(double Ma1, double δ)
+double get_betafromdelta(double Ma1, double delta)
 {
 	//弦截法 计算机科学与技术p132
 	double beta = 40 * pi / 180, beta1 = 50 * pi / 180, beta0 = 60 * pi / 180;
 	double fbeta1, fbeta0;
-	if (δ == 0.92846675631531839)
-		δ = 0.92846675631531839;
+	if (delta == 0.92846675631531839)
+		delta = 0.92846675631531839;
 	while (abs(beta - beta1) > 1e-10)
 	{
 		beta0 = beta1;
@@ -132,24 +132,24 @@ double get_betafromδ(double Ma1, double δ)
 				beta0 = beta0 + pi / 2;
 		}
 
-		fbeta1 = tan(δ) - (Ma1 * Ma1 * sin(beta1) * sin(beta1) - 1) / ((Ma1 * Ma1 * ((gama + 1) / 2 - sin(beta1) * sin(beta1)) + 1) * tan(beta1));
-		fbeta0 = tan(δ) - (Ma1 * Ma1 * sin(beta0) * sin(beta0) - 1) / ((Ma1 * Ma1 * ((gama + 1) / 2 - sin(beta0) * sin(beta0)) + 1) * tan(beta0));
+		fbeta1 = tan(delta) - (Ma1 * Ma1 * sin(beta1) * sin(beta1) - 1) / ((Ma1 * Ma1 * ((gama + 1) / 2 - sin(beta1) * sin(beta1)) + 1) * tan(beta1));
+		fbeta0 = tan(delta) - (Ma1 * Ma1 * sin(beta0) * sin(beta0) - 1) / ((Ma1 * Ma1 * ((gama + 1) / 2 - sin(beta0) * sin(beta0)) + 1) * tan(beta0));
 		beta = beta1 - fbeta1 / (fbeta1 - fbeta0) * (beta1 - beta0);
 	}
 	return beta;
 }
-double get_ufromMa2(double Ma2, double rho2, double p2, double δ)
+double get_ufromMa2(double Ma2, double rho2, double p2, double delta)
 {
 	double a2 = sqrt(gama * p2 / rho2);
 	double velocity = Ma2 * a2;
-	double u = velocity * cos(δ);
+	double u = velocity * cos(delta);
 	return u;
 }
-double get_vfromMa2(double Ma2, double rho2, double p2, double δ)
+double get_vfromMa2(double Ma2, double rho2, double p2, double delta)
 {
 	double a2 = sqrt(gama * p2 / rho2);
 	double velocity = Ma2 * a2;
-	double v = velocity * sin(δ);
+	double v = velocity * sin(delta);
 	return v;
 }
 double get_p2(double Ma1, double beta, double p1)
@@ -204,24 +204,24 @@ void get_down(mesh & U, mesh & D, double beta)//下游参数
 		D.v = -udt * sin(-beta) + udn * cos(-beta);
 	}
 }
-double get_δ(double u, double v)
+double get_delta(double u, double v)
 {
-	double δ = atan(abs(v) / abs(u));
+	double delta = atan(abs(v) / abs(u));
 	if (u > 0)
 	{
 		if (v > 0)
-			return δ;
+			return delta;
 		else if (v < 0)
-			return -δ;
+			return -delta;
 		else
 			return 0;
 	}
 	else if (u < 0)
 	{
 		if (v > 0)
-			return -δ;
+			return -delta;
 		else if (v < 0)
-			return δ;
+			return delta;
 		else
 			return 0;
 	}

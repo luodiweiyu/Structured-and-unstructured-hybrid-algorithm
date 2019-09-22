@@ -37,7 +37,7 @@ void get_dt()
 			{
 				Sxi = sqrt(A[i][j]->xix[0] * A[i][j]->xix[0] + A[i][j]->xiy[0] * A[i][j]->xiy[0]);
 				Seta = sqrt(A[i][j]->etax[0] * A[i][j]->etax[0] + A[i][j]->etay[0] * A[i][j]->etay[0]);
-				c = sqrt(gama * A[i][j]->p / A[i][j]->ρ);
+				c = sqrt(gama * A[i][j]->p / A[i][j]->rho);
 				uxi = A[i][j]->u * A[i][j]->xix[0] + A[i][j]->v * A[i][j]->xiy[0];
 				ueta = A[i][j]->u * A[i][j]->etax[0] + A[i][j]->v * A[i][j]->etay[0];
 				//maxxi = max(Sxi, uxi);
@@ -54,7 +54,7 @@ void get_dt()
 				{
 					Sxi = sqrt(A[i][j]->xix[k] * A[i][j]->xix[k] + A[i][j]->xiy[k] * A[i][j]->xiy[k]);
 					Seta = sqrt(A[i][j]->etax[k] * A[i][j]->etax[k] + A[i][j]->etay[k] * A[i][j]->etay[k]);
-					c = sqrt(gama * A[i][j]->p / A[i][j]->ρ);
+					c = sqrt(gama * A[i][j]->p / A[i][j]->rho);
 					uxi = A[i][j]->u * A[i][j]->xix[k] + A[i][j]->v * A[i][j]->xiy[k];
 					ueta = A[i][j]->u * A[i][j]->etax[k] + A[i][j]->v * A[i][j]->etay[k];
 					//maxxi = max(Sxi, uxi);
@@ -86,10 +86,10 @@ void get_dt()
 //
 //		for (j = 0; j < A[i].size(); j++)
 //		{
-//			A[i][j]->ρ = U[i][j][0];
+//			A[i][j]->rho = U[i][j][0];
 //			A[i][j]->u = U[i][j][1] / U[i][j][0];
 //			A[i][j]->v = U[i][j][2] / U[i][j][0];
-//			A[i][j]->p = (gama - 1) * (U[i][j][3] - 0.5 * A[i][j]->ρ * (A[i][j]->u * A[i][j]->u + A[i][j]->v * A[i][j]->v));
+//			A[i][j]->p = (gama - 1) * (U[i][j][3] - 0.5 * A[i][j]->rho * (A[i][j]->u * A[i][j]->u + A[i][j]->v * A[i][j]->v));
 //			A[i][j]->step = step;
 //		}
 //	}
@@ -109,13 +109,13 @@ void update_bound_uniform()
 		{
 			if (A[i][j]->type == "IN" || A[i][j]->type == "N")
 				continue;
-			A[i][j]->ρ = ρ0;
+			A[i][j]->rho = rho0;
 			A[i][j]->u = u0;
 			A[i][j]->v = v0;
 			A[i][j]->p = p0;
 			//if (A[i].type == "L")
 			//{
-			//	A[i].ρ = ρ1;
+			//	A[i].rho = rho1;
 			//	A[i].u = u1;
 			//	A[i].v = v1;
 			//	A[i].p = p1;
@@ -142,13 +142,13 @@ void update_bound_shockwave()
 					continue;
 				else if (A[i][j]->type == "U")
 				{
-					A[i][j]->ρ = A[i][j - Xnum]->ρ;
+					A[i][j]->rho = A[i][j - Xnum]->rho;
 					A[i][j]->u = A[i][j - Xnum]->u;
 					A[i][j]->v = A[i][j - Xnum]->v;
 					A[i][j]->p = A[i][j - Xnum]->p;
 					if (A[i][j]->neibor.size() == 2)
 					{
-						A[i][j]->ρ = (A[i][j]->neibor[0]->ρ + A[i][j]->neibor[1]->ρ) / 2;
+						A[i][j]->rho = (A[i][j]->neibor[0]->rho + A[i][j]->neibor[1]->rho) / 2;
 						A[i][j]->u = (A[i][j]->neibor[0]->u + A[i][j]->neibor[1]->u) / 2;
 						A[i][j]->v = (A[i][j]->neibor[0]->v + A[i][j]->neibor[1]->v) / 2;
 						A[i][j]->p = (A[i][j]->neibor[0]->p + A[i][j]->neibor[1]->p) / 2;
@@ -156,13 +156,13 @@ void update_bound_shockwave()
 				}
 				else if (A[i][j]->type == "D")
 				{
-					A[i][j]->ρ = A[i][j + Xnum]->ρ;
+					A[i][j]->rho = A[i][j + Xnum]->rho;
 					A[i][j]->u = A[i][j + Xnum]->u;
 					A[i][j]->v = A[i][j + Xnum]->v;
 					A[i][j]->p = A[i][j + Xnum]->p;
 					if (A[i][j]->neibor.size() == 2)
 					{
-						A[i][j]->ρ = (A[i][j]->neibor[0]->ρ + A[i][j]->neibor[1]->ρ) / 2;
+						A[i][j]->rho = (A[i][j]->neibor[0]->rho + A[i][j]->neibor[1]->rho) / 2;
 						A[i][j]->u = (A[i][j]->neibor[0]->u + A[i][j]->neibor[1]->u) / 2;
 						A[i][j]->v = (A[i][j]->neibor[0]->v + A[i][j]->neibor[1]->v) / 2;
 						A[i][j]->p = (A[i][j]->neibor[0]->p + A[i][j]->neibor[1]->p) / 2;
@@ -171,13 +171,13 @@ void update_bound_shockwave()
 				}
 				else if (A[i][j]->type == "L")
 				{
-					A[i][j]->ρ = ρ1;
+					A[i][j]->rho = rho1;
 					A[i][j]->u = u1;
 					A[i][j]->v = v1;
 					A[i][j]->p = p1;
 					if (A[i][j]->neibor.size() == 2)
 					{
-						A[i][j]->ρ = (A[i][j]->neibor[0]->ρ + A[i][j]->neibor[1]->ρ) / 2;
+						A[i][j]->rho = (A[i][j]->neibor[0]->rho + A[i][j]->neibor[1]->rho) / 2;
 						A[i][j]->u = (A[i][j]->neibor[0]->u + A[i][j]->neibor[1]->u) / 2;
 						A[i][j]->v = (A[i][j]->neibor[0]->v + A[i][j]->neibor[1]->v) / 2;
 						A[i][j]->p = (A[i][j]->neibor[0]->p + A[i][j]->neibor[1]->p) / 2;
@@ -186,13 +186,13 @@ void update_bound_shockwave()
 				}
 				else if (A[i][j]->type == "R")
 				{
-					A[i][j]->ρ = A[i][j - 1]->ρ;
+					A[i][j]->rho = A[i][j - 1]->rho;
 					A[i][j]->u = A[i][j - 1]->u;
 					A[i][j]->v = A[i][j - 1]->v;
 					A[i][j]->p = A[i][j - 1]->p;
 					if (A[i][j]->neibor.size() == 2)
 					{
-						A[i][j]->ρ = (A[i][j]->neibor[0]->ρ + A[i][j]->neibor[1]->ρ) / 2;
+						A[i][j]->rho = (A[i][j]->neibor[0]->rho + A[i][j]->neibor[1]->rho) / 2;
 						A[i][j]->u = (A[i][j]->neibor[0]->u + A[i][j]->neibor[1]->u) / 2;
 						A[i][j]->v = (A[i][j]->neibor[0]->v + A[i][j]->neibor[1]->v) / 2;
 						A[i][j]->p = (A[i][j]->neibor[0]->p + A[i][j]->neibor[1]->p) / 2;
@@ -212,14 +212,14 @@ void update_bound_shockwave()
 					{
 						if (abs(A[i][j]->x - A[i][j]->neibor[0]->x) < 1e-10 && abs(A[i][j]->y - A[i][j]->neibor[0]->y) < 1e-10)
 						{
-							A[i][j]->ρ = A[i][j]->neibor[0]->ρ;
+							A[i][j]->rho = A[i][j]->neibor[0]->rho;
 							A[i][j]->u = A[i][j]->neibor[0]->u;
 							A[i][j]->v = A[i][j]->neibor[0]->v;
 							A[i][j]->p = A[i][j]->neibor[0]->p;
 						}
 						else
 						{
-							A[i][j]->ρ = A[i][j]->neibor[1]->ρ;
+							A[i][j]->rho = A[i][j]->neibor[1]->rho;
 							A[i][j]->u = A[i][j]->neibor[1]->u;
 							A[i][j]->v = A[i][j]->neibor[1]->v;
 							A[i][j]->p = A[i][j]->neibor[1]->p;
@@ -246,12 +246,12 @@ void update_bound_shockwave()
 		L12 = getLine(beta2, C);
 		L13 = getLine(beta3, C);
 		mesh A1, A2, A3;
-		A1.ρ = ρ1, A1.p = p1, A1.u = u1, A1.v = v1;
+		A1.rho = rho1, A1.p = p1, A1.u = u1, A1.v = v1;
 		get_down(A1, A2, beta2);
 		get_down(A1, A3, beta3);
 
-		ρ2 = A2.ρ, p2 = A2.p, u2 = A2.u, v2 = A2.v;
-		ρ3 = A3.ρ, p3 = A3.p, u3 = A3.u, v3 = A3.v;
+		rho2 = A2.rho, p2 = A2.p, u2 = A2.u, v2 = A2.v;
+		rho3 = A3.rho, p3 = A3.p, u3 = A3.u, v3 = A3.v;
 #pragma omp parallel
 		for (i = 0; i < A.size(); i++)
 		{
@@ -265,21 +265,21 @@ void update_bound_shockwave()
 				{
 					if (A[i][j]->x * L12.A + A[i][j]->y * L12.B + L12.C < 0)
 					{
-						A[i][j]->ρ = ρ2;
+						A[i][j]->rho = rho2;
 						A[i][j]->u = u2;
 						A[i][j]->v = v2;
 						A[i][j]->p = p2;
 					}
 					else if (A[i][j]->x * L13.A + A[i][j]->y * L13.B + L13.C > 0)
 					{
-						A[i][j]->ρ = ρ3;
+						A[i][j]->rho = rho3;
 						A[i][j]->u = u3;
 						A[i][j]->v = v3;
 						A[i][j]->p = p3;
 					}
 					else
 					{
-						A[i][j]->ρ = ρ1;
+						A[i][j]->rho = rho1;
 						A[i][j]->u = u1;
 						A[i][j]->v = v1;
 						A[i][j]->p = p1;
@@ -287,7 +287,7 @@ void update_bound_shockwave()
 				}
 				else if (A[i][j]->type == "R")
 				{
-					A[i][j]->ρ = A[i][j - 1]->ρ;
+					A[i][j]->rho = A[i][j - 1]->rho;
 					A[i][j]->u = A[i][j - 1]->u;
 					A[i][j]->v = A[i][j - 1]->v;
 					A[i][j]->p = A[i][j - 1]->p;
@@ -295,7 +295,7 @@ void update_bound_shockwave()
 				}
 				else if (A[i][j]->type == "U")
 				{
-					A[i][j]->ρ = A[i][j - Xnum]->ρ;
+					A[i][j]->rho = A[i][j - Xnum]->rho;
 					A[i][j]->u = A[i][j - Xnum]->u;
 					A[i][j]->v = A[i][j - Xnum]->v;
 					A[i][j]->p = A[i][j - Xnum]->p;
@@ -303,7 +303,7 @@ void update_bound_shockwave()
 				}
 				else if (A[i][j]->type == "D")
 				{
-					A[i][j]->ρ = A[i][j + Xnum]->ρ;
+					A[i][j]->rho = A[i][j + Xnum]->rho;
 					A[i][j]->u = A[i][j + Xnum]->u;
 					A[i][j]->v = A[i][j + Xnum]->v;
 					A[i][j]->p = A[i][j + Xnum]->p;
@@ -330,7 +330,7 @@ void update_bound_shockwave()
 				else if (A[i][j]->type == "U")
 				{
 
-					A[i][j]->ρ = A[i][j - Xnum]->ρ;
+					A[i][j]->rho = A[i][j - Xnum]->rho;
 					A[i][j]->u = A[i][j - Xnum]->u;
 					A[i][j]->v = A[i][j - Xnum]->v;
 					A[i][j]->p = A[i][j - Xnum]->p;
@@ -340,7 +340,7 @@ void update_bound_shockwave()
 				{
 					if (A[i][j]->x > 0.0075)
 					{
-						A[i][j]->ρ = ρ2;
+						A[i][j]->rho = rho2;
 						A[i][j]->u = u2;
 						A[i][j]->v = v2;
 						A[i][j]->p = p2;
@@ -348,7 +348,7 @@ void update_bound_shockwave()
 					}
 					else
 					{
-						A[i][j]->ρ = A[i][j + Xnum]->ρ;
+						A[i][j]->rho = A[i][j + Xnum]->rho;
 						A[i][j]->u = A[i][j + Xnum]->u;
 						A[i][j]->v = A[i][j + Xnum]->v;
 						A[i][j]->p = A[i][j + Xnum]->p;
@@ -358,14 +358,14 @@ void update_bound_shockwave()
 				}
 				else if (A[i][j]->type == "L")
 				{
-					A[i][j]->ρ = ρ1;
+					A[i][j]->rho = rho1;
 					A[i][j]->u = u1;
 					A[i][j]->v = v1;
 					A[i][j]->p = p1;
 				}
 				else if (A[i][j]->type == "R")
 				{
-					A[i][j]->ρ = A[i][j - 1]->ρ;
+					A[i][j]->rho = A[i][j - 1]->rho;
 					A[i][j]->u = A[i][j - 1]->u;
 					A[i][j]->v = A[i][j - 1]->v;
 					A[i][j]->p = A[i][j - 1]->p;
@@ -383,14 +383,14 @@ void update_bound_shockwave()
 					{
 						if (abs(A[i][j]->x - A[i][j]->neibor[0]->x) < 1e-10 && abs(A[i][j]->y - A[i][j]->neibor[0]->y) < 1e-10)
 						{
-							A[i][j]->ρ = A[i][j]->neibor[0]->ρ;
+							A[i][j]->rho = A[i][j]->neibor[0]->rho;
 							A[i][j]->u = A[i][j]->neibor[0]->u;
 							A[i][j]->v = A[i][j]->neibor[0]->v;
 							A[i][j]->p = A[i][j]->neibor[0]->p;
 						}
 						else
 						{
-							A[i][j]->ρ = A[i][j]->neibor[1]->ρ;
+							A[i][j]->rho = A[i][j]->neibor[1]->rho;
 							A[i][j]->u = A[i][j]->neibor[1]->u;
 							A[i][j]->v = A[i][j]->neibor[1]->v;
 							A[i][j]->p = A[i][j]->neibor[1]->p;
@@ -415,11 +415,11 @@ void update_bound_shockwave()
 					continue;
 				else if (A[i][j]->type == "U")
 				{
-					A[i][j]->ρ = ρ1;
+					A[i][j]->rho = rho1;
 					A[i][j]->u = u1;
 					A[i][j]->v = v1;
 					A[i][j]->p = p1;
-					A[i][j]->ρ = A[i][j - Xnum]->ρ;
+					A[i][j]->rho = A[i][j - Xnum]->rho;
 					A[i][j]->u = A[i][j - Xnum]->u;
 					A[i][j]->v = A[i][j - Xnum]->v;
 					A[i][j]->p = A[i][j - Xnum]->p;
@@ -427,26 +427,26 @@ void update_bound_shockwave()
 				}
 				else if (A[i][j]->type == "D")
 				{
-					A[i][j]->ρ = ρ1;
+					A[i][j]->rho = rho1;
 					A[i][j]->u = 0;
 					A[i][j]->v = v1;
 					A[i][j]->p = p1;
 				}
 				else if (A[i][j]->type == "L")
 				{
-					A[i][j]->ρ = ρ1;
+					A[i][j]->rho = rho1;
 					A[i][j]->u = u1 * A[i][j]->y / yU;
 					A[i][j]->v = v1;
 					A[i][j]->p = p1;
 				}
-				A[i][j]->ρ = ρ1;
+				A[i][j]->rho = rho1;
 				A[i][j]->u = u1 * A[i][j]->y / yU;
 				A[i][j]->v = v1;
 				A[i][j]->p = p1;
 
 				if (A[i][j]->type == "R")
 				{
-					A[i][j]->ρ = A[i][j - 1]->ρ;
+					A[i][j]->rho = A[i][j - 1]->rho;
 					A[i][j]->u = A[i][j - 1]->u;
 					A[i][j]->v = A[i][j - 1]->v;
 					A[i][j]->p = A[i][j - 1]->p;
@@ -463,28 +463,28 @@ void update_bound_shockwave()
 		{
 			if (A0[i].type == "L")
 			{
-				A0[i].ρ = 20;
+				A0[i].rho = 20;
 				A0[i].u = 10;
 				A0[i].v = 0;
 				A0[i].p = 1;
 			}
 			else if (A0[i].type == "R")
 			{
-				A0[i].ρ = A0[i - 1].ρ;
+				A0[i].rho = A0[i - 1].rho;
 				A0[i].u = A0[i - 1].u;
 				A0[i].v = A0[i - 1].v;
 				A0[i].p = A0[i - 1].p;
 			}
 			else if (A0[i].type == "U")
 			{
-				A0[i].ρ = A0[i - Xnum].ρ;
+				A0[i].rho = A0[i - Xnum].rho;
 				A0[i].u = A0[i - Xnum].u;
 				A0[i].v = A0[i - Xnum].v;
 				A0[i].p = A0[i - Xnum].p;
 			}
 			else if (A0[i].type == "D")
 			{
-				A0[i].ρ = A0[i + Xnum].ρ;
+				A0[i].rho = A0[i + Xnum].rho;
 				A0[i].u = A0[i + Xnum].u;
 				A0[i].v = A0[i + Xnum].v;
 				A0[i].p = A0[i + Xnum].p;
@@ -509,7 +509,7 @@ void update_bound_shockwave()
 				double n2 = A0[i].neibor[0]->v;
 				if ((abs(n1)<1e-10&&abs(n2)<1e-10)||(abs(tx)<1e-8||abs(ty)<1e-8))
 				{
-					A0[i].ρ = A0[i].neibor[0]->ρ;
+					A0[i].rho = A0[i].neibor[0]->rho;
 					A0[i].u = A0[i].neibor[0]->u;
 					A0[i].v = A0[i].neibor[0]->v;
 					A0[i].p = A0[i].neibor[0]->p;
@@ -523,17 +523,17 @@ void update_bound_shockwave()
 					double v = (n1 * n1 + n2 * n2) * cosθ * ey;
 					//std::cout << cosθ << "  " << ex << "  " << ey << std::endl;
 					//std::cout << A0[i].neibor[0]->u << "  " << A0[i].neibor[0]->v << "  " << u << "  " << v << std::endl;
-					A0[i].ρ = A0[i].neibor[0]->ρ;
+					A0[i].rho = A0[i].neibor[0]->rho;
 					A0[i].u = u;
 					A0[i].v = v;
 					A0[i].p = A0[i].neibor[0]->p;
-					//A0[i].ρ = A0[i].neibor[0]->ρ;
+					//A0[i].rho = A0[i].neibor[0]->rho;
 					//A0[i].u = A0[i].neibor[0]->u;
 					//A0[i].v = A0[i].neibor[0]->v;
 					//A0[i].p = A0[i].neibor[0]->p;
 
 				}
-				//A0[i].ρ = 2;
+				//A0[i].rho = 2;
 				//A0[i].u = 0;
 				//A0[i].v = 0;
 				//A0[i].p = A0[i].p;
@@ -723,14 +723,14 @@ void update_bound()
 						continue;
 					if (i == 0)
 					{
-						A[i][j]->ρ = ρ1;
+						A[i][j]->rho = rho1;
 						A[i][j]->u = u1;
 						A[i][j]->v = v1;
 						A[i][j]->p = p1;
 					}
 					if (i == 1)
 					{
-						A[i][j]->ρ = ρ2;
+						A[i][j]->rho = rho2;
 						A[i][j]->u = u2;
 						A[i][j]->v = v2;
 						A[i][j]->p = p2;
@@ -753,21 +753,21 @@ void update_bound()
 						continue;
 					if (i == 0)
 					{
-						A[i][j]->ρ = ρ1;
+						A[i][j]->rho = rho1;
 						A[i][j]->u = u1;
 						A[i][j]->v = v1;
 						A[i][j]->p = p1;
 					}
 					if (i == 1)
 					{
-						A[i][j]->ρ = ρ2;
+						A[i][j]->rho = rho2;
 						A[i][j]->u = u2;
 						A[i][j]->v = v2;
 						A[i][j]->p = p2;
 					}
 					if (A[i][j]->type == "R")
 					{
-						A[i][j]->ρ = A[i][j - 1]->ρ;
+						A[i][j]->rho = A[i][j - 1]->rho;
 						A[i][j]->u = A[i][j - 1]->u;
 						A[i][j]->v = A[i][j - 1]->v;
 						A[i][j]->p = A[i][j - 1]->p;
@@ -804,7 +804,7 @@ void update_bound()
 							else
 								n = m;
 						}
-						A[i][j]->ρ = A[i][n]->ρ;
+						A[i][j]->rho = A[i][n]->rho;
 						A[i][j]->u = A[i][n]->u;
 						A[i][j]->v = A[i][n]->v;
 						A[i][j]->p = A[i][n]->p;
@@ -813,14 +813,14 @@ void update_bound()
 					{
 						if (i == 0)
 						{
-							A[i][j]->ρ = ρ1;
+							A[i][j]->rho = rho1;
 							A[i][j]->u = u1;
 							A[i][j]->v = v1;
 							A[i][j]->p = p1;
 						}
 						else
 						{
-							A[i][j]->ρ = ρ2;
+							A[i][j]->rho = rho2;
 							A[i][j]->u = u2;
 							A[i][j]->v = v2;
 							A[i][j]->p = p2;
@@ -830,7 +830,7 @@ void update_bound()
 					}
 					else if (A[i][j]->type == "L")
 					{
-						A[i][j]->ρ = ρ1;
+						A[i][j]->rho = rho1;
 						A[i][j]->u = u1;
 						A[i][j]->v = v1;
 						A[i][j]->p = p1;
@@ -849,7 +849,7 @@ void update_bound()
 							else
 								n = m;
 						}
-						A[i][j]->ρ = A[i][n]->ρ;
+						A[i][j]->rho = A[i][n]->rho;
 						A[i][j]->u = A[i][n]->u;
 						A[i][j]->v = A[i][n]->v;
 						A[i][j]->p = A[i][n]->p;
@@ -884,7 +884,7 @@ void update_bound()
 							else
 								n = m;
 						}
-						A[i][j]->ρ = A[i][n]->ρ;
+						A[i][j]->rho = A[i][n]->rho;
 						A[i][j]->u = A[i][n]->u;
 						A[i][j]->v = A[i][n]->v;
 						A[i][j]->p = A[i][n]->p;
@@ -893,14 +893,14 @@ void update_bound()
 					{
 						if (i == 0)
 						{
-							A[i][j]->ρ = ρ1;
+							A[i][j]->rho = rho1;
 							A[i][j]->u = u1;
 							A[i][j]->v = v1;
 							A[i][j]->p = p1;
 						}
 						else
 						{
-							A[i][j]->ρ = ρ2;
+							A[i][j]->rho = rho2;
 							A[i][j]->u = u2;
 							A[i][j]->v = v2;
 							A[i][j]->p = p2;
@@ -910,7 +910,7 @@ void update_bound()
 					}
 					else if (A[i][j]->type == "L")
 					{
-						A[i][j]->ρ = ρ1;
+						A[i][j]->rho = rho1;
 						A[i][j]->u = u1;
 						A[i][j]->v = v1;
 						A[i][j]->p = p1;
@@ -929,7 +929,7 @@ void update_bound()
 							else
 								n = m;
 						}
-						A[i][j]->ρ = A[i][n]->ρ;
+						A[i][j]->rho = A[i][n]->rho;
 						A[i][j]->u = A[i][n]->u;
 						A[i][j]->v = A[i][n]->v;
 						A[i][j]->p = A[i][n]->p;
@@ -962,7 +962,7 @@ void update_bound()
 							else
 								n = m;
 						}
-						A[i][j]->ρ = A[i][n]->ρ;
+						A[i][j]->rho = A[i][n]->rho;
 						A[i][j]->u = A[i][n]->u;
 						A[i][j]->v = A[i][n]->v;
 						A[i][j]->p = A[i][n]->p;
@@ -971,21 +971,21 @@ void update_bound()
 					{
 						if (i == 0)
 						{
-							A[i][j]->ρ = ρ1;
+							A[i][j]->rho = rho1;
 							A[i][j]->u = u1;
 							A[i][j]->v = v1;
 							A[i][j]->p = p1;
 						}
 						else if (i == 1)
 						{
-							A[i][j]->ρ = ρ2;
+							A[i][j]->rho = rho2;
 							A[i][j]->u = u2;
 							A[i][j]->v = v2;
 							A[i][j]->p = p2;
 						}
 						else if (i == 2)
 						{
-							A[i][j]->ρ = ρ3;
+							A[i][j]->rho = rho3;
 							A[i][j]->u = u3;
 							A[i][j]->v = v3;
 							A[i][j]->p = p3;
@@ -1006,7 +1006,7 @@ void update_bound()
 							else
 								n = m;
 						}
-						A[i][j]->ρ = A[i][n]->ρ;
+						A[i][j]->rho = A[i][n]->rho;
 						A[i][j]->u = A[i][n]->u;
 						A[i][j]->v = A[i][n]->v;
 						A[i][j]->p = A[i][n]->p;
@@ -1032,14 +1032,14 @@ void update_bound_shockwaveCross()
 				continue;
 			else if (A[i][j]->type == "U")
 			{
-				A[i][j]->ρ = ρ2;
+				A[i][j]->rho = rho2;
 				A[i][j]->u = u2;
 				A[i][j]->v = v2;
 				A[i][j]->p = p2;
 			}
 			else if (A[i][j]->type == "L")
 			{
-				A[i][j]->ρ = ρ1;
+				A[i][j]->rho = rho1;
 				A[i][j]->u = u1;
 				A[i][j]->v = v1;
 				A[i][j]->p = p1;
@@ -1047,14 +1047,14 @@ void update_bound_shockwaveCross()
 			}
 			else if (A[i][j]->type == "D")
 			{
-				A[i][j]->ρ = ρ3;
+				A[i][j]->rho = rho3;
 				A[i][j]->u = u3;
 				A[i][j]->v = v3;
 				A[i][j]->p = p3;
 			}
 			else if (A[i][j]->type == "R")
 			{
-				A[i][j]->ρ = A[i][j - 1]->ρ;
+				A[i][j]->rho = A[i][j - 1]->rho;
 				A[i][j]->u = A[i][j - 1]->u;
 				A[i][j]->v = A[i][j - 1]->v;
 				A[i][j]->p = A[i][j - 1]->p;
@@ -1078,28 +1078,28 @@ void update_bound_Prandtl_Meyer()
 				continue;
 			else if (A[i][j]->type == "L")
 			{
-				A[i][j]->ρ = ρ1;
+				A[i][j]->rho = rho1;
 				A[i][j]->u = u1;
 				A[i][j]->v = v1;
 				A[i][j]->p = p1;
 			}
 			else if (A[i][j]->type == "DL")
 			{
-				A[i][j]->ρ = ρ1;
+				A[i][j]->rho = rho1;
 				A[i][j]->u = u1;
 				A[i][j]->v = v1;
 				A[i][j]->p = p1;
 			}
 			else if (A[i][j]->type == "DR")
 			{
-				A[i][j]->ρ = ρ2;
+				A[i][j]->rho = rho2;
 				A[i][j]->u = u2;
 				A[i][j]->v = v2;
 				A[i][j]->p = p2;
 			}
 			else if (A[i][j]->type == "R")
 			{
-				A[i][j]->ρ = A[i][j - 1]->ρ;
+				A[i][j]->rho = A[i][j - 1]->rho;
 				A[i][j]->u = A[i][j - 1]->u;
 				A[i][j]->v = A[i][j - 1]->v;
 				A[i][j]->p = A[i][j - 1]->p;
@@ -1116,10 +1116,10 @@ void update_bound_Prandtl_Meyer()
 //	extern double F[Pnum][4];
 //	for (int i = 0; i < Pnum; i++)
 //	{
-//		F[i][0] = A[i].ρ*A[i].u;
-//		F[i][1] = A[i].ρ*A[i].u*A[i].u + A[i].p;
-//		F[i][2] = A[i].ρ*A[i].u*A[i].v;
-//		F[i][3] = A[i].u*(A[i].p / (gama - 1) + 0.5*A[i].ρ*(A[i].u*A[i].u + A[i].v*A[i].v) + A[i].p);
+//		F[i][0] = A[i].rho*A[i].u;
+//		F[i][1] = A[i].rho*A[i].u*A[i].u + A[i].p;
+//		F[i][2] = A[i].rho*A[i].u*A[i].v;
+//		F[i][3] = A[i].u*(A[i].p / (gama - 1) + 0.5*A[i].rho*(A[i].u*A[i].u + A[i].v*A[i].v) + A[i].p);
 //	}
 //}
 //void get_G()
@@ -1128,10 +1128,10 @@ void update_bound_Prandtl_Meyer()
 //	extern double G[Pnum][4];
 //	for (int i = 0; i < Pnum; i++)
 //	{
-//		G[i][0] = A[i].ρ*A[i].v; extern vector<vector<vector <double>>> Utr;
-//		G[i][1] = A[i].ρ*A[i].u *A[i].v;
-//		G[i][2] = A[i].ρ*A[i].u*A[i].v + A[i].p;
-//		G[i][3] = A[i].v*(A[i].p / (gama - 1) + 0.5*A[i].ρ*(A[i].u*A[i].u + A[i].v*A[i].v) + A[i].p);
+//		G[i][0] = A[i].rho*A[i].v; extern vector<vector<vector <double>>> Utr;
+//		G[i][1] = A[i].rho*A[i].u *A[i].v;
+//		G[i][2] = A[i].rho*A[i].u*A[i].v + A[i].p;
+//		G[i][3] = A[i].v*(A[i].p / (gama - 1) + 0.5*A[i].rho*(A[i].u*A[i].u + A[i].v*A[i].v) + A[i].p);
 //	}
 //}
 
@@ -1186,7 +1186,7 @@ double compute_res()//计算残差
 	{
 		for (j = 0; j < A[i].size(); j++)
 		{
-			res = max(res, abs(A[i][j]->ρ - Ar[A[i][j]->id].ρ) / Ar[A[i][j]->id].ρ);
+			res = max(res, abs(A[i][j]->rho - Ar[A[i][j]->id].rho) / Ar[A[i][j]->id].rho);
 			n++;
 		}
 	}
@@ -1245,10 +1245,10 @@ void update_IN()
 			if (A[i][j]->type == "L" || A[i][j]->type == "R" || A[i][j]->type == "U" || A[i][j]->type == "D" || A[i][j]->type == "Cy" || A[i][j]->section == 0 /*|| A[i][j]->change == "N"*/)
 				continue;
 			id = A[i][j]->id;
-			U[0] = Ar[id].ρ;
-			U[1] = Ar[id].ρ * A[i][j]->u;
-			U[2] = Ar[id].ρ * A[i][j]->v;
-			U[3] = 0.5 * Ar[id].ρ * (Ar[id].u * Ar[id].u + Ar[id].v * Ar[id].v) + Ar[id].p / (gama - 1);
+			U[0] = Ar[id].rho;
+			U[1] = Ar[id].rho * A[i][j]->u;
+			U[2] = Ar[id].rho * A[i][j]->v;
+			U[3] = 0.5 * Ar[id].rho * (Ar[id].u * Ar[id].u + Ar[id].v * Ar[id].v) + Ar[id].p / (gama - 1);
 
 			if (A[i][j]->neibor.size() == 3)
 			{
@@ -1317,7 +1317,7 @@ void update_IN()
 				{
 					double m, n;
 
-					A[i][j]->ρ = (A[i][j]->neibor[0]->ρ + A[i][j]->neibor[1]->ρ) / 2;
+					A[i][j]->rho = (A[i][j]->neibor[0]->rho + A[i][j]->neibor[1]->rho) / 2;
 					A[i][j]->u = (A[i][j]->neibor[0]->u + A[i][j]->neibor[1]->u) / 2;
 					A[i][j]->v = (A[i][j]->neibor[0]->v + A[i][j]->neibor[1]->v) / 2;
 					A[i][j]->p = (A[i][j]->neibor[0]->p + A[i][j]->neibor[1]->p) / 2;
@@ -1327,13 +1327,13 @@ void update_IN()
 			}
 			else
 				std::cout << i << "   " << j << "   " << "somthing wrong in updat_u" << std::endl;
-			A[i][j]->ρ = U[0];
+			A[i][j]->rho = U[0];
 			A[i][j]->u = U[1] / U[0];
 			A[i][j]->v = U[2] / U[0];
-			A[i][j]->p = (gama - 1) * (U[3] - 0.5 * A[i][j]->ρ * (A[i][j]->u * A[i][j]->u + A[i][j]->v * A[i][j]->v));
+			A[i][j]->p = (gama - 1) * (U[3] - 0.5 * A[i][j]->rho * (A[i][j]->u * A[i][j]->u + A[i][j]->v * A[i][j]->v));
 			if (i == 0&FlowType=="cylinder")
 			{
-				A[i][j]->ρ = A[i][j]->ρ * A[i][j]->sec_num;
+				A[i][j]->rho = A[i][j]->rho * A[i][j]->sec_num;
 				A[i][j]->u = A[i][j]->u * A[i][j]->sec_num;
 				A[i][j]->v = A[i][j]->v * A[i][j]->sec_num;
 				A[i][j]->p = A[i][j]->p * A[i][j]->sec_num;
@@ -1354,10 +1354,10 @@ Flux get_F(mesh N, mesh C, int method)//得到当地坐标系下的通量
 	double xi3 = xit / Dxi;
 	double ub = N.u * xi1 + N.v * xi2 + xi3;
 	Flux F;
-	F.f1 = C.ρ;
-	F.f2 = C.ρ * C.u;
-	F.f3 = C.ρ * C.v;
-	F.f4 = C.p * gama / (gama - 1) + 0.5 * C.ρ * C.u * C.u + 0.5 * C.ρ * C.v * C.v;
+	F.f1 = C.rho;
+	F.f2 = C.rho * C.u;
+	F.f3 = C.rho * C.v;
+	F.f4 = C.p * gama / (gama - 1) + 0.5 * C.rho * C.u * C.u + 0.5 * C.rho * C.v * C.v;
 	F.f1 = F.f1 * ub;
 	F.f2 = F.f2 * ub + xi1 * C.p;
 	F.f3 = F.f3 * ub + xi2 * C.p;
@@ -1382,10 +1382,10 @@ Flux get_G(mesh N, mesh C, int method)//得到当地坐标系下的通量
 	double ub = N.u * eta1 + N.v * eta2 + eta3;
 
 	Flux F;
-	F.f1 = C.ρ;
-	F.f2 = C.ρ * C.u;
-	F.f3 = C.ρ * C.v;
-	F.f4 = C.p * gama / (gama - 1) + 0.5 * C.ρ * C.u * C.u + 0.5 * C.ρ * C.v * C.v;
+	F.f1 = C.rho;
+	F.f2 = C.rho * C.u;
+	F.f3 = C.rho * C.v;
+	F.f4 = C.p * gama / (gama - 1) + 0.5 * C.rho * C.u * C.u + 0.5 * C.rho * C.v * C.v;
 	F.f1 = F.f1 * ub;
 	F.f2 = F.f2 * ub + eta1 * C.p;
 	F.f3 = F.f3 * ub + eta2 * C.p;
@@ -1405,42 +1405,42 @@ Flux get_G(mesh N, mesh C, int method)//得到当地坐标系下的通量
 //	extern double U0[Pnum][4];
 //	extern double U1[Pnum][4];
 //	extern double U2[Pnum][4];
-//	double ρ00, u00, v00, p00;
-//	double ρ, u, v, p;
-//	double ρ0, u0, v0, p0;
-//	double ρ1, u1, v1, p1;
-//	double ρ2, u2, v2, p2;
-//	ρ00 = A[i].ρ;
+//	double rho00, u00, v00, p00;
+//	double rho, u, v, p;
+//	double rho0, u0, v0, p0;
+//	double rho1, u1, v1, p1;
+//	double rho2, u2, v2, p2;
+//	rho00 = A[i].rho;
 //	u00 = A[i].u;
 //	v00 = A[i].v;
 //	p00 = A[i].p;
 //
-//	ρ0 = U0[i][0] / A[i].J[0];
+//	rho0 = U0[i][0] / A[i].J[0];
 //	u0 = U0[i][1] / U0[i][0];
 //	v0 = U0[i][2] / U0[i][0];
-//	p0 = (gama - 1)*(U0[i][3] / A[i].J[0] - 0.5*A[i].ρ*(A[i].u*A[i].u + A[i].v*A[i].v));
+//	p0 = (gama - 1)*(U0[i][3] / A[i].J[0] - 0.5*A[i].rho*(A[i].u*A[i].u + A[i].v*A[i].v));
 //
-//	ρ1 = U1[i][0] / A[i].J[1];
+//	rho1 = U1[i][0] / A[i].J[1];
 //	u1 = U1[i][1] / U1[i][0];
 //	v1 = U1[i][2] / U1[i][0];
-//	p1 = (gama - 1)*(U1[i][3] / A[i].J[1] - 0.5*A[i].ρ*(A[i].u*A[i].u + A[i].v*A[i].v));
-//	//ρ0 = ρ1;
+//	p1 = (gama - 1)*(U1[i][3] / A[i].J[1] - 0.5*A[i].rho*(A[i].u*A[i].u + A[i].v*A[i].v));
+//	//rho0 = rho1;
 //	//u0 = u1;
 //	//v0 = v1;
 //	//p0 = p1;
 //
-//	ρ2 = U2[i][0] / A[i].J[2];
+//	rho2 = U2[i][0] / A[i].J[2];
 //	u2 = U2[i][1] / U2[i][0];
 //	v2 = U2[i][2] / U2[i][0];
-//	p2 = (gama - 1)*(U2[i][3] / A[i].J[1] - 0.5*A[i].ρ*(A[i].u*A[i].u + A[i].v*A[i].v));
-//	ρ = absmax(absmax(ρ0, ρ1), ρ2);
+//	p2 = (gama - 1)*(U2[i][3] / A[i].J[1] - 0.5*A[i].rho*(A[i].u*A[i].u + A[i].v*A[i].v));
+//	rho = absmax(absmax(rho0, rho1), rho2);
 //	u = absmin(absmin(u0, u1), u2);
 //	v = absmax(absmax(v0, v1), v2);
 //	p = absmax(absmax(p0, p1), p2);
-//	U[i][0] = ρ;
-//	U[i][1] = ρ * u;
-//	U[i][2] = ρ * v;
-//	U[i][3] = 0.5*ρ*(u*u + v * v) + p / (gama - 1);
+//	U[i][0] = rho;
+//	U[i][1] = rho * u;
+//	U[i][2] = rho * v;
+//	U[i][3] = 0.5*rho*(u*u + v * v) + p / (gama - 1);
 //}
 //void choose_U(int i)
 //{

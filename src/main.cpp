@@ -53,7 +53,7 @@ int main()
 	for (int i = 0; i < A0.size(); i++)
 	{
 		if (A0[i].section != 0)
-			fout << A0[i].x << "  " << A0[i].y << "  " << A0[i].老 << endl;
+			fout << A0[i].x << "  " << A0[i].y << "  " << A0[i].rho << endl;
 	}
 	fout.close();
 	fout.clear();
@@ -85,7 +85,7 @@ int main()
 			for (int i = 0; i < A0.size(); i++)
 			{
 				if (A0[i].section != 0)
-					fout << A0[i].x << "  " << A0[i].y << "  " << A0[i].老 << "  " << A0[i].u << "  " << A0[i].v << "  " << A0[i].p << endl;
+					fout << A0[i].x << "  " << A0[i].y << "  " << A0[i].rho << "  " << A0[i].u << "  " << A0[i].v << "  " << A0[i].p << endl;
 			}
 			fout.close();
 			fout.clear();
@@ -95,7 +95,7 @@ int main()
 			fout << "solutiontime = "<<t_sim << endl;
 			for (int i = 0; i < A[0].size(); i++)
 			{
-					fout << A[0][i]->x << "  " << A[0][i]->y << "  " << A[0][i]->老 << "  " << A[0][i]->u << "  " << A[0][i]->v << "  " << A[0][i]->p << endl;
+					fout << A[0][i]->x << "  " << A[0][i]->y << "  " << A[0][i]->rho << "  " << A[0][i]->u << "  " << A[0][i]->v << "  " << A[0][i]->p << endl;
 			}
 			fout.close();
 			fout.clear();
@@ -131,7 +131,7 @@ int main()
 		//						for (j = 0; j < A[i].size(); j++)
 		//						{
 		//							if (abs(A[i][j]->y - 0.015) < dx / 2)
-		//								fout << A[i][j]->x << "   " << A[i][j]->老 << endl;
+		//								fout << A[i][j]->x << "   " << A[i][j]->rho << endl;
 		//						}
 		//					}
 		//				}
@@ -145,7 +145,7 @@ int main()
 		//						for (j = 0; j < A[i].size(); j++)
 		//						{
 		//							if (abs(A[i][j]->x - 0.029) < dx / 2)
-		//								fout << A[i][j]->y << "   " << A[i][j]->老 << endl;
+		//								fout << A[i][j]->y << "   " << A[i][j]->rho << endl;
 		//						}
 		//					}
 		//					fout.close();
@@ -157,7 +157,7 @@ int main()
 		//						for (j = 0; j < A[i].size(); j++)
 		//						{
 		//							if (abs(A[i][j]->x - 0.0016) < dx / 2)
-		//								fout << A[i][j]->y << "   " << A[i][j]->老 << endl;
+		//								fout << A[i][j]->y << "   " << A[i][j]->rho << endl;
 		//						}
 		//					}
 

@@ -33,7 +33,7 @@ void update_bound_shockwave_fitting();//¼¤²¨±ß½ç£¬ÓÃÓÚ×°Åä·¨
 void update_Vm();
 void clear_Vm();
 void update_bound();
-double get_¦È(double x1, double y1, double x2, double y2);//ÇóÖ±ÏßÓëxÖáµÄ¼Ğ½Ç
+double get_theta(double x1, double y1, double x2, double y2);//ÇóÖ±ÏßÓëxÖáµÄ¼Ğ½Ç
 
 double max(double a, double b);
 double min(double a, double b);
@@ -45,5 +45,5 @@ mesh getCrossPoint(mesh M, double a, double b, double r);//Ä³µãºÍÔ²ĞÄµÄÁ¬ÏßÓëÔ²µ
 Line getLine(mesh A, mesh B);
 Line getLine(double x1, double y1, double x2, double y2);
 
-Line getLine(double ¦È, mesh A);
+Line getLine(double theta, mesh A);
 double compute_res();//¼ÆËã²Ğ²î

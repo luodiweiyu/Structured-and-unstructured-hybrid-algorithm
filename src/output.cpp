@@ -15,7 +15,7 @@ void out_mesh(string name)
 	int i;
 	if (FlowType == "oblique" || FlowType == "intersection")
 	{
-		fout << "VARIABLES = \"X\", \"Y\", \"u\", \"v\", \"p\", \"老\"" << endl;
+		fout << "VARIABLES = \"X\", \"Y\", \"u\", \"v\", \"p\", \"rho\"" << endl;
 
 		fout << "ZONE I =" << Xnum << ", J = " << Ynum << ", F = point" << endl;
 		fout << "solutiontime = " << t_sim << endl;
@@ -23,7 +23,7 @@ void out_mesh(string name)
 		for (i = 0; i < Pnum; i++)
 		{
 			//if(A0[i].section==1)
-			fout << A0[i].x << "   " << A0[i].y << "   " << A0[i].u << "   " << A0[i].v << "   " << A0[i].p << "   " << A0[i].老 << endl;
+			fout << A0[i].x << "   " << A0[i].y << "   " << A0[i].u << "   " << A0[i].v << "   " << A0[i].p << "   " << A0[i].rho << endl;
 		}
 
 	}
@@ -35,14 +35,14 @@ void out_mesh(string name)
 			if (ad[i].size() == 3)
 				s++;
 		}
-		fout << "VARIABLES = \"X\", \"Y\", \"u\", \"v\", \"p\", \"老\",\"Ma\"" << endl;
+		fout << "VARIABLES = \"X\", \"Y\", \"u\", \"v\", \"p\", \"rho\",\"Ma\"" << endl;
 
 
 		fout << "ZONE N =" << A0.size() << ", E = " << s << ", F = FEPOINT, ET = TRIANGLE" << endl;
 		fout << "solutiontime = " << t_sim << endl;
 		for (i = 0; i < A0.size(); i++)
 		{
-			fout << A0[i].x << "   " << A0[i].y << "   " << A0[i].u << "   " << A0[i].v << "   " << A0[i].p << "   " << A0[i].老 << "   " << get_Ma(A0[i].u, A0[i].v, A0[i].老, A0[i].p) << endl;
+			fout << A0[i].x << "   " << A0[i].y << "   " << A0[i].u << "   " << A0[i].v << "   " << A0[i].p << "   " << A0[i].rho << "   " << get_Ma(A0[i].u, A0[i].v, A0[i].rho, A0[i].p) << endl;
 		}
 		for (i = 0; i < ad.size(); i++)
 		{
@@ -55,15 +55,15 @@ void out_mesh(string name)
 		fout.scientific;
 		for (i = 0; i < Pnum; i++)
 		{
-			fout << A0[i].x << "   " << A0[i].y << "   " << A0[i].u << "   " << A0[i].v << "   " << A0[i].p << "   " << A0[i].老 << "   " << get_Ma(A0[i].u, A0[i].v, A0[i].老, A0[i].p) << endl;
+			fout << A0[i].x << "   " << A0[i].y << "   " << A0[i].u << "   " << A0[i].v << "   " << A0[i].p << "   " << A0[i].rho << "   " << get_Ma(A0[i].u, A0[i].v, A0[i].rho, A0[i].p) << endl;
 		}
 		fout << "ZONE I =" << Xnum << ", J = " << Ynum << ", F = point" << endl;
 		fout << "solutiontime = " << t_sim << endl;
 		fout.scientific;
-		fout << A0[Xnum - 1].x << "   " << A0[Xnum - 1].y << "   " << A0[Xnum - 1].u << "   " << A0[Xnum - 1].v << "   " << A0[Xnum - 1].p << "   " << A0[Xnum - 1].老 << "   " << get_Ma(A0[Xnum - 1].u, A0[Xnum - 1].v, A0[Xnum - 1].老, A0[Xnum - 1].p) << endl;
+		fout << A0[Xnum - 1].x << "   " << A0[Xnum - 1].y << "   " << A0[Xnum - 1].u << "   " << A0[Xnum - 1].v << "   " << A0[Xnum - 1].p << "   " << A0[Xnum - 1].rho << "   " << get_Ma(A0[Xnum - 1].u, A0[Xnum - 1].v, A0[Xnum - 1].rho, A0[Xnum - 1].p) << endl;
 		for (i = Pnum; i < A0.size(); i++)
 		{
-			fout << A0[i].x << "   " << A0[i].y << "   " << A0[i].u << "   " << A0[i].v << "   " << A0[i].p << "   " << A0[i].老 << "   " << get_Ma(A0[i].u, A0[i].v, A0[i].老, A0[i].p) << endl;
+			fout << A0[i].x << "   " << A0[i].y << "   " << A0[i].u << "   " << A0[i].v << "   " << A0[i].p << "   " << A0[i].rho << "   " << get_Ma(A0[i].u, A0[i].v, A0[i].rho, A0[i].p) << endl;
 		}
 
 	}
@@ -92,7 +92,7 @@ void out_polygon_mesh(string name)
 	int i;
 	//fout << "FILETYPE = GRID" << endl;
 	//fout << "VARIABLES = \"X\", \"Y\"" << endl;
-	fout << "VARIABLES =  \"X\", \"Y\"\"u\", \"v\", \"p\", \"老\"" << endl;
+	fout << "VARIABLES =  \"X\", \"Y\"\"u\", \"v\", \"p\", \"rho\"" << endl;
 
 	fout << "ZONE T=\"Test\"" << endl;
 	fout << "ZONETYPE=FEPOLYGON" << endl;
@@ -136,7 +136,7 @@ void out_polygon_mesh(string name)
 
 	for (i = 0; i < Pnum; i++)
 	{
-		fout << A0[i].老 << endl;
+		fout << A0[i].rho << endl;
 	}
 	fout << endl;
 
@@ -210,7 +210,7 @@ void out_M(std::string name)
 
 		for (j = 0; j < A[i].size(); j++)
 		{
-			fout << A[i][j]->老 << "   ";
+			fout << A[i][j]->rho << "   ";
 			if (j % 30 == 0)
 				fout << endl;
 		}
@@ -319,7 +319,7 @@ void out_polygon_variables(string name)
 	fout.open(name + ".dat");
 	int i;
 	fout << "FILETYPE = SOLUTION" << endl;
-	fout << "VARIABLES =  \"u\", \"v\", \"p\", \"老\"" << endl;
+	fout << "VARIABLES =  \"u\", \"v\", \"p\", \"rho\"" << endl;
 	fout << "ZONE T=\"Test\"" << endl;
 	fout << "ZONETYPE=FEPOLYGON" << endl;
 	fout << "Nodes = " << Pnum << endl;
@@ -351,7 +351,7 @@ void out_polygon_variables(string name)
 
 	for (i = 0; i < Pnum; i++)
 	{
-		fout << A0[i].老 << endl;
+		fout << A0[i].rho << endl;
 	}
 	fout << endl;
 }
@@ -435,7 +435,7 @@ void out_res()
 //
 //	for (i = 0; i < Pnum; i++)
 //	{
-//		fout << A[i].老 << " ";
+//		fout << A[i].rho << " ";
 //		if (i % 30 == 0)
 //			fout << endl;
 //	}

@@ -13,46 +13,46 @@
 //	double Dxi = sqrt(xix*xix + xiy * xiy);
 //	double xicL = (xix * CL.u + xiy * CL.v) / Dxi;
 //	double xicR = (xix * CR.u + xiy * CR.v) / Dxi;
-//	double aL = sqrt(gama*CL.p / CL.老);
-//	double aR = sqrt(gama*CR.p / CR.老);
-//	double EL = CL.p / (gama - 1) + 0.5*CL.老 * CL.u * CL.u + 0.5*CL.老 * CL.v * CL.v;
-//	double ER = CR.p / (gama - 1) + 0.5*CR.老 * CR.u * CR.u + 0.5*CR.老 * CR.v * CR.v;
+//	double aL = sqrt(gama*CL.p / CL.rho);
+//	double aR = sqrt(gama*CR.p / CR.rho);
+//	double EL = CL.p / (gama - 1) + 0.5*CL.rho * CL.u * CL.u + 0.5*CL.rho * CL.v * CL.v;
+//	double ER = CR.p / (gama - 1) + 0.5*CR.rho * CR.u * CR.u + 0.5*CR.rho * CR.v * CR.v;
 //	double FL[4], FR[4];
 //
-//	FL[0] = (CL.老*xicL);
-//	FL[1] = (CL.老*CL.u*xicL + xix * CL.p);
-//	FL[2] = (CL.老*CL.v*xicL + xiy * CL.p);
+//	FL[0] = (CL.rho*xicL);
+//	FL[1] = (CL.rho*CL.u*xicL + xix * CL.p);
+//	FL[2] = (CL.rho*CL.v*xicL + xiy * CL.p);
 //	FL[3] = (xicL * (EL + CL.p));
-//	FR[0] = (CR.老*xicR);
-//	FR[1] = (CR.老*CR.u*xicR + xix * CR.p);
-//	FR[2] = (CR.老*CR.v*xicR + xiy * CR.p);
+//	FR[0] = (CR.rho*xicR);
+//	FR[1] = (CR.rho*CR.u*xicR + xix * CR.p);
+//	FR[2] = (CR.rho*CR.v*xicR + xiy * CR.p);
 //	FR[3] = (xicR * (ER + CR.p));
 //	double SL = xicL - aL;
 //	double SR = xicR + aR;
-//	double SM = (CL.p - CR.p + CL.老 * xicL * (xicL - SL) + CR.老 * xicR* (SR - xicR)) / (CR.老 * (SR - xicR) - CL.老 * (SL - xicL));
-//	double pM = 0.5*(CL.老 * (xicL - SL)*(xicL - SM) + CR.老 * (xicR - SR)*(xicR - SM) + CR.p + CL.p);
+//	double SM = (CL.p - CR.p + CL.rho * xicL * (xicL - SL) + CR.rho * xicR* (SR - xicR)) / (CR.rho * (SR - xicR) - CL.rho * (SL - xicL));
+//	double pM = 0.5*(CL.rho * (xicL - SL)*(xicL - SM) + CR.rho * (xicR - SR)*(xicR - SM) + CR.p + CL.p);
 //	//Average-State Jacobians and Implicit Methods for Compressible Viscous and Turbulent Flows,(7)(8)
 //	double 次L = 1 / (SL - SM);
 //	double 次R = 1 / (SR - SM);
 //
-//	double 老LM = 次L * CL.老*(SL - xicL);
-//	double 老uLS = 次L * ((SL - xicL)*(CL.老*CL.u) + (pM - CL.p)*xix);
-//	double 老vLS = 次L * ((SL - xicL)*(CL.老*CL.v) + (pM - CL.p)*xiy);
+//	double rhoLM = 次L * CL.rho*(SL - xicL);
+//	double rhouLS = 次L * ((SL - xicL)*(CL.rho*CL.u) + (pM - CL.p)*xix);
+//	double rhovLS = 次L * ((SL - xicL)*(CL.rho*CL.v) + (pM - CL.p)*xiy);
 //	double eLS = 次L * ((SL - xicL)*EL - CL.p*xicL + pM * SM);
 //
-//	double 老RM = 次R * CR.老*(SR - xicR);
-//	double 老uRS = 次R * ((SR - xicR)*(CR.老*CR.u) + (pM - CR.p)*xix);
-//	double 老vRS = 次R * ((SR - xicR)*(CR.老*CR.v) + (pM - CR.p)*xiy);
+//	double rhoRM = 次R * CR.rho*(SR - xicR);
+//	double rhouRS = 次R * ((SR - xicR)*(CR.rho*CR.u) + (pM - CR.p)*xix);
+//	double rhovRS = 次R * ((SR - xicR)*(CR.rho*CR.v) + (pM - CR.p)*xiy);
 //	double eRS = 次R * ((SR - xicR)*ER - CR.p*xicR + pM * SM);
 //
 //	double  FML[4], FMR[4];
-//	FML[0] = SM * 老LM;
-//	FML[1] = 老uLS * SM + pM * xix;
-//	FML[2] = 老vLS * SM + pM * xiy;
+//	FML[0] = SM * rhoLM;
+//	FML[1] = rhouLS * SM + pM * xix;
+//	FML[2] = rhovLS * SM + pM * xiy;
 //	FML[3] = (eLS + pM)*SM;
-//	FMR[0] = SM * 老RM;
-//	FMR[1] = 老uRS * SM + pM * xix;
-//	FMR[2] = 老vRS * SM + pM * xiy;
+//	FMR[0] = SM * rhoRM;
+//	FMR[1] = rhouRS * SM + pM * xix;
+//	FMR[2] = rhovRS * SM + pM * xiy;
 //	FMR[3] = (eRS + pM)*SM;
 //
 //	double *F_HLLC = new double[4];
@@ -81,49 +81,49 @@
 //	double Deta = sqrt(etax*etax + etay * etay);
 //	double etacU = (C.etax[method] * CU.u + C.etay[method] * CD.v) / Deta;
 //	double etacD = (C.etax[method] * CD.u + C.etay[method] * CU.v) / Deta;
-//	double aU = sqrt(gama*CU.p / CU.老);
-//	double aD = sqrt(gama*CD.p / CD.老);
-//	double EU = CU.p / (gama - 1) + 0.5*CU.老 * CU.u * CU.u + 0.5*CU.老 * CU.v * CU.v;
-//	double ED = CD.p / (gama - 1) + 0.5*CD.老 * CD.u * CD.u + 0.5*CD.老 * CD.v * CD.v;
+//	double aU = sqrt(gama*CU.p / CU.rho);
+//	double aD = sqrt(gama*CD.p / CD.rho);
+//	double EU = CU.p / (gama - 1) + 0.5*CU.rho * CU.u * CU.u + 0.5*CU.rho * CU.v * CU.v;
+//	double ED = CD.p / (gama - 1) + 0.5*CD.rho * CD.u * CD.u + 0.5*CD.rho * CD.v * CD.v;
 //	double GD[4], GU[4];
 //
-//	GD[0] = (CD.老*etacD);
-//	GD[1] = (CD.老*CD.u*etacD + etax * CD.p);
-//	GD[2] = (CD.老*CD.v*etacD + etay * CD.p);
+//	GD[0] = (CD.rho*etacD);
+//	GD[1] = (CD.rho*CD.u*etacD + etax * CD.p);
+//	GD[2] = (CD.rho*CD.v*etacD + etay * CD.p);
 //	GD[3] = (etacD * (ED + CD.p));
 //
-//	GU[0] = (CU.老*etacU);
-//	GU[1] = (CU.老*CU.u*etacU + etax * CD.p);
-//	GU[2] = (CU.老*CU.v*etacU + etay * CD.p);
+//	GU[0] = (CU.rho*etacU);
+//	GU[1] = (CU.rho*CU.u*etacU + etax * CD.p);
+//	GU[2] = (CU.rho*CU.v*etacU + etay * CD.p);
 //	GU[3] = (etacU * (EU + CU.p));
 //
 //	double SD = etacD - aD;
 //	double SU = etacU + aU;
-//	double SM = (CD.p - CU.p - CD.老 * etax * (SD - etacD) + CU.老 * etax* (SU - etacU)) / (CU.老 * (SU - etacU) - CD.老 * (SD - etacD));
-//	double pM = 0.5*(CD.老 * (etacD - SD)*(etacD - SM) + CU.老 * (etacU - SU)*(etacU - SM) + CU.p + CD.p);
+//	double SM = (CD.p - CU.p - CD.rho * etax * (SD - etacD) + CU.rho * etax* (SU - etacU)) / (CU.rho * (SU - etacU) - CD.rho * (SD - etacD));
+//	double pM = 0.5*(CD.rho * (etacD - SD)*(etacD - SM) + CU.rho * (etacU - SU)*(etacU - SM) + CU.p + CD.p);
 //	//Average-State Jacobians and Implicit Methods for Compressible Viscous and Turbulent Flows,(7)(8)
 //	double 次D = 1 / (SD - SM);
 //	double 次U = 1 / (SU - SM);
 //
-//	double 老DM = 次D * CD.老*(SD - etacD);
-//	double 老uDS = 次D * ((SD - etacD)*(CD.老*CD.u) + (pM - CD.p)*etax);
-//	double 老vDS = 次D * ((SD - etacD)*(CD.老*CD.v) + (pM - CD.p)*etay);
+//	double rhoDM = 次D * CD.rho*(SD - etacD);
+//	double rhouDS = 次D * ((SD - etacD)*(CD.rho*CD.u) + (pM - CD.p)*etax);
+//	double rhovDS = 次D * ((SD - etacD)*(CD.rho*CD.v) + (pM - CD.p)*etay);
 //	double eDS = 次D * ((SD - etacD)*ED - CD.p*etacD + pM * SM);
 //
-//	double 老UM = 次U * CU.老*(SU - etacU);
-//	double 老uUS = 次U * ((SU - etacU)*(CU.老*CU.u) + (pM - CU.p)*etax);
-//	double 老vUS = 次U * ((SU - etacU)*(CU.老*CU.v) + (pM - CU.p)*etay);
+//	double rhoUM = 次U * CU.rho*(SU - etacU);
+//	double rhouUS = 次U * ((SU - etacU)*(CU.rho*CU.u) + (pM - CU.p)*etax);
+//	double rhovUS = 次U * ((SU - etacU)*(CU.rho*CU.v) + (pM - CU.p)*etay);
 //	double eUS = 次U * ((SU - etacU)*EU - CU.p*etacU + pM * SM);
 //
 //	double  FMD[4], FMU[4];
 //
-//	FMD[0] = SM * 老DM;
-//	FMD[1] = 老uDS * SM + pM * etax;
-//	FMD[2] = 老vDS * SM + pM * etay;
+//	FMD[0] = SM * rhoDM;
+//	FMD[1] = rhouDS * SM + pM * etax;
+//	FMD[2] = rhovDS * SM + pM * etay;
 //	FMD[3] = (eDS + pM)*SM;
-//	FMU[0] = SM * 老UM;
-//	FMU[1] = 老uUS * SM + pM * etax;
-//	FMU[2] = 老vUS * SM + pM * etay;
+//	FMU[0] = SM * rhoUM;
+//	FMU[1] = rhouUS * SM + pM * etax;
+//	FMU[2] = rhovUS * SM + pM * etay;
 //	FMU[3] = (eUS + pM)*SM;
 //
 //	double *G_HLLC = new double[4];

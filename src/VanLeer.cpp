@@ -10,8 +10,8 @@ Flux VanLeerA(mesh& C, double xix, double xiy, double xit,double J)
 	double u = C.u;
 	double v = C.v;
 	double p = C.p;
-	double 老 = C.老;
-	double c = sqrt(gama * p / 老);
+	double rho = C.rho;
+	double c = sqrt(gama * p / rho);
 	double Dxi = sqrt(xix * xix + xiy * xiy);
 	double ub = u * xix + v * xiy + xit;
 	double uc = ub / Dxi;
@@ -25,16 +25,16 @@ Flux VanLeerA(mesh& C, double xix, double xiy, double xit,double J)
 	}
 	else if (uc - c >= 0)
 	{
-		double E = 0.5 * 老 * (u * u + v * v) + p / (gama - 1);
-		FL.f1 = 老 * uc;
-		FL.f2 = 老 * uc * u + p * xi1;
-		FL.f3 = 老 * uc * v + p * xi2;
+		double E = 0.5 * rho * (u * u + v * v) + p / (gama - 1);
+		FL.f1 = rho * uc;
+		FL.f2 = rho * uc * u + p * xi1;
+		FL.f3 = rho * uc * v + p * xi2;
 		FL.f4 = uc * (E + p) - p * xi3;
 	}
 	double M = uc / c;
 	if (abs(M) <= 1)
 	{
-		double FM = 0.25 * 老 * c * (M + 1) * (M + 1);
+		double FM = 0.25 * rho * c * (M + 1) * (M + 1);
 		FL.f1 = FM;
 		FL.f2 = FM * (xi1 * (-uc + 2 * c) / gama + u);
 		FL.f3 = FM * (xi2 * (-uc + 2 * c) / gama + v);
@@ -51,8 +51,8 @@ Flux VanLeerB(mesh & C, double xix, double xiy, double xit, double J)
 	double u = C.u;
 	double v = C.v;
 	double p = C.p;
-	double 老 = C.老;
-	double c = sqrt(gama * p / 老);
+	double rho = C.rho;
+	double c = sqrt(gama * p / rho);
 	double Dxi = sqrt(xix * xix + xiy * xiy);
 	double ub = u * xix + v * xiy + xit;
 	double uc = ub / Dxi;
@@ -66,16 +66,16 @@ Flux VanLeerB(mesh & C, double xix, double xiy, double xit, double J)
 	}
 	else if (uc + c <=0)
 	{
-		double E = 0.5 * 老 * (u * u + v * v) + p / (gama - 1);
-		FR.f1 = 老 * uc;
-		FR.f2 = 老 * uc * u + p * xi1;
-		FR.f3 = 老 * uc * v + p * xi2;
+		double E = 0.5 * rho * (u * u + v * v) + p / (gama - 1);
+		FR.f1 = rho * uc;
+		FR.f2 = rho * uc * u + p * xi1;
+		FR.f3 = rho * uc * v + p * xi2;
 		FR.f4 = uc * (E + p) - p * xi3;
 	}
 	double M = uc / c;
 	if (abs(M) <= 1)
 	{
-		double FM = -0.25 * 老 * c * (M - 1) * (M - 1);
+		double FM = -0.25 * rho * c * (M - 1) * (M - 1);
 		FR.f1 = FM;
 		FR.f2 = FM * (xi1 * (-uc - 2 * c) / gama + u);
 		FR.f3 = FM * (xi2 * (-uc - 2 * c) / gama + v);

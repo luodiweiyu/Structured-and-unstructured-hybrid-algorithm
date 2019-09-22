@@ -12,7 +12,7 @@ double get¦ÌfromMa(double Ma)
 {
 	return asin(1 / Ma);
 }
-double get¦ÈfromMa(double Ma)
+double getthetafromMa(double Ma)
 {
 	double ¦Ë = get¦ËfromMa(Ma);
 	return sqrt((gama + 1) / (gama - 1))*asin(sqrt((gama - 1)*(¦Ë*¦Ë - 1) / 2));
@@ -59,15 +59,15 @@ double getp0from¦Ëandp(double ¦Ë, double p)
 	temp = pow(temp, gama / (gama - 1));
 	return p / temp;
 }
-double get¦Ñfrom¦Ë(double ¦Ë, double ¦Ñ0)
+double getrhofrom¦Ë(double ¦Ë, double rho0)
 {
 	double temp = 1 - (gama - 1)*¦Ë*¦Ë / (gama + 1);
 	temp = pow(temp, 1 / (gama - 1)); 
-	return temp * ¦Ñ0;
+	return temp * rho0;
 }
-double get¦Ñ0from¦Ëand¦Ñ(double ¦Ë, double ¦Ñ)
+double getrho0from¦Ëandrho(double ¦Ë, double rho)
 {
 	double temp = 1 - (gama - 1)*¦Ë*¦Ë / (gama + 1);
 	temp = pow(temp, 1 / (gama - 1));
-	return ¦Ñ / temp;
+	return rho / temp;
 }

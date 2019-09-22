@@ -574,9 +574,9 @@ void initFlow()
 		{
 			using namespace Normal;
 			mesh A1, A2;
-			A1.老 = 老1, A1.p = p1, A1.u = u1, A1.v = v1;
+			A1.rho = rho1, A1.p = p1, A1.u = u1, A1.v = v1;
 			get_down(A1, A2, ConstPara::pi / 2);
-			老2 = A2.老, p2 = A2.p, u2 = A2.u, v2 = A2.v;
+			rho2 = A2.rho, p2 = A2.p, u2 = A2.u, v2 = A2.v;
 			u2 += 1;
 			u1 += 1;
 			for (i = 0; i < A.size(); i++)
@@ -585,14 +585,14 @@ void initFlow()
 				{
 					if (i == 0)
 					{
-						A[i][j]->老 = 老1;
+						A[i][j]->rho = rho1;
 						A[i][j]->u = u1;
 						A[i][j]->v = v1;
 						A[i][j]->p = p1;
 					}
 					else if (i == 1)
 					{
-						A[i][j]->老 = 老2;
+						A[i][j]->rho = rho2;
 						A[i][j]->u = u2;
 						A[i][j]->v = v2;
 						A[i][j]->p = p2;
@@ -606,9 +606,9 @@ void initFlow()
 		{
 			using namespace Oblique;
 			mesh A1, A2;
-			A1.老 = 老1, A1.p = p1, A1.u = u1, A1.v = v1;
+			A1.rho = rho1, A1.p = p1, A1.u = u1, A1.v = v1;
 			get_down(A1, A2, beta);
-			老2 = A2.老, p2 = A2.p, u2 = A2.u, v2 = A2.v;
+			rho2 = A2.rho, p2 = A2.p, u2 = A2.u, v2 = A2.v;
 
 			for (i = 0; i < A.size(); i++)
 			{
@@ -616,14 +616,14 @@ void initFlow()
 				{
 					if (i == 0)
 					{
-						A[i][j]->老 = 老1;
+						A[i][j]->rho = rho1;
 						A[i][j]->u = u1;
 						A[i][j]->v = v1;
 						A[i][j]->p = p1;
 					}
 					else if (i == 1)
 					{
-						A[i][j]->老 = 老2;
+						A[i][j]->rho = rho2;
 						A[i][j]->u = u2;
 						A[i][j]->v = v2;
 						A[i][j]->p = p2;
@@ -647,15 +647,15 @@ void initFlow()
 			double un20, un21, Mu20, Mu21;
 			double un30, un31, Mu30, Mu31;
 			mesh A1, A2, A3;
-			A1.老 = 老1, A1.p = p1, A1.u = u1, A1.v = v1;
+			A1.rho = rho1, A1.p = p1, A1.u = u1, A1.v = v1;
 			get_down(A1, A2, beta2/*-0.05*pi/180*/);
 			get_down(A1, A3, beta3);
 
-			老2 = A2.老, p2 = A2.p, u2 = A2.u, v2 = A2.v;
-			老3 = A3.老, p3 = A3.p, u3 = A3.u, v3 = A3.v;
+			rho2 = A2.rho, p2 = A2.p, u2 = A2.u, v2 = A2.v;
+			rho3 = A3.rho, p3 = A3.p, u3 = A3.u, v3 = A3.v;
 
-			//A2.老 = 老2, A2.p = p2, A2.u = u2, A2.v = v2;
-			//A3.老 = 老3, A3.p = p3, A3.u = u3, A3.v = v3;
+			//A2.rho = rho2, A2.p = p2, A2.u = u2, A2.v = v2;
+			//A3.rho = rho3, A3.p = p3, A3.u = u3, A3.v = v3;
 			mesh A40, A41, A50, A51;
 			while (abs(beta42 - beta41) > 1e-15)
 			{
@@ -714,11 +714,11 @@ void initFlow()
 
 			double un2 = u2 * sin(beta4) - v2 * cos(beta4);
 			double ut2 = u2 * cos(beta4) + v2 * sin(beta4);
-			double Mu2 = get_Ma(un2, 0, 老2, p2);
-			老4 = 老2 * get_老2老1(Mu2);
+			double Mu2 = get_Ma(un2, 0, rho2, p2);
+			rho4 = rho2 * get_rho2rho1(Mu2);
 			p4 = p2 * get_p2p1(Mu2);
 			double Md4 = sqrt((Mu2 * Mu2 + 2 / (gama - 1)) / (2 * gama * Mu2 * Mu2 / (gama - 1) - 1));
-			double c4 = sqrt(gama * p4 / 老4);
+			double c4 = sqrt(gama * p4 / rho4);
 			double un4 = Md4 * c4;
 			double ut4 = ut2;
 			u4 = un4 * sin(beta4) + ut4 * cos(beta4);
@@ -727,11 +727,11 @@ void initFlow()
 
 			double un3 = -u3 * sin(beta5) + v3 * cos(beta5);
 			double ut3 = u3 * cos(beta5) + v3 * sin(beta5);
-			double Mu3 = get_Ma(un3, 0, 老3, p3);
-			老5 = 老3 * get_老2老1(Mu3);
+			double Mu3 = get_Ma(un3, 0, rho3, p3);
+			rho5 = rho3 * get_rho2rho1(Mu3);
 			p5 = p3 * get_p2p1(Mu3);
 			double Md5 = sqrt((Mu3 * Mu3 + 2 / (gama - 1)) / (2 * gama * Mu3 * Mu3 / (gama - 1) - 1));
-			double c5 = sqrt(gama * p5 / 老5);
+			double c5 = sqrt(gama * p5 / rho5);
 			double un5 = Md5 * c5;
 			double ut5 = ut3;
 			u5 = un5 * sin(-beta5) + ut5 * cos(-beta5);
@@ -740,13 +740,13 @@ void initFlow()
 			std::cout << "p2= " << p2 << "   p3= " << p3 << std::endl;
 			std::cout << "u2= " << u2 << "   u3= " << u3 << std::endl;
 			std::cout << "v2= " << v2 << "   v3= " << v3 << std::endl;
-			std::cout << "rho2= " << 老2 << "   rho3= " << 老3 << std::endl;
+			std::cout << "rho2= " << rho2 << "   rho3= " << rho3 << std::endl;
 			std::cout << "beta4= " << beta4 * 180 / pi << "   beta5= " << beta5 * 180 / pi << std::endl;
 			std::cout << "汛4= " << 汛4 * 180 / pi << "   汛5= " << 汛5 * 180 / pi << std::endl;
 			std::cout << "p4= " << p4 << "   p5= " << p5 << std::endl;
 			std::cout << "u4= " << u4 << "   u5= " << u5 << std::endl;
 			std::cout << "v4= " << v4 << "   v5= " << v5 << std::endl;
-			std::cout << "rho4= " << 老4 << "   rho5= " << 老5 << std::endl;
+			std::cout << "rho4= " << rho4 << "   rho5= " << rho5 << std::endl;
 			std::cout << std::endl;
 			for (i = 0; i < A.size(); i++)
 			{
@@ -755,14 +755,14 @@ void initFlow()
 					A[i][j]->um = A[i][j]->vm = 0;
 					if (i == 0)
 					{
-						A[i][j]->老 = 老1;
+						A[i][j]->rho = rho1;
 						A[i][j]->u = u1;
 						A[i][j]->v = v1;
 						A[i][j]->p = p1;
 					}
 					else if (i == 1)
 					{
-						A[i][j]->老 = 老2;
+						A[i][j]->rho = rho2;
 						A[i][j]->u = u2;
 						A[i][j]->v = v2;
 						A[i][j]->p = p2;
@@ -771,7 +771,7 @@ void initFlow()
 					{
 						//if (A[i][j]->type == "L")
 						//{
-						A[i][j]->老 = 老3;
+						A[i][j]->rho = rho3;
 						A[i][j]->u = u3;
 						A[i][j]->v = v3;
 						A[i][j]->p = p3;
@@ -779,7 +779,7 @@ void initFlow()
 						//}
 						//else
 						//{
-						//	A[i][j]->老 = 老3;
+						//	A[i][j]->rho = rho3;
 						//	A[i][j]->u = u3 - 5;
 						//	A[i][j]->v = v3 -0.5;
 						//	A[i][j]->p = p3;
@@ -787,14 +787,14 @@ void initFlow()
 					}
 					else if (i == 3)
 					{
-						A[i][j]->老 = 老4;
+						A[i][j]->rho = rho4;
 						A[i][j]->u = u4;
 						A[i][j]->v = v4;
 						A[i][j]->p = p4;
 					}
 					else if (i == 4)
 					{
-						A[i][j]->老 = 老5;
+						A[i][j]->rho = rho5;
 						A[i][j]->u = u5;
 						A[i][j]->v = v5;
 						A[i][j]->p = p5;
@@ -824,7 +824,7 @@ void initFlow()
 		{
 			using namespace Couette;
 			mesh A1, A2;
-			A1.老 = 老1, A1.p = p1, A1.u = u1, A1.v = v1;
+			A1.rho = rho1, A1.p = p1, A1.u = u1, A1.v = v1;
 			int i, j;
 			extern vector<vector <mesh*>> A;
 			extern double yU;
@@ -832,7 +832,7 @@ void initFlow()
 			{
 				for (j = 0; j < A[i].size(); j++)
 				{
-					A[i][j]->老 = 老1;
+					A[i][j]->rho = rho1;
 					A[i][j]->u = 0;
 					A[i][j]->v = v1;
 					A[i][j]->p = p1;
@@ -850,9 +850,9 @@ void init_flow_normal()
 	using namespace Normal;
 	int i, j;
 	mesh A1, A2;
-	A1.老 = 老1, A1.p = p1, A1.u = u1, A1.v = v1;
+	A1.rho = rho1, A1.p = p1, A1.u = u1, A1.v = v1;
 	get_down(A1, A2, ConstPara::pi / 2);
-	老2 = A2.老, p2 = A2.p, u2 = A2.u, v2 = A2.v;
+	rho2 = A2.rho, p2 = A2.p, u2 = A2.u, v2 = A2.v;
 	u2 += 1;
 	u1 += 1;
 	for (i = 0; i < A.size(); i++)
@@ -861,14 +861,14 @@ void init_flow_normal()
 		{
 			if (A[i][j]->x < 0.002)
 			{
-				A[i][j]->老 = 老1;
+				A[i][j]->rho = rho1;
 				A[i][j]->u = u1;
 				A[i][j]->v = v1;
 				A[i][j]->p = p1;
 			}
 			else
 			{
-				A[i][j]->老 = 老2;
+				A[i][j]->rho = rho2;
 				A[i][j]->u = u2;
 				A[i][j]->v = v2;
 				A[i][j]->p = p2;
@@ -884,7 +884,7 @@ void init_flow_uniform()//歙埱霜
 	using namespace Init;
 	for (i = 0; i < A[0].size(); i++)
 	{
-		A[0][i]->老 = 老0;
+		A[0][i]->rho = rho0;
 		A[0][i]->u = u0;
 		A[0][i]->v = v0;
 		A[0][i]->p = p0;
@@ -895,14 +895,14 @@ void init_flow_shockwave()//訇慾疏
 	extern vector<vector <mesh*>> A;
 	using namespace Oblique;
 	mesh A1, A2;
-	A1.老 = 老1, A1.p = p1, A1.u = u1, A1.v = v1;
+	A1.rho = rho1, A1.p = p1, A1.u = u1, A1.v = v1;
 	get_down(A1, A2, beta);
-	老2 = A2.老, p2 = A2.p, u2 = A2.u, v2 = A2.v;
+	rho2 = A2.rho, p2 = A2.p, u2 = A2.u, v2 = A2.v;
 	using std::cout;
 	using std::endl;
 	cout.precision(10);
-	cout << "老1=" << 老1 << ", u1= " << u1 << ", v1=" << v1 << ",  p1=" << p1 << endl;
-	cout << "老2=" << 老2 << ", u2= " << u2 << ", v2=" << v2 << ",  p2=" << p2 << endl;
+	cout << "rho1=" << rho1 << ", u1= " << u1 << ", v1=" << v1 << ",  p1=" << p1 << endl;
+	cout << "rho2=" << rho2 << ", u2= " << u2 << ", v2=" << v2 << ",  p2=" << p2 << endl;
 
 	int i, j;
 	for (i = 0; i < A.size(); i++)
@@ -911,14 +911,14 @@ void init_flow_shockwave()//訇慾疏
 		{
 			if (A[i][j]->x < 0.0075)
 			{
-				A[i][j]->老 = 老1;
+				A[i][j]->rho = rho1;
 				A[i][j]->u = u1;
 				A[i][j]->v = v1;
 				A[i][j]->p = p1;
 			}
 			else
 			{
-				A[i][j]->老 = 老2;
+				A[i][j]->rho = rho2;
 				A[i][j]->u = u2;
 				A[i][j]->v = v2;
 				A[i][j]->p = p2;
@@ -926,14 +926,14 @@ void init_flow_shockwave()//訇慾疏
 		}
 		//if (A[0][i].type == "IN")
 		//{
-		//	A[0][i].老 = 老1;
+		//	A[0][i].rho = rho1;
 		//	A[0][i].u = u1;
 		//	A[0][i].v = v1;
 		//	A[0][i].p = p1;
 		//}
 		//else if (A[0][i].type == "L")
 		//{
-		//	A[0][i].老 = 老1;
+		//	A[0][i].rho = rho1;
 		//	A[0][i].u = u1;
 		//	A[0][i].v = v1;
 		//	A[0][i].p = p1;
@@ -942,14 +942,14 @@ void init_flow_shockwave()//訇慾疏
 		//{
 		//	if (A[0][i].x < A[0][startpoint].x)
 		//	{
-		//		A[0][i].老 = 老1;
+		//		A[0][i].rho = rho1;
 		//		A[0][i].u = u1;
 		//		A[0][i].v = v1;
 		//		A[0][i].p = p1;
 		//	}
 		//	else
 		//	{
-		//		A[0][i].老 = 老2;
+		//		A[0][i].rho = rho2;
 		//		A[0][i].u = u2;
 		//		A[0][i].v = v2;
 		//		A[0][i].p = p2;
@@ -959,14 +959,14 @@ void init_flow_shockwave()//訇慾疏
 		//{
 		//	if (A[0][i].x < A[0][startpoint].x + dy * Ynum / tan(beta))
 		//	{
-		//		A[0][i].老 = 老1;
+		//		A[0][i].rho = rho1;
 		//		A[0][i].u = u1;
 		//		A[0][i].v = v1;
 		//		A[0][i].p = p1;
 		//	}
 		//	else
 		//	{
-		//		A[0][i].老 = 老2;
+		//		A[0][i].rho = rho2;
 		//		A[0][i].u = u2;
 		//		A[0][i].v = v2;
 		//		A[0][i].p = p2;
@@ -990,20 +990,20 @@ void init_flow_shockwaveCross()//肮耜慾疏眈蝠
 	mesh C;
 
 	mesh A1, A2, A3;
-	A1.老 = 老1, A1.p = p1, A1.u = u1, A1.v = v1;
+	A1.rho = rho1, A1.p = p1, A1.u = u1, A1.v = v1;
 	get_down(A1, A2, beta2);
 	get_down(A1, A3, beta3);
-	老2 = A2.老, p2 = A2.p, u2 = A2.u, v2 = A2.v;
-	老3 = A3.老, p3 = A3.p, u3 = A3.u, v3 = A3.v;
-	double 牟12 = -30 / 180.0 * ConstPara::pi;
-	double 牟13 = 30 / 180.0 * ConstPara::pi;
+	rho2 = A2.rho, p2 = A2.p, u2 = A2.u, v2 = A2.v;
+	rho3 = A3.rho, p3 = A3.p, u3 = A3.u, v3 = A3.v;
+	double theta12 = -30 / 180.0 * ConstPara::pi;
+	double theta13 = 30 / 180.0 * ConstPara::pi;
 	mesh A12;
 	mesh A13;
 	vector<mesh> t;
 	A12.x = -dx / 2, A12.y = A0[Pnum - 1].y - 2 * dy * 5 * Ynum / 43;
 	A13.x = -dx / 2, A13.y = 2 * dy * 5 * Ynum / 43;
-	L12 = getLine(牟12, A12);
-	L13 = getLine(牟13, A13);
+	L12 = getLine(theta12, A12);
+	L13 = getLine(theta13, A13);
 	C = getCrossPoint(L12, L13);
 	L12 = getLine(beta2, C);
 	L13 = getLine(beta3, C);
@@ -1013,21 +1013,21 @@ void init_flow_shockwaveCross()//肮耜慾疏眈蝠
 		{
 			if (A[0][i]->x * L12.A + A[0][i]->y * L12.B + L12.C < 0)
 			{
-				A[0][i]->老 = 老2;
+				A[0][i]->rho = rho2;
 				A[0][i]->u = u2;
 				A[0][i]->v = v2;
 				A[0][i]->p = p2;
 			}
 			else if (A[0][i]->x * L13.A + A[0][i]->y * L13.B + L13.C > 0)
 			{
-				A[0][i]->老 = 老3;
+				A[0][i]->rho = rho3;
 				A[0][i]->u = u3;
 				A[0][i]->v = v3;
 				A[0][i]->p = p3;
 			}
 			else
 			{
-				A[0][i]->老 = 老1;
+				A[0][i]->rho = rho1;
 				A[0][i]->u = u1;
 				A[0][i]->v = v1;
 				A[0][i]->p = p1;
@@ -1035,7 +1035,7 @@ void init_flow_shockwaveCross()//肮耜慾疏眈蝠
 		}
 		else
 		{
-			A[0][i]->老 = 老0;
+			A[0][i]->rho = rho0;
 			A[0][i]->u = u0;
 			A[0][i]->v = v0;
 			A[0][i]->p = p0;
@@ -1054,7 +1054,7 @@ void init_flow_cylinder()//埴翐�そ�
 	{
 		if (A0[i].section == 0)
 			continue;
-		A0[i].老 = 老0;
+		A0[i].rho = rho0;
 		A0[i].u = u0;
 		A0[i].v = v0;
 		A0[i].p = p0;
@@ -1075,10 +1075,10 @@ void init_flow_cylinder()//埴翐�そ�
 //		for (j = 0; j < A[i].size(); j++)
 //		{
 //			U[i].push_back(u1);
-//			U[i][j].push_back(A[i][j]->老);
-//			U[i][j].push_back(A[i][j]->老 * A[i][j]->u);
-//			U[i][j].push_back(A[i][j]->老 * A[i][j]->v);
-//			U[i][j].push_back(0.5 * A[i][j]->老 * (A[i][j]->u * A[i][j]->u + A[i][j]->v * A[i][j]->v) + A[i][j]->p / (ConstPara::gama - 1));
+//			U[i][j].push_back(A[i][j]->rho);
+//			U[i][j].push_back(A[i][j]->rho * A[i][j]->u);
+//			U[i][j].push_back(A[i][j]->rho * A[i][j]->v);
+//			U[i][j].push_back(0.5 * A[i][j]->rho * (A[i][j]->u * A[i][j]->u + A[i][j]->v * A[i][j]->v) + A[i][j]->p / (ConstPara::gama - 1));
 //		}
 //	}
 //}
@@ -1139,7 +1139,7 @@ void findConnectPoint()
 //	{
 //		Ar[i].x = A0[i].x;
 //		Ar[i].y = A0[i].y;
-//		Ar[i].老 = A0[i].老;
+//		Ar[i].rho = A0[i].rho;
 //		Ar[i].u = A0[i].u;
 //		Ar[i].v = A0[i].v;
 //		Ar[i].p = A0[i].p;

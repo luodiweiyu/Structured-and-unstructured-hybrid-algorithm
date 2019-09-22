@@ -14,25 +14,25 @@ namespace ConstPara//常数
 }
 namespace Init//初始网格
 {
-	extern double ρ0;
+	extern double rho0;
 	extern double v0;
 	extern double p0;
 	extern double u0;
 }
 namespace Normal//初始网格
 {
-	extern double ρ1;
+	extern double rho1;
 	extern double v1;
 	extern double p1;
 	extern double u1;
-	extern double ρ2;
+	extern double rho2;
 	extern double v2;
 	extern double p2;
 	extern double u2;
 }
 namespace Couette//初始网格
 {
-	extern double ρ1;
+	extern double rho1;
 	extern double v1;
 	extern double p1;
 	extern double u1;
@@ -85,7 +85,7 @@ struct mesh
 	double x;
 	double y;
 	int id;
-	double ρ;//密度
+	double rho;//密度
 	double u;//水平速度
 	double v;//竖直速度
 	double p;//压强
@@ -144,22 +144,22 @@ namespace Oblique//斜激波
 	extern double beta;
 	extern double δ;
 	extern int startpoint;
-	extern double  ρ1, p1, Ma1, u1, v1;
-	extern double  ρ2, p2, Ma2, u2, v2;
+	extern double  rho1, p1, Ma1, u1, v1;
+	extern double  rho2, p2, Ma2, u2, v2;
 }
 namespace Prandtl_Meyer//普朗特麦耶尔流动
 {
-	extern double  ρ0, p0, θ0, λ0, δ0, μ0, Ma0, u0, v0;
-	extern double  ρ1, p1, θ1, λ1, δ1, μ1, Ma1, u1, v1;
-	extern double  ρ2, p2, θ2, λ2, δ2, μ2, Ma2, u2, v2;
+	extern double  rho0, p0, θ0, λ0, δ0, μ0, Ma0, u0, v0;
+	extern double  rho1, p1, θ1, λ1, δ1, μ1, Ma1, u1, v1;
+	extern double  rho2, p2, θ2, λ2, δ2, μ2, Ma2, u2, v2;
 }
 namespace ShockwaveCross//激波相交
 {
 
-	extern double  ρ1, p1, beta1, δ1, Ma1, u1, v1;
-	extern double  ρ2, p2, beta2, δ2, Ma2, u2, v2;
-	extern double  ρ3, p3, beta3, δ3, Ma3, u3, v3;
-	extern double  ρ4, p4, beta4, δ4, Ma4, u4, v4;
-	extern double  ρ5, p5, beta5, δ5, Ma5, u5, v5;
+	extern double  rho1, p1, beta1, δ1, Ma1, u1, v1;
+	extern double  rho2, p2, beta2, δ2, Ma2, u2, v2;
+	extern double  rho3, p3, beta3, δ3, Ma3, u3, v3;
+	extern double  rho4, p4, beta4, δ4, Ma4, u4, v4;
+	extern double  rho5, p5, beta5, δ5, Ma5, u5, v5;
 }
 

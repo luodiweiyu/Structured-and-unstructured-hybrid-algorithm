@@ -3,13 +3,13 @@
 #include"/Structured-and-unstructured-hybrid-algorithm/include/shockwave.h"
 //¼ÆËã¼¤²¨Ïà¹Ø²ÎÊıÇ®Òíğ¢¡¶¿ÕÆø¶¯Á¦Ñ§¡·p228-241
 using namespace ConstPara;
-double get_c(double ¦Ñ, double p)//ÉùËÙ¹«Ê½
+double get_c(double rho, double p)//ÉùËÙ¹«Ê½
 {
-	return sqrt(gama * p / ¦Ñ);
+	return sqrt(gama * p / rho);
 }
-double get_Ma(double u, double v, double ¦Ñ, double p)//ÇóÂíºÕÊı
+double get_Ma(double u, double v, double rho, double p)//ÇóÂíºÕÊı
 {
-	double a = get_c(¦Ñ, p);
+	double a = get_c(rho, p);
 	double velocity = sqrt(u * u + v * v);
 	return velocity / a;
 }
@@ -26,7 +26,7 @@ double get_p2p1(double Ma1)
 	return  2 * gama* Ma1* Ma1 / (gama + 1) - (gama - 1) / (gama + 1);
 }
 //7-106
-double get_¦Ñ2¦Ñ1(double Ma1)
+double get_rho2rho1(double Ma1)
 {
 	return  (gama + 1) * Ma1 * Ma1 / ((gama - 1) * Ma1 * Ma1 + 2);
 }
@@ -35,23 +35,23 @@ double get_Ma2(double Ma1)
 	return sqrt((Ma1 * Ma1 + 2 / (gama - 1)) / (2 * gama * Ma1 * Ma1 / (gama - 1) - 1));
 }
 //ÇóÉÏÓÎÂíºÕÊı  ×Ş¶«Ñô,²©Ê¿ÂÛÎÄp57 3.5
-double get_Mu(mesh & U, mesh & D, double ¦È)
+double get_Mu(mesh & U, mesh & D, double theta)
 {
 	using namespace ConstPara;
 	double ¦Ä = 1e-10;
 	double Mu = 2, Mu1 = 20;
 	double udn, uun, udt, uut;
-	uun = get_un(U, ¦È);
-	udn = get_un(D, ¦È);
-	uut = get_ut(U, ¦È);
-	udt = get_ut(D, ¦È);
-	double cu = sqrt(gama * U.p / U.¦Ñ);
+	uun = get_un(U, theta);
+	udn = get_un(D, theta);
+	uut = get_ut(U, theta);
+	udt = get_ut(D, theta);
+	double cu = sqrt(gama * U.p / U.rho);
 	double J, Fx, fx;
 	double a, b;
 	while (abs(Mu - Mu1) >= ¦Ä)
 	{
 		Mu = Mu1;
-		double J = 2 * sqrt(gama * D.p / D.¦Ñ) / (gama - 1) - udn;
+		double J = 2 * sqrt(gama * D.p / D.rho) / (gama - 1) - udn;
 		a = 2 * gama * Mu1 * Mu1 - (gama - 1);
 		b = (gama - 1) * Mu1 * Mu1 + 2;
 		Fx = sqrt(a * b) / (Mu1 * (gama - 1)) + (Mu1 * Mu1 - 1) / Mu1 - (gama + 1) * (J + uun) / (2 * cu);
@@ -61,18 +61,18 @@ double get_Mu(mesh & U, mesh & D, double ¦È)
 	return Mu;
 }
 //3.4
-double get_udn(mesh & U, mesh & D, double Ma1, double Vs, double ¦È)
+double get_udn(mesh & U, mesh & D, double Ma1, double Vs, double theta)
 {
 	double ¦Ë1 = get¦ËfromMa(Ma1);
 	double ¦Ë2 = 1 / ¦Ë1;
 	double Ma2 = getMafrom¦Ë(¦Ë2);
-	double c2 = sqrt(gama * D.p / D.¦Ñ);
+	double c2 = sqrt(gama * D.p / D.rho);
 	double V2 = Ma2 * c2;
 	return V2 + Vs;
 	//double a = ((gama - 1) * Ma1 + 2) / (2 * gama * Ma1 - (gama - 1));
-	//double b = (a * gama * D.p) / D.¦Ñ;
-	//double cu = sqrt(gama * U.p / U.¦Ñ);
-	//double uun = U.u * sin(¦È) - U.v * cos(¦È);
+	//double b = (a * gama * D.p) / D.rho;
+	//double cu = sqrt(gama * U.p / U.rho);
+	//double uun = U.u * sin(theta) - U.v * cos(theta);
 	//double udn = sqrt(b) - uun +cu * Ma1 ;
 	//return udn;
 }
@@ -138,16 +138,16 @@ double get_betafrom¦Ä(double Ma1, double ¦Ä)
 	}
 	return beta;
 }
-double get_ufromMa2(double Ma2, double ¦Ñ2, double p2, double ¦Ä)
+double get_ufromMa2(double Ma2, double rho2, double p2, double ¦Ä)
 {
-	double a2 = sqrt(gama * p2 / ¦Ñ2);
+	double a2 = sqrt(gama * p2 / rho2);
 	double velocity = Ma2 * a2;
 	double u = velocity * cos(¦Ä);
 	return u;
 }
-double get_vfromMa2(double Ma2, double ¦Ñ2, double p2, double ¦Ä)
+double get_vfromMa2(double Ma2, double rho2, double p2, double ¦Ä)
 {
-	double a2 = sqrt(gama * p2 / ¦Ñ2);
+	double a2 = sqrt(gama * p2 / rho2);
 	double velocity = Ma2 * a2;
 	double v = velocity * sin(¦Ä);
 	return v;
@@ -157,10 +157,10 @@ double get_p2(double Ma1, double beta, double p1)
 	double p2 = (2 * gama / (gama + 1) * Ma1 * Ma1 * sin(beta) * sin(beta) - (gama - 1) / (gama + 1)) * p1;
 	return p2;
 }
-double get_¦Ñ2(double Ma1, double beta, double ¦Ñ1)
+double get_rho2(double Ma1, double beta, double rho1)
 {
-	double ¦Ñ2 = ((gama + 1) * Ma1 * Ma1 * sin(beta) * sin(beta) / ((gama - 1) * Ma1 * Ma1 * sin(beta) * sin(beta) + 2)) * ¦Ñ1;
-	return ¦Ñ2;
+	double rho2 = ((gama + 1) * Ma1 * Ma1 * sin(beta) * sin(beta) / ((gama - 1) * Ma1 * Ma1 * sin(beta) * sin(beta) + 2)) * rho1;
+	return rho2;
 }
 
 
@@ -185,12 +185,12 @@ void get_down(mesh & U, mesh & D, double beta)//ÏÂÓÎ²ÎÊı
 	double udn, uun, udt, uut;
 	uun = get_un(U, beta);
 	uut = get_ut(U, beta);
-	double au = get_c(U.¦Ñ, U.p);
+	double au = get_c(U.rho, U.p);
 	double Mu = uun / au;
 	D.p = U.p * get_p2p1(Mu);
-	D.¦Ñ = U.¦Ñ * get_¦Ñ2¦Ñ1(Mu);
+	D.rho = U.rho * get_rho2rho1(Mu);
 	double Md = get_Ma2(Mu);
-	double ad = get_c(D.¦Ñ, D.p);
+	double ad = get_c(D.rho, D.p);
 	udn = Md * ad;
 	udt = uut;
 	if (beta >= 0)
@@ -269,8 +269,8 @@ double get_beta(mesh & U, double p2, int type)//type=-1±íÊ¾Çó³öµÄbeta½ÇÎª¸º£¬·ñÔ
 		}
 		uun0 = get_un(U, beta0);
 		uun1 = get_un(U, beta1);
-		Mu0 = get_Ma(uun0, 0, U.¦Ñ, U.p);
-		Mu1 = get_Ma(uun1, 0, U.¦Ñ, U.p);
+		Mu0 = get_Ma(uun0, 0, U.rho, U.p);
+		Mu1 = get_Ma(uun1, 0, U.rho, U.p);
 		p20 = U.p * get_p2p1(Mu0);
 		p21 = U.p * get_p2p1(Mu1);
 		fbeta0 = p20 - p2;

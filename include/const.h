@@ -149,9 +149,9 @@ namespace Oblique//斜激波
 }
 namespace Prandtl_Meyer//普朗特麦耶尔流动
 {
-	extern double  rho0, p0, θ0, λ0, δ0, μ0, Ma0, u0, v0;
-	extern double  rho1, p1, θ1, λ1, δ1, μ1, Ma1, u1, v1;
-	extern double  rho2, p2, θ2, λ2, δ2, μ2, Ma2, u2, v2;
+	extern double  rho0, p0, theta0, λ0, δ0, μ0, Ma0, u0, v0;
+	extern double  rho1, p1, theta1, λ1, δ1, μ1, Ma1, u1, v1;
+	extern double  rho2, p2, theta2, λ2, δ2, μ2, Ma2, u2, v2;
 }
 namespace ShockwaveCross//激波相交
 {

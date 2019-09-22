@@ -234,14 +234,14 @@ void update_bound_shockwave()
 	else if (FlowType == "intersection")
 	{
 		using namespace ShockwaveCross;
-		double θ12 = -30 / 180.0 * ConstPara::pi;
-		double θ13 = 30 / 180.0 * ConstPara::pi;
+		double theta12 = -30 / 180.0 * ConstPara::pi;
+		double theta13 = 30 / 180.0 * ConstPara::pi;
 		mesh A12, A13, C;
 		Line L12, L13;
 		A12.x = -dx / 2, A12.y = A0[Pnum - 1].y - 2 * dy * 5 * Ynum / 45;
 		A13.x = -dx / 2, A13.y = 2 * dy * 5 * Ynum / 45;
-		L12 = getLine(θ12, A12);
-		L13 = getLine(θ13, A13);
+		L12 = getLine(theta12, A12);
+		L13 = getLine(theta13, A13);
 		C = getCrossPoint(L12, L13);
 		L12 = getLine(beta2, C);
 		L13 = getLine(beta3, C);
@@ -516,12 +516,12 @@ void update_bound_shockwave()
 				}
 				else
 				{
-					double cosθ = (tx * n1 + ty * n2) / (sqrt(tx * tx + ty * ty) * sqrt(n1 * n1 + n2 * n2));
+					double costheta = (tx * n1 + ty * n2) / (sqrt(tx * tx + ty * ty) * sqrt(n1 * n1 + n2 * n2));
 					double ex = tx / sqrt(tx * tx + ty * ty);
 					double ey = ty / sqrt(tx * tx + ty * ty);
-					double u = (n1 * n1 + n2 * n2) * cosθ * ex;
-					double v = (n1 * n1 + n2 * n2) * cosθ * ey;
-					//std::cout << cosθ << "  " << ex << "  " << ey << std::endl;
+					double u = (n1 * n1 + n2 * n2) * costheta * ex;
+					double v = (n1 * n1 + n2 * n2) * costheta * ey;
+					//std::cout << costheta << "  " << ex << "  " << ey << std::endl;
 					//std::cout << A0[i].neibor[0]->u << "  " << A0[i].neibor[0]->v << "  " << u << "  " << v << std::endl;
 					A0[i].rho = A0[i].neibor[0]->rho;
 					A0[i].u = u;
@@ -542,26 +542,26 @@ void update_bound_shockwave()
 		}
 	}
 }
-double get_θ(double x1, double y1, double x2, double y2)//求直线与x轴的夹角
+double get_theta(double x1, double y1, double x2, double y2)//求直线与x轴的夹角
 {
-	double θ;
+	double theta;
 	if (x1 == x2)
 	{
 		//if (y2 < y1)
-		//	θ = -pi / 2;
+		//	theta = -pi / 2;
 		//else
-		//	θ = pi / 2;
-		θ = pi / 2;
+		//	theta = pi / 2;
+		theta = pi / 2;
 	}
 	else if (y1 == y2)
-		θ = 0;
+		theta = 0;
 	else
 	{
-		θ = atan(abs((y2 - y1) / (x2 - x1)));
+		theta = atan(abs((y2 - y1) / (x2 - x1)));
 		if ((x2 > x1 && y2 < y1) || (x2 < x1 && y2 > y1))
-			θ = -θ;
+			theta = -theta;
 	}
-	return θ;
+	return theta;
 }
 void update_Vm()
 {
@@ -1743,9 +1743,9 @@ Line getLine(double x1, double y1, double x2, double y2)
 		L.A = (y2 - y1) / (x2 - x1), L.B = -1, L.C = (x2 * y1 - x1 * y2) / (x2 - x1);
 	return L;
 }
-Line getLine(double θ, mesh A)
+Line getLine(double theta, mesh A)
 {
-	double k = tan(θ);
+	double k = tan(theta);
 	double b = A.y - k * A.x;
 	Line L;
 	L.A = k, L.B = -1, L.C = b;

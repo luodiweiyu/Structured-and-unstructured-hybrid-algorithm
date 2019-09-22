@@ -1,6 +1,6 @@
 #include<cmath>
-#include"const.h"
-#include"shockwave.h"
+#include"/Structured-and-unstructured-hybrid-algorithm/include/const.h"
+#include"/Structured-and-unstructured-hybrid-algorithm/include/shockwave.h"
 using ConstPara::gama;
 double get¦Äfrom¦Ë(double ¦Ë)
 {

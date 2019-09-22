@@ -1,7 +1,7 @@
 //分区文件，用于激波装配法，将原网格分成若干区域
 #include<iostream>
-#include"const.h"
-#include"functions.h"
+#include"/Structured-and-unstructured-hybrid-algorithm/include/const.h"
+#include"/Structured-and-unstructured-hybrid-algorithm/include/functions.h"
 #include<vector>
 #include<string>
 #include<fstream>

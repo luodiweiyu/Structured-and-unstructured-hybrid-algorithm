@@ -1,6 +1,6 @@
-#include"const.h"
+#include"/Structured-and-unstructured-hybrid-algorithm/include/const.h"
 #include<cmath>
-#include"shockwave.h"
+#include"/Structured-and-unstructured-hybrid-algorithm/include/shockwave.h"
 //计算激波相关参数钱翼稷《空气动力学》p228-241
 using namespace ConstPara;
 double get_c(double ρ, double p)//声速公式

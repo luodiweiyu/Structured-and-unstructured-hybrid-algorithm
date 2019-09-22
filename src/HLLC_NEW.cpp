@@ -1,8 +1,8 @@
 #include<cmath>
-#include"const.h"
+#include"/Structured-and-unstructured-hybrid-algorithm/include/const.h"
 #include<iostream>
 #include<omp.h>
-#include"functions.h"
+#include"/Structured-and-unstructured-hybrid-algorithm/include/functions.h"
 using namespace std;
 using namespace ConstPara;
 //2维欧拉方程组离散：张德良《计算流体力学教程》p433 13.3.7

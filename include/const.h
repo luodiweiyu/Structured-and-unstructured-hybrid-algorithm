@@ -37,7 +37,9 @@ namespace Couette//³õÊ¼Íø¸ñ
 	extern double p1;
 	extern double u1;
 }
-
+const double a = 0.01;
+const double b = 0.01;
+const double r = 0.005;
 namespace MeshPara
 {
 	const string FlowType = "cylinder";

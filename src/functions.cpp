@@ -492,8 +492,8 @@ void update_bound_shockwave()
 			else if (A0[i].type == "Cy")
 			{
 
-				double nx = A0[i].x - 0.02;
-				double ny = A0[i].y - 0.01;
+				double nx = A0[i].x - a;
+				double ny = A0[i].y - b;
 				double tx, ty;
 				if (ny > 0)
 				{
@@ -507,7 +507,7 @@ void update_bound_shockwave()
 				}
 				double n1 = A0[i].neibor[0]->u;
 				double n2 = A0[i].neibor[0]->v;
-				if ((abs(n1)<1e-10&&abs(n2)<1e-10)||(abs(tx)<1e-8||abs(ty)<1e-8))
+				if ((abs(n1) < 1e-10 && abs(n2) < 1e-10) || (abs(tx) < 1e-8 || abs(ty) < 1e-8))
 				{
 					A0[i].rho = A0[i].neibor[0]->rho;
 					A0[i].u = A0[i].neibor[0]->u;
@@ -1331,7 +1331,7 @@ void update_IN()
 			A[i][j]->u = U[1] / U[0];
 			A[i][j]->v = U[2] / U[0];
 			A[i][j]->p = (gama - 1) * (U[3] - 0.5 * A[i][j]->rho * (A[i][j]->u * A[i][j]->u + A[i][j]->v * A[i][j]->v));
-			if (i == 0&FlowType=="cylinder")
+			if (i == 0 & FlowType == "cylinder")
 			{
 				A[i][j]->rho = A[i][j]->rho * A[i][j]->sec_num;
 				A[i][j]->u = A[i][j]->u * A[i][j]->sec_num;
@@ -1586,7 +1586,7 @@ void reorder_neighbor()
 }
 double area(mesh A, mesh B, mesh C, mesh D)//求任意四点构成四边形面积 
 {
-	return 0.5* abs(A.x * B.y + B.x * C.y + C.x * D.y + D.x * A.y - B.x * A.y - C.x * B.y - D.x * C.y - A.x * D.y);
+	return 0.5 * abs(A.x * B.y + B.x * C.y + C.x * D.y + D.x * A.y - B.x * A.y - C.x * B.y - D.x * C.y - A.x * D.y);
 }
 
 void movemesh()
@@ -1646,13 +1646,13 @@ mesh getCrossPoint(mesh M, double a, double b, double r)//某点和圆心的连线与圆的
 	}
 	else
 	{
-		double delta = 1e-10;
+		double diff = 1e-15;
 		double x0 = min(M.x, a);
 		double x1 = max(M.x, a);
 		double y0, y1;
 		double x2, y2;
 		double f0, f1, f2;
-		while (abs(x0 - x1) > delta)
+		while (abs(x0 - x1) > diff)
 		{
 			y0 = -(L.A * x0 + L.C) / L.B;
 			y1 = -(L.A * x1 + L.C) / L.B;
@@ -1661,7 +1661,7 @@ mesh getCrossPoint(mesh M, double a, double b, double r)//某点和圆心的连线与圆的
 			f0 = (x0 - a) * (x0 - a) + (y0 - b) * (y0 - b) - r * r;
 			f1 = (x1 - a) * (x1 - a) + (y1 - b) * (y1 - b) - r * r;
 			f2 = (x2 - a) * (x2 - a) + (y2 - b) * (y2 - b) - r * r;
-			if (f0 * f1 >= 0)
+			if (f0 * f2 >= 0)
 				x0 = x2;
 			else
 				x1 = x2;

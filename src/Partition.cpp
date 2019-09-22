@@ -50,10 +50,8 @@ void partition_Point()//Partition existing grid points
 			for (i = 0; i < A0.size(); i++)
 				A[0].push_back(&A0[i]), A[0][i]->id = i;
 			double x, y, xl, yl, xr, yr, xu, yu, xd, yd;
-			double a, b, r, r1;
-			a = 0.02;
-			b = 0.01;
-			r = 0.55 / 75;
+			double r1;
+
 			//the 2D cylinder (x-a)^2+(y-b)^2=r^2
 			int n1, n2, n3, n4, n, size;
 			for (i = 0; i < A[0].size(); i++)
@@ -69,7 +67,7 @@ void partition_Point()//Partition existing grid points
 				xd = x;
 				yd = y - dy;
 				n1 = n2 = n3 = n4 = 0;
-				r1 = r + sqrt(dx * dx + dy * dy);
+				r1 = r /*+ sqrt(dx * dx + dy * dy)*/;
 				//r1 decides the unstructural grid region 
 				//r1 is larger than r
 				//the larger of r1, the larger of the unstructural grid region
@@ -109,6 +107,7 @@ void partition_Point()//Partition existing grid points
 						A0[A0.size() - 1].id = A0.size() - 1;
 						A0[A0.size() - 1].type = "Cy";
 						A0[A0.size() - 1].neibor.push_back(A[1][size]);
+
 						if (n1 == 0)
 						{
 							A[1][size]->neibor.push_back(&A0[i + 1]);

@@ -11,6 +11,7 @@
 #include<iomanip>
 #include <vector>
 #include<ctime>
+#include<algorithm>
 using namespace std;
 vector <mesh> A0;
 vector<vector <mesh*>> A;
@@ -49,15 +50,48 @@ int main()
 	initFlow();
 	ofstream fout;
 	fout.open("mesh1.dat");
-	fout << "variables=x,y,rho" << endl;
+	fout << "variables=theta, delta_theta" << endl;
+	vector <double> delta_theta;
+	vector<double>theta;
 	for (int i = 0; i < A0.size(); i++)
 	{
-		if (A0[i].section != 0)
-			fout << A0[i].x << "  " << A0[i].y << "  " << A0[i].rho << endl;
+		using namespace ConstPara;
+		if (A0[i].type == "Cy")
+		{
+			theta.push_back(get_theta(A0[i].x, A0[i].y, a, b));
+			if (A0[i].x < a && A0[i].y > b)
+				theta[theta.size() - 1] = pi + theta[theta.size() - 1];
+			else if (A0[i].x < a && A0[i].y < b)
+				theta[theta.size() - 1] = pi + theta[theta.size() - 1];
+			else if (A0[i].x > a && A0[i].y < b)
+				theta[theta.size() - 1] = 2 * pi + theta[theta.size() - 1];
+			else if (A0[i].x == a && A0[i].y > b)
+				theta[theta.size() - 1] = pi / 2;
+			else if (A0[i].x == a && A0[i].y < b)
+				theta[theta.size() - 1] = 3 * pi / 2;
+			else if (A0[i].x > a && A0[i].y == b)
+				theta[theta.size() - 1] = 0;
+			else if (A0[i].x < a && A0[i].y == b)
+				theta[theta.size() - 1] = pi;
+
+		}
+		sort(theta.begin(), theta.end());
+	}
+	for (int i = 0; i < theta.size(); i++)
+	{
+		//fout << theta[i] << endl;
+
+		if (i != theta.size() - 1)
+			delta_theta.push_back(theta[i + 1] - theta[i]);
+		else
+			delta_theta.push_back(theta[0] + 2 * ConstPara::pi - theta[i]);
+		sort(delta_theta.begin(), delta_theta.end());
+
+			fout << theta[i] << "   " << delta_theta[i] << endl;
 	}
 	fout.close();
 	fout.clear();
-
+	cout << delta_theta[0] << "   " << delta_theta[delta_theta.size() - 1] << endl;
 
 
 	//out_M("mesh/" + methodType + "/step = " + to_string(step));
@@ -92,10 +126,10 @@ int main()
 			fout.open("mesh/C/" + to_string(step) + ".dat");
 			fout << "variables=x,y,rho,u,v,p" << endl;
 			fout << "zone i = 101 j=101 F=point" << endl;
-			fout << "solutiontime = "<<t_sim << endl;
+			fout << "solutiontime = " << t_sim << endl;
 			for (int i = 0; i < A[0].size(); i++)
 			{
-					fout << A[0][i]->x << "  " << A[0][i]->y << "  " << A[0][i]->rho << "  " << A[0][i]->u << "  " << A[0][i]->v << "  " << A[0][i]->p << endl;
+				fout << A[0][i]->x << "  " << A[0][i]->y << "  " << A[0][i]->rho << "  " << A[0][i]->u << "  " << A[0][i]->v << "  " << A[0][i]->p << endl;
 			}
 			fout.close();
 			fout.clear();

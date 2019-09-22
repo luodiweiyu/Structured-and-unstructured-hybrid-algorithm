@@ -39,7 +39,7 @@ namespace Couette//初始网格
 }
 const double a = 0.01;
 const double b = 0.01;
-const double r = 0.005;
+const double r = 0.01/2;
 namespace MeshPara
 {
 	const string FlowType = "cylinder";
@@ -68,10 +68,10 @@ namespace MeshPara
 {1,2,0,1},
 	};
 
-	const int Xnum = 101;//x方向点的个数20,40,150
-	const int Ynum = 101;//y方向点的个数43,87,215
+	const int Xnum = 51;//x方向点的个数20,40,150
+	const int Ynum = 51;//y方向点的个数43,87,215
 	const int Pnum = Xnum * Ynum;//一共点的个数
-	const double dx = 0.0002;
+	const double dx = 0.0002*2;
 	const double dy = dx;
 }
 struct Flux

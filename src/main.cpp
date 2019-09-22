@@ -77,21 +77,22 @@ int main()
 		}
 		sort(theta.begin(), theta.end());
 	}
+	using ConstPara::pi;
+
 	for (int i = 0; i < theta.size(); i++)
 	{
 		//fout << theta[i] << endl;
-
 		if (i != theta.size() - 1)
 			delta_theta.push_back(theta[i + 1] - theta[i]);
 		else
-			delta_theta.push_back(theta[0] + 2 * ConstPara::pi - theta[i]);
-		sort(delta_theta.begin(), delta_theta.end());
+			delta_theta.push_back(theta[0] + 2 * pi - theta[i]);
 
-			fout << theta[i] << "   " << delta_theta[i] << endl;
+		fout << theta[i] * 180 / pi << "   " << delta_theta[i] * 180 / pi << endl;
 	}
 	fout.close();
 	fout.clear();
-	cout << delta_theta[0] << "   " << delta_theta[delta_theta.size() - 1] << endl;
+	sort(delta_theta.begin(), delta_theta.end());
+	cout << delta_theta[0] * 180 / pi << "   " << delta_theta[delta_theta.size() - 1] * 180 / pi << endl;
 
 
 	//out_M("mesh/" + methodType + "/step = " + to_string(step));

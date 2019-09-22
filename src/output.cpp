@@ -172,7 +172,7 @@ void out_M(std::string name)
 	extern double t_sim;
 	using std::endl;
 	fout.open(name + ".dat");
-	fout << "VARIABLES =  \"X\", \"Y\", \"rho\", \"u\", \"v\", \"p\",\"um\",\"vm\",\"¦Á1\",\"¦Á2\",\"section\",\"secnum\"" << std::endl;
+	fout << "VARIABLES =  \"X\", \"Y\", \"rho\", \"u\", \"v\", \"p\",\"um\",\"vm\",\"alpha1\",\"alpha2\",\"section\",\"secnum\"" << std::endl;
 
 	int i, j, k;
 	for (i = 0; i < M.size(); i++)
@@ -253,14 +253,14 @@ void out_M(std::string name)
 		fout << endl;
 		for (j = 0; j < A[i].size(); j++)
 		{
-			fout << A[i][j]->¦Á.f1 << "   ";
+			fout << A[i][j]->alpha.f1 << "   ";
 			if (j % 30 == 0)
 				fout << endl;
 		}
 		fout << endl;
 		for (j = 0; j < A[i].size(); j++)
 		{
-			fout << A[i][j]->¦Á.f2 << "   ";
+			fout << A[i][j]->alpha.f2 << "   ";
 			if (j % 30 == 0)
 				fout << endl;
 		}

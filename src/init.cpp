@@ -93,7 +93,7 @@ void init_mesh()
 	if (FlowType == "Prandtl-Meyer")
 	{
 		using namespace Prandtl_Meyer;
-		using ConstPara::γ;
+		using ConstPara::gama;
 		double LineLength = 0.003;
 		//左边结构网格生成
 		double dx;
@@ -607,7 +607,7 @@ void initFlow()
 			using namespace Oblique;
 			mesh A1, A2;
 			A1.ρ = ρ1, A1.p = p1, A1.u = u1, A1.v = v1;
-			get_down(A1, A2, β);
+			get_down(A1, A2, beta);
 			ρ2 = A2.ρ, p2 = A2.p, u2 = A2.u, v2 = A2.v;
 
 			for (i = 0; i < A.size(); i++)
@@ -637,19 +637,19 @@ void initFlow()
 		{
 			using namespace ShockwaveCross;
 			using namespace ConstPara;
-			double β40 = 45 * pi / 180, β41 = 50 * pi / 180, β42 = 60 * pi / 180;
+			double beta40 = 45 * pi / 180, beta41 = 50 * pi / 180, beta42 = 60 * pi / 180;
 			double p41, p40;
 			double p51, p50;
 			double δ41, δ40;
 			double δ51, δ50;
-			double β51, β50;
-			double fβ41, fβ40;
+			double beta51, beta50;
+			double fbeta41, fbeta40;
 			double un20, un21, Mu20, Mu21;
 			double un30, un31, Mu30, Mu31;
 			mesh A1, A2, A3;
 			A1.ρ = ρ1, A1.p = p1, A1.u = u1, A1.v = v1;
-			get_down(A1, A2, β2/*-0.05*pi/180*/);
-			get_down(A1, A3, β3);
+			get_down(A1, A2, beta2/*-0.05*pi/180*/);
+			get_down(A1, A3, beta3);
 
 			ρ2 = A2.ρ, p2 = A2.p, u2 = A2.u, v2 = A2.v;
 			ρ3 = A3.ρ, p3 = A3.p, u3 = A3.u, v3 = A3.v;
@@ -657,91 +657,91 @@ void initFlow()
 			//A2.ρ = ρ2, A2.p = p2, A2.u = u2, A2.v = v2;
 			//A3.ρ = ρ3, A3.p = p3, A3.u = u3, A3.v = v3;
 			mesh A40, A41, A50, A51;
-			while (abs(β42 - β41) > 1e-15)
+			while (abs(beta42 - beta41) > 1e-15)
 			{
-				while (β42 > -β2 || β42 < β2)
+				while (beta42 > -beta2 || beta42 < beta2)
 				{
-					if (abs(β42) > 1e5)
+					if (abs(beta42) > 1e5)
 					{
-						β42 = β42 / 1e5;
+						beta42 = beta42 / 1e5;
 						continue;
 					}
-					if (β42 > -β2)
-						β42 = β42 + β2;
-					else if (β42 < β2)
-						β42 = β42 - β2;
-					//if (β42 > pi / 2)
-					//	β42 = β42 - pi / 2;
-					//	else if (β42 < -pi / 2)
-					//	β42 = β42 + pi / 2;
+					if (beta42 > -beta2)
+						beta42 = beta42 + beta2;
+					else if (beta42 < beta2)
+						beta42 = beta42 - beta2;
+					//if (beta42 > pi / 2)
+					//	beta42 = beta42 - pi / 2;
+					//	else if (beta42 < -pi / 2)
+					//	beta42 = beta42 + pi / 2;
 				}
-				if (abs(β42) < 1e-7)
-					β42 = 30 * pi / 180;
+				if (abs(beta42) < 1e-7)
+					beta42 = 30 * pi / 180;
 
-				β40 = (β41 + β42) / 2;
-				β41 = β42;
+				beta40 = (beta41 + beta42) / 2;
+				beta41 = beta42;
 
-				get_down(A2, A40, β40);
+				get_down(A2, A40, beta40);
 				A50.p = A40.p;
-				β50 = get_β(A3, A50.p, -1);
-				get_down(A3, A50, β50);
+				beta50 = get_beta(A3, A50.p, -1);
+				get_down(A3, A50, beta50);
 
-				get_down(A2, A41, β41);
+				get_down(A2, A41, beta41);
 				A51.p = A41.p;
-				β51 = get_β(A3, A51.p, -1);
-				get_down(A3, A51, β51);
+				beta51 = get_beta(A3, A51.p, -1);
+				get_down(A3, A51, beta51);
 
 				δ40 = get_δ(A40.u, A40.v);
 				δ41 = get_δ(A41.u, A41.v);
 				δ50 = get_δ(A50.u, A50.v);
 				δ51 = get_δ(A51.u, A51.v);
-				fβ41 = δ41 - δ51;
-				fβ40 = δ40 - δ50;
-				if (abs(fβ41 - fβ40) <= 1e-20)
+				fbeta41 = δ41 - δ51;
+				fbeta40 = δ40 - δ50;
+				if (abs(fbeta41 - fbeta40) <= 1e-20)
 				{
-					β42 = β41;
+					beta42 = beta41;
 					break;
 				}
-				β42 = β41 - fβ41 / (fβ41 - fβ40) * (β41 - β40);
+				beta42 = beta41 - fbeta41 / (fbeta41 - fbeta40) * (beta41 - beta40);
 			}
-			β4 = β42;
-			get_down(A2, A41, β4);
+			beta4 = beta42;
+			get_down(A2, A41, beta4);
 			A51.p = A41.p;
-			β5 = get_β(A3, A51.p, -1);
-			get_down(A3, A51, β5);
+			beta5 = get_beta(A3, A51.p, -1);
+			get_down(A3, A51, beta5);
 			δ4 = get_δ(A41.u, A41.v);
 			δ5 = get_δ(A51.u, A51.v);
 
-			double un2 = u2 * sin(β4) - v2 * cos(β4);
-			double ut2 = u2 * cos(β4) + v2 * sin(β4);
+			double un2 = u2 * sin(beta4) - v2 * cos(beta4);
+			double ut2 = u2 * cos(beta4) + v2 * sin(beta4);
 			double Mu2 = get_Ma(un2, 0, ρ2, p2);
 			ρ4 = ρ2 * get_ρ2ρ1(Mu2);
 			p4 = p2 * get_p2p1(Mu2);
-			double Md4 = sqrt((Mu2 * Mu2 + 2 / (γ - 1)) / (2 * γ * Mu2 * Mu2 / (γ - 1) - 1));
-			double c4 = sqrt(γ * p4 / ρ4);
+			double Md4 = sqrt((Mu2 * Mu2 + 2 / (gama - 1)) / (2 * gama * Mu2 * Mu2 / (gama - 1) - 1));
+			double c4 = sqrt(gama * p4 / ρ4);
 			double un4 = Md4 * c4;
 			double ut4 = ut2;
-			u4 = un4 * sin(β4) + ut4 * cos(β4);
-			v4 = -un4 * cos(β4) + ut4 * sin(β4);
+			u4 = un4 * sin(beta4) + ut4 * cos(beta4);
+			v4 = -un4 * cos(beta4) + ut4 * sin(beta4);
 
 
-			double un3 = -u3 * sin(β5) + v3 * cos(β5);
-			double ut3 = u3 * cos(β5) + v3 * sin(β5);
+			double un3 = -u3 * sin(beta5) + v3 * cos(beta5);
+			double ut3 = u3 * cos(beta5) + v3 * sin(beta5);
 			double Mu3 = get_Ma(un3, 0, ρ3, p3);
 			ρ5 = ρ3 * get_ρ2ρ1(Mu3);
 			p5 = p3 * get_p2p1(Mu3);
-			double Md5 = sqrt((Mu3 * Mu3 + 2 / (γ - 1)) / (2 * γ * Mu3 * Mu3 / (γ - 1) - 1));
-			double c5 = sqrt(γ * p5 / ρ5);
+			double Md5 = sqrt((Mu3 * Mu3 + 2 / (gama - 1)) / (2 * gama * Mu3 * Mu3 / (gama - 1) - 1));
+			double c5 = sqrt(gama * p5 / ρ5);
 			double un5 = Md5 * c5;
 			double ut5 = ut3;
-			u5 = un5 * sin(-β5) + ut5 * cos(-β5);
-			v5 = un5 * cos(-β5) - ut5 * sin(-β5);
+			u5 = un5 * sin(-beta5) + ut5 * cos(-beta5);
+			v5 = un5 * cos(-beta5) - ut5 * sin(-beta5);
 			std::cout.precision(20);
 			std::cout << "p2= " << p2 << "   p3= " << p3 << std::endl;
 			std::cout << "u2= " << u2 << "   u3= " << u3 << std::endl;
 			std::cout << "v2= " << v2 << "   v3= " << v3 << std::endl;
 			std::cout << "rho2= " << ρ2 << "   rho3= " << ρ3 << std::endl;
-			std::cout << "β4= " << β4 * 180 / pi << "   β5= " << β5 * 180 / pi << std::endl;
+			std::cout << "beta4= " << beta4 * 180 / pi << "   beta5= " << beta5 * 180 / pi << std::endl;
 			std::cout << "δ4= " << δ4 * 180 / pi << "   δ5= " << δ5 * 180 / pi << std::endl;
 			std::cout << "p4= " << p4 << "   p5= " << p5 << std::endl;
 			std::cout << "u4= " << u4 << "   u5= " << u5 << std::endl;
@@ -896,7 +896,7 @@ void init_flow_shockwave()//斜激波
 	using namespace Oblique;
 	mesh A1, A2;
 	A1.ρ = ρ1, A1.p = p1, A1.u = u1, A1.v = v1;
-	get_down(A1, A2, β);
+	get_down(A1, A2, beta);
 	ρ2 = A2.ρ, p2 = A2.p, u2 = A2.u, v2 = A2.v;
 	using std::cout;
 	using std::endl;
@@ -957,7 +957,7 @@ void init_flow_shockwave()//斜激波
 		//}
 		//else if (A[0][i].type == "D" || A[0][i].type == "R")
 		//{
-		//	if (A[0][i].x < A[0][startpoint].x + dy * Ynum / tan(β))
+		//	if (A[0][i].x < A[0][startpoint].x + dy * Ynum / tan(beta))
 		//	{
 		//		A[0][i].ρ = ρ1;
 		//		A[0][i].u = u1;
@@ -991,8 +991,8 @@ void init_flow_shockwaveCross()//同侧激波相交
 
 	mesh A1, A2, A3;
 	A1.ρ = ρ1, A1.p = p1, A1.u = u1, A1.v = v1;
-	get_down(A1, A2, β2);
-	get_down(A1, A3, β3);
+	get_down(A1, A2, beta2);
+	get_down(A1, A3, beta3);
 	ρ2 = A2.ρ, p2 = A2.p, u2 = A2.u, v2 = A2.v;
 	ρ3 = A3.ρ, p3 = A3.p, u3 = A3.u, v3 = A3.v;
 	double θ12 = -30 / 180.0 * ConstPara::pi;
@@ -1005,8 +1005,8 @@ void init_flow_shockwaveCross()//同侧激波相交
 	L12 = getLine(θ12, A12);
 	L13 = getLine(θ13, A13);
 	C = getCrossPoint(L12, L13);
-	L12 = getLine(β2, C);
-	L13 = getLine(β3, C);
+	L12 = getLine(beta2, C);
+	L13 = getLine(beta3, C);
 	for (i = 0; i < Pnum; i++)
 	{
 		if (A[0][i]->type == "L")
@@ -1078,7 +1078,7 @@ void init_flow_cylinder()//圆柱绕流
 //			U[i][j].push_back(A[i][j]->ρ);
 //			U[i][j].push_back(A[i][j]->ρ * A[i][j]->u);
 //			U[i][j].push_back(A[i][j]->ρ * A[i][j]->v);
-//			U[i][j].push_back(0.5 * A[i][j]->ρ * (A[i][j]->u * A[i][j]->u + A[i][j]->v * A[i][j]->v) + A[i][j]->p / (ConstPara::γ - 1));
+//			U[i][j].push_back(0.5 * A[i][j]->ρ * (A[i][j]->u * A[i][j]->u + A[i][j]->v * A[i][j]->v) + A[i][j]->p / (ConstPara::gama - 1));
 //		}
 //	}
 //}

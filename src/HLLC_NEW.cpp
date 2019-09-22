@@ -8,75 +8,75 @@ using namespace ConstPara;
 //2Î¬Å·À­·½³Ì×éÀëÉ¢£ºÕÅµÂÁ¼¡¶¼ÆËãÁ÷ÌåÁ¦Ñ§½Ì³Ì¡·p433 13.3.7
 Flux HLLC_¦¶(mesh& CL, mesh& CR, mesh& C, int method)//°ëµã×ó²àÓÒ²à¸ñµã£¬×ø±ê±ä»»²Î¿¼µã
 {
-	double ¦Îx = C.¦Îx[method];
-	double ¦Îy = C.¦Îy[method];
-	double ¦Ît = C.¦Ît[method];
+	double xix = C.xix[method];
+	double xiy = C.xiy[method];
+	double xit = C.xit[method];
 	double J = C.J[method];
-	double D¦Î = sqrt(¦Îx * ¦Îx + ¦Îy * ¦Îy);
-	double ¦Î1 = ¦Îx / D¦Î;
-	double ¦Î2 = ¦Îy / D¦Î;
-	double ¦Î3 = ¦Ît / D¦Î;
-	double ¦ÎcL = CL.u * ¦Î1 + CL.v * ¦Î2 + ¦Î3;
-	double ¦ÎcR = CR.u * ¦Î1 + CR.v * ¦Î2 + ¦Î3;
-	double aL = sqrt(¦Ã * CL.p / CL.¦Ñ);
-	double aR = sqrt(¦Ã * CR.p / CR.¦Ñ);
+	double Dxi = sqrt(xix * xix + xiy * xiy);
+	double xi1 = xix / Dxi;
+	double xi2 = xiy / Dxi;
+	double xi3 = xit / Dxi;
+	double xicL = CL.u * xi1 + CL.v * xi2 + xi3;
+	double xicR = CR.u * xi1 + CR.v * xi2 + xi3;
+	double aL = sqrt(gama * CL.p / CL.¦Ñ);
+	double aR = sqrt(gama * CR.p / CR.¦Ñ);
 	double a = sqrt(CL.¦Ñ);
 	double b = sqrt(CR.¦Ñ);
 
-	double SL = ¦ÎcL - aL;
-	double SR = ¦ÎcR + aR;
+	double SL = xicL - aL;
+	double SR = xicR + aR;
 
-	double EL = CL.p / (¦Ã - 1) + 0.5 * CL.¦Ñ * CL.u * CL.u + 0.5 * CL.¦Ñ * CL.v * CL.v;
-	double ER = CR.p / (¦Ã - 1) + 0.5 * CR.¦Ñ * CR.u * CR.u + 0.5 * CR.¦Ñ * CR.v * CR.v;
+	double EL = CL.p / (gama - 1) + 0.5 * CL.¦Ñ * CL.u * CL.u + 0.5 * CL.¦Ñ * CL.v * CL.v;
+	double ER = CR.p / (gama - 1) + 0.5 * CR.¦Ñ * CR.u * CR.u + 0.5 * CR.¦Ñ * CR.v * CR.v;
 	Flux FL, FR;
-	FL.f1 = (CL.¦Ñ * ¦ÎcL);
-	FL.f2 = (CL.¦Ñ * CL.u * ¦ÎcL + ¦Î1 * CL.p);
-	FL.f3 = (CL.¦Ñ * CL.v * ¦ÎcL + ¦Î2 * CL.p);
-	FL.f4 = (¦ÎcL * (EL + CL.p) - ¦Î3 * CL.p);
-	FR.f1 = (CR.¦Ñ * ¦ÎcR);
-	FR.f2 = (CR.¦Ñ * CR.u * ¦ÎcR + ¦Î1 * CR.p);
-	FR.f3 = (CR.¦Ñ * CR.v * ¦ÎcR + ¦Î2 * CR.p);
-	FR.f4 = (¦ÎcR * (ER + CR.p) - ¦Î3 * CR.p);
-	double SM = (CL.p - CR.p + CL.¦Ñ * ¦ÎcL * (¦ÎcL - SL) + CR.¦Ñ * ¦ÎcR * (SR - ¦ÎcR)) / (CR.¦Ñ * (SR - ¦ÎcR) + CL.¦Ñ * (¦ÎcL - SL));
-	double pM = 0.5 * (CL.¦Ñ * (¦ÎcL - SL) * (¦ÎcL - SM) + CR.¦Ñ * (¦ÎcR - SR) * (¦ÎcR - SM) + CR.p + CL.p);
+	FL.f1 = (CL.¦Ñ * xicL);
+	FL.f2 = (CL.¦Ñ * CL.u * xicL + xi1 * CL.p);
+	FL.f3 = (CL.¦Ñ * CL.v * xicL + xi2 * CL.p);
+	FL.f4 = (xicL * (EL + CL.p) - xi3 * CL.p);
+	FR.f1 = (CR.¦Ñ * xicR);
+	FR.f2 = (CR.¦Ñ * CR.u * xicR + xi1 * CR.p);
+	FR.f3 = (CR.¦Ñ * CR.v * xicR + xi2 * CR.p);
+	FR.f4 = (xicR * (ER + CR.p) - xi3 * CR.p);
+	double SM = (CL.p - CR.p + CL.¦Ñ * xicL * (xicL - SL) + CR.¦Ñ * xicR * (SR - xicR)) / (CR.¦Ñ * (SR - xicR) + CL.¦Ñ * (xicL - SL));
+	double pM = 0.5 * (CL.¦Ñ * (xicL - SL) * (xicL - SM) + CR.¦Ñ * (xicR - SR) * (xicR - SM) + CR.p + CL.p);
 	//Average-State Jacobians and Implicit Methods for Compressible Viscous and Turbulent Flows,(7)(8)
-	double par1 = (¦ÎcL - SL) / (SM - SL);
+	double par1 = (xicL - SL) / (SM - SL);
 	double par2 = (pM - CL.p) / (SM - SL);
 	Flux  FML;
 	FML.f1 = (SM * par1 * CL.¦Ñ);
-	FML.f2 = (SM * par1 * CL.¦Ñ * CL.u - par2 * ¦Î1 + ¦Î1 * pM);
-	FML.f3 = (SM * par1 * CL.¦Ñ * CL.v - par2 * ¦Î2 + ¦Î2 * pM);
-	FML.f4 = (SM * par1 * (EL + CL.p) + par2 * ¦Î3 - ¦Î3 * pM);
-	double par3 = (¦ÎcR - SR) / (SM - SR);
+	FML.f2 = (SM * par1 * CL.¦Ñ * CL.u - par2 * xi1 + xi1 * pM);
+	FML.f3 = (SM * par1 * CL.¦Ñ * CL.v - par2 * xi2 + xi2 * pM);
+	FML.f4 = (SM * par1 * (EL + CL.p) + par2 * xi3 - xi3 * pM);
+	double par3 = (xicR - SR) / (SM - SR);
 	double par4 = (pM - CR.p) / (SM - SR);
 	Flux FMR;
 	FMR.f1 = (SM * par3 * CR.¦Ñ);
-	FMR.f2 = (SM * par3 * CR.¦Ñ * CR.u - par4 * ¦Î1 + ¦Î1 * pM);
-	FMR.f3 = (SM * par3 * CR.¦Ñ * CR.v - par4 * ¦Î2 + ¦Î2 * pM);
-	FMR.f4 = (SM * par3 * (ER + CR.p) + par4 * ¦Î3 - ¦Î3 * pM);
+	FMR.f2 = (SM * par3 * CR.¦Ñ * CR.u - par4 * xi1 + xi1 * pM);
+	FMR.f3 = (SM * par3 * CR.¦Ñ * CR.v - par4 * xi2 + xi2 * pM);
+	FMR.f4 = (SM * par3 * (ER + CR.p) + par4 * xi3 - xi3 * pM);
 
 	//double ¦¸L = 1 / (SL - SM);
 	//double ¦¸R = 1 / (SR - SM);
 
-	//double ¦ÑLM = ¦¸L * CL.¦Ñ * (SL - ¦ÎcL);
-	//double ¦ÑuLS = ¦¸L * ((SL - ¦ÎcL) * (CL.¦Ñ * CL.u) + (pM - CL.p) * ¦Î1);
-	//double ¦ÑvLS = ¦¸L * ((SL - ¦ÎcL) * (CL.¦Ñ * CL.v) + (pM - CL.p) * ¦Î2);
-	//double eLS = ¦¸L * ((SL - ¦ÎcL) * EL - CL.p * ¦ÎcL + pM * SM - (pM - CL.p) * ¦Î3);
+	//double ¦ÑLM = ¦¸L * CL.¦Ñ * (SL - xicL);
+	//double ¦ÑuLS = ¦¸L * ((SL - xicL) * (CL.¦Ñ * CL.u) + (pM - CL.p) * xi1);
+	//double ¦ÑvLS = ¦¸L * ((SL - xicL) * (CL.¦Ñ * CL.v) + (pM - CL.p) * xi2);
+	//double eLS = ¦¸L * ((SL - xicL) * EL - CL.p * xicL + pM * SM - (pM - CL.p) * xi3);
 
-	//double ¦ÑRM = ¦¸R * CR.¦Ñ * (SR - ¦ÎcR);
-	//double ¦ÑuRS = ¦¸R * ((SR - ¦ÎcR) * (CR.¦Ñ * CR.u) + (pM - CR.p) * ¦Î1);
-	//double ¦ÑvRS = ¦¸R * ((SR - ¦ÎcR) * (CR.¦Ñ * CR.v) + (pM - CR.p) * ¦Î2);
-	//double eRS = ¦¸R * ((SR - ¦ÎcR) * ER - CR.p * ¦ÎcR + pM * SM - (pM - CR.p) * ¦Î3);
+	//double ¦ÑRM = ¦¸R * CR.¦Ñ * (SR - xicR);
+	//double ¦ÑuRS = ¦¸R * ((SR - xicR) * (CR.¦Ñ * CR.u) + (pM - CR.p) * xi1);
+	//double ¦ÑvRS = ¦¸R * ((SR - xicR) * (CR.¦Ñ * CR.v) + (pM - CR.p) * xi2);
+	//double eRS = ¦¸R * ((SR - xicR) * ER - CR.p * xicR + pM * SM - (pM - CR.p) * xi3);
 
 	//Flux FML, FMR;
 	//FML.f1 = SM * ¦ÑLM;
-	//FML.f2 = ¦ÑuLS * SM + pM * ¦Î1;
-	//FML.f3 = ¦ÑvLS * SM + pM * ¦Î2;
-	//FML.f4 = (eLS + pM) * SM - pM * ¦Î3;
+	//FML.f2 = ¦ÑuLS * SM + pM * xi1;
+	//FML.f3 = ¦ÑvLS * SM + pM * xi2;
+	//FML.f4 = (eLS + pM) * SM - pM * xi3;
 	//FMR.f1 = SM * ¦ÑRM;
-	//FMR.f2 = ¦ÑuRS * SM + pM * ¦Î1;
-	//FMR.f3 = ¦ÑvRS * SM + pM * ¦Î2;
-	//FMR.f4 = (eRS + pM) * SM - pM * ¦Î3;
+	//FMR.f2 = ¦ÑuRS * SM + pM * xi1;
+	//FMR.f3 = ¦ÑvRS * SM + pM * xi2;
+	//FMR.f4 = (eRS + pM) * SM - pM * xi3;
 
 	Flux F_HLLC;
 	if (SL > 0)
@@ -87,85 +87,85 @@ Flux HLLC_¦¶(mesh& CL, mesh& CR, mesh& C, int method)//°ëµã×ó²àÓÒ²à¸ñµã£¬×ø±ê±ä»
 		F_HLLC = FMR;
 	else
 		F_HLLC = FR;
-	F_HLLC.f1 = F_HLLC.f1 * D¦Î;
-	F_HLLC.f2 = F_HLLC.f2 * D¦Î;
-	F_HLLC.f3 = F_HLLC.f3 * D¦Î;
-	F_HLLC.f4 = F_HLLC.f4 * D¦Î;
+	F_HLLC.f1 = F_HLLC.f1 * Dxi;
+	F_HLLC.f2 = F_HLLC.f2 * Dxi;
+	F_HLLC.f3 = F_HLLC.f3 * Dxi;
+	F_HLLC.f4 = F_HLLC.f4 * Dxi;
 
 	return F_HLLC;
 }
 
 Flux HLLC_¦´(mesh & CD, mesh & CU, mesh & C, int method)
 {
-	double ¦Çx = C.¦Çx[method];
-	double ¦Çy = C.¦Çy[method];
-	double ¦Çt = C.¦Çt[method];
+	double etax = C.etax[method];
+	double etay = C.etay[method];
+	double etat = C.etat[method];
 	double J = C.J[method];
 
-	double D¦Ç = sqrt(¦Çx * ¦Çx + ¦Çy * ¦Çy);
-	double ¦Ç1 = ¦Çx / D¦Ç;
-	double ¦Ç2 = ¦Çy / D¦Ç;
-	double ¦Ç3 = ¦Çt / D¦Ç;
-	double ¦ÇcU = CU.u * ¦Ç1 + CU.v * ¦Ç2;
-	double ¦ÇcD = CD.u * ¦Ç1 + CD.v * ¦Ç2;
-	double aU = sqrt(¦Ã * CU.p / CU.¦Ñ);
-	double aD = sqrt(¦Ã * CD.p / CD.¦Ñ);
-	double EU = CU.p / (¦Ã - 1) + 0.5 * CU.¦Ñ * CU.u * CU.u + 0.5 * CU.¦Ñ * CU.v * CU.v;
-	double ED = CD.p / (¦Ã - 1) + 0.5 * CD.¦Ñ * CD.u * CD.u + 0.5 * CD.¦Ñ * CD.v * CD.v;
+	double Deta = sqrt(etax * etax + etay * etay);
+	double eta1 = etax / Deta;
+	double eta2 = etay / Deta;
+	double eta3 = etat / Deta;
+	double etacU = CU.u * eta1 + CU.v * eta2;
+	double etacD = CD.u * eta1 + CD.v * eta2;
+	double aU = sqrt(gama * CU.p / CU.¦Ñ);
+	double aD = sqrt(gama * CD.p / CD.¦Ñ);
+	double EU = CU.p / (gama - 1) + 0.5 * CU.¦Ñ * CU.u * CU.u + 0.5 * CU.¦Ñ * CU.v * CU.v;
+	double ED = CD.p / (gama - 1) + 0.5 * CD.¦Ñ * CD.u * CD.u + 0.5 * CD.¦Ñ * CD.v * CD.v;
 	Flux GD, GU;
-	GD.f1 = (CD.¦Ñ * ¦ÇcD);
-	GD.f2 = (CD.¦Ñ * CD.u * ¦ÇcD + ¦Ç1 * CD.p);
-	GD.f3 = (CD.¦Ñ * CD.v * ¦ÇcD + ¦Ç2 * CD.p);
-	GD.f4 = (¦ÇcD * (ED + CD.p) - ¦Ç3 * CD.p);
+	GD.f1 = (CD.¦Ñ * etacD);
+	GD.f2 = (CD.¦Ñ * CD.u * etacD + eta1 * CD.p);
+	GD.f3 = (CD.¦Ñ * CD.v * etacD + eta2 * CD.p);
+	GD.f4 = (etacD * (ED + CD.p) - eta3 * CD.p);
 
-	GU.f1 = (CU.¦Ñ * ¦ÇcU);
-	GU.f2 = (CU.¦Ñ * CU.u * ¦ÇcU + ¦Ç1 * CD.p);
-	GU.f3 = (CU.¦Ñ * CU.v * ¦ÇcU + ¦Ç2 * CD.p);
-	GU.f4 = (¦ÇcU * (EU + CU.p) - ¦Ç3 * CD.p);
+	GU.f1 = (CU.¦Ñ * etacU);
+	GU.f2 = (CU.¦Ñ * CU.u * etacU + eta1 * CD.p);
+	GU.f3 = (CU.¦Ñ * CU.v * etacU + eta2 * CD.p);
+	GU.f4 = (etacU * (EU + CU.p) - eta3 * CD.p);
 
-	double SD = ¦ÇcD - aD;
-	double SU = ¦ÇcU + aU;
-	double SM = (CD.p - CU.p - CD.¦Ñ * ¦ÇcD * (SD - ¦ÇcD) + CU.¦Ñ * ¦ÇcU * (SU - ¦ÇcU)) / (CU.¦Ñ * (SU - ¦ÇcU) - CD.¦Ñ * (SD - ¦ÇcD));
-	double pM = 0.5 * (CD.¦Ñ * (¦ÇcD - SD) * (¦ÇcD - SM) + CU.¦Ñ * (¦ÇcU - SU) * (¦ÇcU - SM) + CU.p + CD.p);
+	double SD = etacD - aD;
+	double SU = etacU + aU;
+	double SM = (CD.p - CU.p - CD.¦Ñ * etacD * (SD - etacD) + CU.¦Ñ * etacU * (SU - etacU)) / (CU.¦Ñ * (SU - etacU) - CD.¦Ñ * (SD - etacD));
+	double pM = 0.5 * (CD.¦Ñ * (etacD - SD) * (etacD - SM) + CU.¦Ñ * (etacU - SU) * (etacU - SM) + CU.p + CD.p);
 	//Average-State Jacobians and Implicit Methods for Compressible Viscous and Turbulent Flows,(7)(8)
-	double par1 = (¦ÇcD - SD) / (SM - SD);
+	double par1 = (etacD - SD) / (SM - SD);
 	double par2 = (pM - CD.p) / (SM - SD);
 	Flux  FMD;
 	FMD.f1 = (SM * par1 * CD.¦Ñ);
-	FMD.f2 = (SM * par1 * CD.¦Ñ * CD.u - par2 * ¦Ç1 + ¦Ç1 * pM);
-	FMD.f3 = (SM * par1 * CD.¦Ñ * CD.v - par2 * ¦Ç2 + ¦Ç2 * pM);
-	FMD.f4 = (SM * par1 * (ED + CD.p) + par2 * ¦Ç3 - ¦Ç3 * pM);
-	double par3 = (¦ÇcU - SU) / (SM - SU);
+	FMD.f2 = (SM * par1 * CD.¦Ñ * CD.u - par2 * eta1 + eta1 * pM);
+	FMD.f3 = (SM * par1 * CD.¦Ñ * CD.v - par2 * eta2 + eta2 * pM);
+	FMD.f4 = (SM * par1 * (ED + CD.p) + par2 * eta3 - eta3 * pM);
+	double par3 = (etacU - SU) / (SM - SU);
 	double par4 = (pM - CU.p) / (SM - SU);
 	Flux FMU;
 	FMU.f1 = (SM * par3 * CU.¦Ñ);
-	FMU.f2 = (SM * par3 * CU.¦Ñ * CU.u - par4 * ¦Ç1 + ¦Ç1 * pM);
-	FMU.f3 = (SM * par3 * CU.¦Ñ * CU.v - par4 * ¦Ç2 + ¦Ç2 * pM);
-	FMU.f4 = (SM * par3 * (EU + CU.p) + par4 * ¦Ç3 - ¦Ç3 * pM);
+	FMU.f2 = (SM * par3 * CU.¦Ñ * CU.u - par4 * eta1 + eta1 * pM);
+	FMU.f3 = (SM * par3 * CU.¦Ñ * CU.v - par4 * eta2 + eta2 * pM);
+	FMU.f4 = (SM * par3 * (EU + CU.p) + par4 * eta3 - eta3 * pM);
 
 	//double ¦¸D = 1 / (SD - SM);
 	//double ¦¸U = 1 / (SU - SM);
 
-	//double ¦ÑDM = ¦¸D * CD.¦Ñ * (SD - ¦ÇcD);
-	//double ¦ÑuDS = ¦¸D * ((SD - ¦ÇcD) * (CD.¦Ñ * CD.u) + (pM - CD.p) * ¦Ç1);
-	//double ¦ÑvDS = ¦¸D * ((SD - ¦ÇcD) * (CD.¦Ñ * CD.v) + (pM - CD.p) * ¦Ç2);
-	//double eDS = ¦¸D * ((SD - ¦ÇcD) * ED - CD.p * ¦ÇcD + pM * SM - (pM - CD.p) * ¦Ç3);
+	//double ¦ÑDM = ¦¸D * CD.¦Ñ * (SD - etacD);
+	//double ¦ÑuDS = ¦¸D * ((SD - etacD) * (CD.¦Ñ * CD.u) + (pM - CD.p) * eta1);
+	//double ¦ÑvDS = ¦¸D * ((SD - etacD) * (CD.¦Ñ * CD.v) + (pM - CD.p) * eta2);
+	//double eDS = ¦¸D * ((SD - etacD) * ED - CD.p * etacD + pM * SM - (pM - CD.p) * eta3);
 
-	//double ¦ÑUM = ¦¸U * CU.¦Ñ * (SU - ¦ÇcU);
-	//double ¦ÑuUS = ¦¸U * ((SU - ¦ÇcU) * (CU.¦Ñ * CU.u) + (pM - CU.p) * ¦Ç1);
-	//double ¦ÑvUS = ¦¸U * ((SU - ¦ÇcU) * (CU.¦Ñ * CU.v) + (pM - CU.p) * ¦Ç2);
-	//double eUS = ¦¸U * ((SU - ¦ÇcU) * EU - CU.p * ¦ÇcU + pM * SM - (pM - CU.p) * ¦Ç3);
+	//double ¦ÑUM = ¦¸U * CU.¦Ñ * (SU - etacU);
+	//double ¦ÑuUS = ¦¸U * ((SU - etacU) * (CU.¦Ñ * CU.u) + (pM - CU.p) * eta1);
+	//double ¦ÑvUS = ¦¸U * ((SU - etacU) * (CU.¦Ñ * CU.v) + (pM - CU.p) * eta2);
+	//double eUS = ¦¸U * ((SU - etacU) * EU - CU.p * etacU + pM * SM - (pM - CU.p) * eta3);
 
 	//Flux  FMD, FMU;
 
 	//FMD.f1 = SM * ¦ÑDM;
-	//FMD.f2 = ¦ÑuDS * SM + pM * ¦Ç1;
-	//FMD.f3 = ¦ÑvDS * SM + pM * ¦Ç2;
-	//FMD.f4 = (eDS + pM) * SM - pM * ¦Ç3;
+	//FMD.f2 = ¦ÑuDS * SM + pM * eta1;
+	//FMD.f3 = ¦ÑvDS * SM + pM * eta2;
+	//FMD.f4 = (eDS + pM) * SM - pM * eta3;
 	//FMU.f1 = SM * ¦ÑUM;
-	//FMU.f2 = ¦ÑuUS * SM + pM * ¦Ç1;
-	//FMU.f3 = ¦ÑvUS * SM + pM * ¦Ç2;
-	//FMU.f4 = (eUS + pM) * SM - pM * ¦Ç3;
+	//FMU.f2 = ¦ÑuUS * SM + pM * eta1;
+	//FMU.f3 = ¦ÑvUS * SM + pM * eta2;
+	//FMU.f4 = (eUS + pM) * SM - pM * eta3;
 
 	Flux G_HLLC;
 	if (SD >= 0)
@@ -176,30 +176,30 @@ Flux HLLC_¦´(mesh & CD, mesh & CU, mesh & C, int method)
 		G_HLLC = FMU;
 	else
 		G_HLLC = GU;
-	G_HLLC.f1 = G_HLLC.f1 * D¦Ç;
-	G_HLLC.f2 = G_HLLC.f2 * D¦Ç;
-	G_HLLC.f3 = G_HLLC.f3 * D¦Ç;
-	G_HLLC.f4 = G_HLLC.f4 * D¦Ç;
+	G_HLLC.f1 = G_HLLC.f1 * Deta;
+	G_HLLC.f2 = G_HLLC.f2 * Deta;
+	G_HLLC.f3 = G_HLLC.f3 * Deta;
+	G_HLLC.f4 = G_HLLC.f4 * Deta;
 
 	return G_HLLC;
 }
 
 Flux HLLC_¦¶2(mesh& CL, mesh& CR, mesh& C, int method)//°ëµã×ó²àÓÒ²à¸ñµã£¬×ø±ê±ä»»²Î¿¼µã
 {
-	double ¦Îx = C.¦Îx[method];
-	double ¦Îy = C.¦Îy[method];
-	double ¦Ît = C.¦Ît[method];
+	double xix = C.xix[method];
+	double xiy = C.xiy[method];
+	double xit = C.xit[method];
 	double J = C.J[method];
-	double D¦Î = sqrt(¦Îx * ¦Îx + ¦Îy * ¦Îy);
-	double ¦Î1 = ¦Îx / D¦Î;
-	double ¦Î2 = ¦Îy / D¦Î;
-	double ¦Î3 = ¦Ît / D¦Î;
-	double aL = sqrt(¦Ã * CL.p / CL.¦Ñ);
-	double aR = sqrt(¦Ã * CR.p / CR.¦Ñ);
+	double Dxi = sqrt(xix * xix + xiy * xiy);
+	double xi1 = xix / Dxi;
+	double xi2 = xiy / Dxi;
+	double xi3 = xit / Dxi;
+	double aL = sqrt(gama * CL.p / CL.¦Ñ);
+	double aR = sqrt(gama * CR.p / CR.¦Ñ);
 	double a = sqrt(CL.¦Ñ);
 	double b = sqrt(CR.¦Ñ);
-	double ubl = CL.u * ¦Î1 + CL.v * ¦Î2 + ¦Î3;
-	double ubr = CR.u * ¦Î1 + CR.v * ¦Î2 + ¦Î3;
+	double ubl = CL.u * xi1 + CL.v * xi2 + xi3;
+	double ubr = CR.u * xi1 + CR.v * xi2 + xi3;
 	double ubp = (a * ubl + b * ubr) / (a + b);
 	double aM = (a * aL * aL + b * aR * aR) / (a + b) + 0.5 * (a * b / ((a + b) * (a + b))) * ((CL.u - CR.u) * (CL.u - CR.u) + (CL.v - CR.v) * (CL.v - CR.v));
 
@@ -214,79 +214,79 @@ Flux HLLC_¦¶2(mesh& CL, mesh& CR, mesh& C, int method)//°ëµã×ó²àÓÒ²à¸ñµã£¬×ø±ê±ä
 	FL.f1 = CL.¦Ñ;
 	FL.f2 = CL.¦Ñ * CL.u;
 	FL.f3 = CL.¦Ñ * CL.v;
-	FL.f4 = CL.p * ¦Ã / (¦Ã - 1) + 0.5 * CL.¦Ñ * CL.u * CL.u + 0.5 * CL.¦Ñ * CL.v * CL.v; 
+	FL.f4 = CL.p * gama / (gama - 1) + 0.5 * CL.¦Ñ * CL.u * CL.u + 0.5 * CL.¦Ñ * CL.v * CL.v; 
 	FR.f1 = CR.¦Ñ;
 	FR.f2 = CR.¦Ñ * CR.u;
 	FR.f3 = CR.¦Ñ * CR.v;
-	FR.f4 = CR.p * ¦Ã / (¦Ã - 1) + 0.5 * CR.¦Ñ * CR.u * CR.u + 0.5 * CR.¦Ñ * CR.v * CR.v;
+	FR.f4 = CR.p * gama / (gama - 1) + 0.5 * CR.¦Ñ * CR.u * CR.u + 0.5 * CR.¦Ñ * CR.v * CR.v;
 	double par1 = (ubl - conl) / (ss - conl);
 	double par2 = (ps - CL.p) / (ss - conl);
 
 	Flux FML, FMR;
 	FML.f1 = par1 * FL.f1;
-	FML.f2 = par1 * FL.f2 - par2 * ¦Î1;
-	FML.f3 = par1 * FL.f3 - par2 * ¦Î2;
-	FML.f4 = par1 * FL.f4 + par2 * ¦Î3;
+	FML.f2 = par1 * FL.f2 - par2 * xi1;
+	FML.f3 = par1 * FL.f3 - par2 * xi2;
+	FML.f4 = par1 * FL.f4 + par2 * xi3;
 	double par3 = (ubr - conr) / (ss - conr);
 	double par4 = (ps - CR.p) / (ss - conr);
 
 	FMR.f1 = par3 * FR.f1;
-	FMR.f2 = par3 * FR.f2 - par4 * ¦Î1;
-	FMR.f3 = par3 * FR.f3 - par4 * ¦Î2;
-	FMR.f4 = par3 * FR.f4 + par4 * ¦Î3;
+	FMR.f2 = par3 * FR.f2 - par4 * xi1;
+	FMR.f3 = par3 * FR.f3 - par4 * xi2;
+	FMR.f4 = par3 * FR.f4 + par4 * xi3;
 
 	Flux F_HLLC;
 	if (conl > 0)
 	{
 		F_HLLC.f1 = FL.f1 * ubl;
-		F_HLLC.f2 = FL.f2 * ubl + ¦Î1 * CL.p;
-		F_HLLC.f3 = FL.f3 * ubl + ¦Î2 * CL.p;
-		F_HLLC.f4 = FL.f4 * ubl - ¦Î3 * CL.p;
+		F_HLLC.f2 = FL.f2 * ubl + xi1 * CL.p;
+		F_HLLC.f3 = FL.f3 * ubl + xi2 * CL.p;
+		F_HLLC.f4 = FL.f4 * ubl - xi3 * CL.p;
 	}
 	else if (conl <= 0 && ss > 0)
 	{
 		F_HLLC.f1 = FML.f1 * ss;
-		F_HLLC.f2 = FML.f2 * ss + ¦Î1 * ps;
-		F_HLLC.f3 = FML.f3 * ss + ¦Î2 * ps;
-		F_HLLC.f4 = FML.f4 * ss - ¦Î3 * ps;
+		F_HLLC.f2 = FML.f2 * ss + xi1 * ps;
+		F_HLLC.f3 = FML.f3 * ss + xi2 * ps;
+		F_HLLC.f4 = FML.f4 * ss - xi3 * ps;
 	}
 	else if (ss <= 0 && conr >= 0)
 	{
 		F_HLLC.f1 = FMR.f1 * ss;
-		F_HLLC.f2 = FMR.f2 * ss + ¦Î1 * ps;
-		F_HLLC.f3 = FMR.f3 * ss + ¦Î2 * ps;
-		F_HLLC.f4 = FMR.f4 * ss - ¦Î3 * ps;
+		F_HLLC.f2 = FMR.f2 * ss + xi1 * ps;
+		F_HLLC.f3 = FMR.f3 * ss + xi2 * ps;
+		F_HLLC.f4 = FMR.f4 * ss - xi3 * ps;
 	}
 	else
 	{
 		F_HLLC.f1 = FR.f1 * ubr;
-		F_HLLC.f2 = FR.f2 * ubr + ¦Î1 * CR.p;
-		F_HLLC.f3 = FR.f3 * ubr + ¦Î2 * CR.p;
-		F_HLLC.f4 = FR.f4 * ubr - ¦Î3 * CR.p;
+		F_HLLC.f2 = FR.f2 * ubr + xi1 * CR.p;
+		F_HLLC.f3 = FR.f3 * ubr + xi2 * CR.p;
+		F_HLLC.f4 = FR.f4 * ubr - xi3 * CR.p;
 	}
-	F_HLLC.f1 = F_HLLC.f1 * D¦Î;
-	F_HLLC.f2 = F_HLLC.f2 * D¦Î;
-	F_HLLC.f3 = F_HLLC.f3 * D¦Î;
-	F_HLLC.f4 = F_HLLC.f4 * D¦Î;
+	F_HLLC.f1 = F_HLLC.f1 * Dxi;
+	F_HLLC.f2 = F_HLLC.f2 * Dxi;
+	F_HLLC.f3 = F_HLLC.f3 * Dxi;
+	F_HLLC.f4 = F_HLLC.f4 * Dxi;
 
 	return F_HLLC;
 }
 Flux HLLC_¦´2(mesh& CL, mesh& CR, mesh& C, int method)
 {
-	double ¦Çx = C.¦Çx[method];
-	double ¦Çy = C.¦Çy[method];
-	double ¦Çt = C.¦Çt[method];
+	double etax = C.etax[method];
+	double etay = C.etay[method];
+	double etat = C.etat[method];
 	double J = C.J[method];
-	double D¦Ç = sqrt(¦Çx * ¦Çx + ¦Çy * ¦Çy);
-	double ¦Ç1 = ¦Çx / D¦Ç;
-	double ¦Ç2 = ¦Çy / D¦Ç;
-	double ¦Ç3 = ¦Çt / D¦Ç;
-	double aL = sqrt(¦Ã * CL.p / CL.¦Ñ);
-	double aR = sqrt(¦Ã * CR.p / CR.¦Ñ);
+	double Deta = sqrt(etax * etax + etay * etay);
+	double eta1 = etax / Deta;
+	double eta2 = etay / Deta;
+	double eta3 = etat / Deta;
+	double aL = sqrt(gama * CL.p / CL.¦Ñ);
+	double aR = sqrt(gama * CR.p / CR.¦Ñ);
 	double a = sqrt(CL.¦Ñ);
 	double b = sqrt(CR.¦Ñ);
-	double ubl = CL.u * ¦Ç1 + CL.v * ¦Ç2 + ¦Ç3;
-	double ubr = CR.u * ¦Ç1 + CR.v * ¦Ç2 + ¦Ç3;
+	double ubl = CL.u * eta1 + CL.v * eta2 + eta3;
+	double ubr = CR.u * eta1 + CR.v * eta2 + eta3;
 	double ubp = (a * ubl + b * ubr) / (a + b);
 	double aM = (a * aL * aL + b * aR * aR) / (a + b) + 0.5 * (a * b / ((a + b) * (a + b))) * ((CL.u - CR.u) * (CL.u - CR.u) + (CL.v - CR.v) * (CL.v - CR.v));
 
@@ -301,60 +301,60 @@ Flux HLLC_¦´2(mesh& CL, mesh& CR, mesh& C, int method)
 	FL.f1 = CL.¦Ñ;
 	FL.f2 = CL.¦Ñ * CL.u;
 	FL.f3 = CL.¦Ñ * CL.v;
-	FL.f4 = CL.p * ¦Ã / (¦Ã - 1) + 0.5 * CL.¦Ñ * CL.u * CL.u + 0.5 * CL.¦Ñ * CL.v * CL.v; 
+	FL.f4 = CL.p * gama / (gama - 1) + 0.5 * CL.¦Ñ * CL.u * CL.u + 0.5 * CL.¦Ñ * CL.v * CL.v; 
 	FR.f1 = CR.¦Ñ;
 	FR.f2 = CR.¦Ñ * CR.u;
 	FR.f3 = CR.¦Ñ * CR.v;
-	FR.f4 = CR.p * ¦Ã / (¦Ã - 1) + 0.5 * CR.¦Ñ * CR.u * CR.u + 0.5 * CR.¦Ñ * CR.v * CR.v;
+	FR.f4 = CR.p * gama / (gama - 1) + 0.5 * CR.¦Ñ * CR.u * CR.u + 0.5 * CR.¦Ñ * CR.v * CR.v;
 	double par1 = (ubl - conl) / (ss - conl);
 	double par2 = (ps - CL.p) / (ss - conl);
 
 	Flux FML, FMR;
 	FML.f1 = par1 * FL.f1;
-	FML.f2 = par1 * FL.f2 - par2 * ¦Ç1;
-	FML.f3 = par1 * FL.f3 - par2 * ¦Ç2;
-	FML.f4 = par1 * FL.f4 + par2 * ¦Ç3;
+	FML.f2 = par1 * FL.f2 - par2 * eta1;
+	FML.f3 = par1 * FL.f3 - par2 * eta2;
+	FML.f4 = par1 * FL.f4 + par2 * eta3;
 	double par3 = (ubr - conr) / (ss - conr);
 	double par4 = (ps - CR.p) / (ss - conr);
 
 	FMR.f1 = par3 * FR.f1;
-	FMR.f2 = par3 * FR.f2 - par4 * ¦Ç1;
-	FMR.f3 = par3 * FR.f3 - par4 * ¦Ç2;
-	FMR.f4 = par3 * FR.f4 + par4 * ¦Ç3;
+	FMR.f2 = par3 * FR.f2 - par4 * eta1;
+	FMR.f3 = par3 * FR.f3 - par4 * eta2;
+	FMR.f4 = par3 * FR.f4 + par4 * eta3;
 
 	Flux F_HLLC;
 	if (conl > 0)
 	{
 		F_HLLC.f1 = FL.f1 * ubl;
-		F_HLLC.f2 = FL.f2 * ubl + ¦Ç1 * CL.p;
-		F_HLLC.f3 = FL.f3 * ubl + ¦Ç2 * CL.p;
-		F_HLLC.f4 = FL.f4 * ubl - ¦Ç3 * CL.p;
+		F_HLLC.f2 = FL.f2 * ubl + eta1 * CL.p;
+		F_HLLC.f3 = FL.f3 * ubl + eta2 * CL.p;
+		F_HLLC.f4 = FL.f4 * ubl - eta3 * CL.p;
 	}
 	else if (conl <= 0 && ss > 0)
 	{
 		F_HLLC.f1 = FML.f1 * ss;
-		F_HLLC.f2 = FML.f2 * ss + ¦Ç1 * ps;
-		F_HLLC.f3 = FML.f3 * ss + ¦Ç2 * ps;
-		F_HLLC.f4 = FML.f4 * ss - ¦Ç3 * ps;
+		F_HLLC.f2 = FML.f2 * ss + eta1 * ps;
+		F_HLLC.f3 = FML.f3 * ss + eta2 * ps;
+		F_HLLC.f4 = FML.f4 * ss - eta3 * ps;
 	}
 	else if (ss <= 0 && conr >= 0)
 	{
 		F_HLLC.f1 = FMR.f1 * ss;
-		F_HLLC.f2 = FMR.f2 * ss + ¦Ç1 * ps;
-		F_HLLC.f3 = FMR.f3 * ss + ¦Ç2 * ps;
-		F_HLLC.f4 = FMR.f4 * ss - ¦Ç3 * ps;
+		F_HLLC.f2 = FMR.f2 * ss + eta1 * ps;
+		F_HLLC.f3 = FMR.f3 * ss + eta2 * ps;
+		F_HLLC.f4 = FMR.f4 * ss - eta3 * ps;
 	}
 	else
 	{
 		F_HLLC.f1 = FR.f1 * ubr;
-		F_HLLC.f2 = FR.f2 * ubr + ¦Ç1 * CR.p;
-		F_HLLC.f3 = FR.f3 * ubr + ¦Ç2 * CR.p;
-		F_HLLC.f4 = FR.f4 * ubr - ¦Ç3 * CR.p;
+		F_HLLC.f2 = FR.f2 * ubr + eta1 * CR.p;
+		F_HLLC.f3 = FR.f3 * ubr + eta2 * CR.p;
+		F_HLLC.f4 = FR.f4 * ubr - eta3 * CR.p;
 	}
-	F_HLLC.f1 = F_HLLC.f1 * D¦Ç;
-	F_HLLC.f2 = F_HLLC.f2 * D¦Ç;
-	F_HLLC.f3 = F_HLLC.f3 * D¦Ç;
-	F_HLLC.f4 = F_HLLC.f4 * D¦Ç;
+	F_HLLC.f1 = F_HLLC.f1 * Deta;
+	F_HLLC.f2 = F_HLLC.f2 * Deta;
+	F_HLLC.f3 = F_HLLC.f3 * Deta;
+	F_HLLC.f4 = F_HLLC.f4 * Deta;
 
 	return F_HLLC;
 }

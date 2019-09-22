@@ -17,12 +17,12 @@ double distance(mesh& a, mesh& b)
 void get_dt()
 {
 	extern vector<vector <mesh*>> A;
-	double maxξ = 0, maxη = 0;
+	double maxxi = 0, maxeta = 0;
 	extern double dt;
 	double t;
 	int i, j, k;
 	double max1, max2;
-	double Sξ, Sη, c, uξ, uη;
+	double Sxi, Seta, c, uxi, ueta;
 
 	dt = t_end;
 	max1 = max2 = 0;
@@ -32,45 +32,45 @@ void get_dt()
 		{
 			if (A[i][j]->type != "IN" || A[i][j]->section == 0)
 				continue;
-			maxξ = maxη = 0;
+			maxxi = maxeta = 0;
 			if (A[i][j]->neibor.size() > 3)
 			{
-				Sξ = sqrt(A[i][j]->ξx[0] * A[i][j]->ξx[0] + A[i][j]->ξy[0] * A[i][j]->ξy[0]);
-				Sη = sqrt(A[i][j]->ηx[0] * A[i][j]->ηx[0] + A[i][j]->ηy[0] * A[i][j]->ηy[0]);
-				c = sqrt(γ * A[i][j]->p / A[i][j]->ρ);
-				uξ = A[i][j]->u * A[i][j]->ξx[0] + A[i][j]->v * A[i][j]->ξy[0];
-				uη = A[i][j]->u * A[i][j]->ηx[0] + A[i][j]->v * A[i][j]->ηy[0];
-				//maxξ = max(Sξ, uξ);
-				//maxη = max(Sη, uη);
-				maxξ = abs(uξ) + c * Sξ;
-				maxη = abs(uξ) + c * Sη;
-				max1 = max(max1, maxξ);
-				max2 = max(max2, maxη);
+				Sxi = sqrt(A[i][j]->xix[0] * A[i][j]->xix[0] + A[i][j]->xiy[0] * A[i][j]->xiy[0]);
+				Seta = sqrt(A[i][j]->etax[0] * A[i][j]->etax[0] + A[i][j]->etay[0] * A[i][j]->etay[0]);
+				c = sqrt(gama * A[i][j]->p / A[i][j]->ρ);
+				uxi = A[i][j]->u * A[i][j]->xix[0] + A[i][j]->v * A[i][j]->xiy[0];
+				ueta = A[i][j]->u * A[i][j]->etax[0] + A[i][j]->v * A[i][j]->etay[0];
+				//maxxi = max(Sxi, uxi);
+				//maxeta = max(Seta, ueta);
+				maxxi = abs(uxi) + c * Sxi;
+				maxeta = abs(uxi) + c * Seta;
+				max1 = max(max1, maxxi);
+				max2 = max(max2, maxeta);
 
 			}
 			else
 			{
 				for (k = 0; k < 3; k++)
 				{
-					Sξ = sqrt(A[i][j]->ξx[k] * A[i][j]->ξx[k] + A[i][j]->ξy[k] * A[i][j]->ξy[k]);
-					Sη = sqrt(A[i][j]->ηx[k] * A[i][j]->ηx[k] + A[i][j]->ηy[k] * A[i][j]->ηy[k]);
-					c = sqrt(γ * A[i][j]->p / A[i][j]->ρ);
-					uξ = A[i][j]->u * A[i][j]->ξx[k] + A[i][j]->v * A[i][j]->ξy[k];
-					uη = A[i][j]->u * A[i][j]->ηx[k] + A[i][j]->v * A[i][j]->ηy[k];
-					//maxξ = max(Sξ, uξ);
-					//maxη = max(Sη, uη);
-					maxξ += abs(uξ) + c * Sξ;
-					maxη += abs(uξ) + c * Sη;
+					Sxi = sqrt(A[i][j]->xix[k] * A[i][j]->xix[k] + A[i][j]->xiy[k] * A[i][j]->xiy[k]);
+					Seta = sqrt(A[i][j]->etax[k] * A[i][j]->etax[k] + A[i][j]->etay[k] * A[i][j]->etay[k]);
+					c = sqrt(gama * A[i][j]->p / A[i][j]->ρ);
+					uxi = A[i][j]->u * A[i][j]->xix[k] + A[i][j]->v * A[i][j]->xiy[k];
+					ueta = A[i][j]->u * A[i][j]->etax[k] + A[i][j]->v * A[i][j]->etay[k];
+					//maxxi = max(Sxi, uxi);
+					//maxeta = max(Seta, ueta);
+					maxxi += abs(uxi) + c * Sxi;
+					maxeta += abs(uxi) + c * Seta;
 				}
-				maxξ = maxξ / 3;
-				maxη = maxη / 3;
-				max1 = max(max1, maxξ);
-				max2 = max(max2, maxη);
+				maxxi = maxxi / 3;
+				maxeta = maxeta / 3;
+				max1 = max(max1, maxxi);
+				max2 = max(max2, maxeta);
 			}
 		}
 	}
 	t = CFL / (max1 + max2);
-	//t = CFL / (maxξ + maxη);
+	//t = CFL / (maxxi + maxeta);
 	dt = min(dt, t);
 }
 //void update_AfromU()
@@ -89,7 +89,7 @@ void get_dt()
 //			A[i][j]->ρ = U[i][j][0];
 //			A[i][j]->u = U[i][j][1] / U[i][j][0];
 //			A[i][j]->v = U[i][j][2] / U[i][j][0];
-//			A[i][j]->p = (γ - 1) * (U[i][j][3] - 0.5 * A[i][j]->ρ * (A[i][j]->u * A[i][j]->u + A[i][j]->v * A[i][j]->v));
+//			A[i][j]->p = (gama - 1) * (U[i][j][3] - 0.5 * A[i][j]->ρ * (A[i][j]->u * A[i][j]->u + A[i][j]->v * A[i][j]->v));
 //			A[i][j]->step = step;
 //		}
 //	}
@@ -243,12 +243,12 @@ void update_bound_shockwave()
 		L12 = getLine(θ12, A12);
 		L13 = getLine(θ13, A13);
 		C = getCrossPoint(L12, L13);
-		L12 = getLine(β2, C);
-		L13 = getLine(β3, C);
+		L12 = getLine(beta2, C);
+		L13 = getLine(beta3, C);
 		mesh A1, A2, A3;
 		A1.ρ = ρ1, A1.p = p1, A1.u = u1, A1.v = v1;
-		get_down(A1, A2, β2);
-		get_down(A1, A3, β3);
+		get_down(A1, A2, beta2);
+		get_down(A1, A3, beta3);
 
 		ρ2 = A2.ρ, p2 = A2.p, u2 = A2.u, v2 = A2.v;
 		ρ3 = A3.ρ, p3 = A3.p, u3 = A3.u, v3 = A3.v;
@@ -319,7 +319,7 @@ void update_bound_shockwave()
 		vector<mesh> t;
 		M1.x = 0.0014, M1.y = 0;
 
-		L = getLine(β, M1);
+		L = getLine(beta, M1);
 
 		for (i = 0; i < A.size(); i++)
 		{
@@ -1119,7 +1119,7 @@ void update_bound_Prandtl_Meyer()
 //		F[i][0] = A[i].ρ*A[i].u;
 //		F[i][1] = A[i].ρ*A[i].u*A[i].u + A[i].p;
 //		F[i][2] = A[i].ρ*A[i].u*A[i].v;
-//		F[i][3] = A[i].u*(A[i].p / (γ - 1) + 0.5*A[i].ρ*(A[i].u*A[i].u + A[i].v*A[i].v) + A[i].p);
+//		F[i][3] = A[i].u*(A[i].p / (gama - 1) + 0.5*A[i].ρ*(A[i].u*A[i].u + A[i].v*A[i].v) + A[i].p);
 //	}
 //}
 //void get_G()
@@ -1131,7 +1131,7 @@ void update_bound_Prandtl_Meyer()
 //		G[i][0] = A[i].ρ*A[i].v; extern vector<vector<vector <double>>> Utr;
 //		G[i][1] = A[i].ρ*A[i].u *A[i].v;
 //		G[i][2] = A[i].ρ*A[i].u*A[i].v + A[i].p;
-//		G[i][3] = A[i].v*(A[i].p / (γ - 1) + 0.5*A[i].ρ*(A[i].u*A[i].u + A[i].v*A[i].v) + A[i].p);
+//		G[i][3] = A[i].v*(A[i].p / (gama - 1) + 0.5*A[i].ρ*(A[i].u*A[i].u + A[i].v*A[i].v) + A[i].p);
 //	}
 //}
 
@@ -1222,8 +1222,8 @@ void update_IN()
 	int n1, n2, n3, n4;
 
 	double d1, d2;
-	Flux Rf_ξη, Rg_ξη;
-	Flux Rf_φψ, Rg_φψ;
+	Flux Rf_xieta, Rg_xieta;
+	Flux Rf_phiψ, Rg_phiψ;
 	Flux FL, FC, FR;
 	mesh CL, CR, C;
 	Flux GU, GC, GD;
@@ -1248,7 +1248,7 @@ void update_IN()
 			U[0] = Ar[id].ρ;
 			U[1] = Ar[id].ρ * A[i][j]->u;
 			U[2] = Ar[id].ρ * A[i][j]->v;
-			U[3] = 0.5 * Ar[id].ρ * (Ar[id].u * Ar[id].u + Ar[id].v * Ar[id].v) + Ar[id].p / (γ - 1);
+			U[3] = 0.5 * Ar[id].ρ * (Ar[id].u * Ar[id].u + Ar[id].v * Ar[id].v) + Ar[id].p / (gama - 1);
 
 			if (A[i][j]->neibor.size() == 3)
 			{
@@ -1293,19 +1293,19 @@ void update_IN()
 				n3 = A[i][j]->neibor[2]->id;
 				n4 = A[i][j]->neibor[3]->id;
 				//VanLeer
-				Fll = VanLeerB(Ar[n3], Ar[id].ξx[0], Ar[id].ξy[0], Ar[id].ξt[0], Ar[id].J[0]);
-				Flr = VanLeerA(Ar[n3], Ar[id].ξx[0], Ar[id].ξy[0], Ar[id].ξt[0], Ar[id].J[0]);
-				Fcl = VanLeerB(Ar[id], Ar[id].ξx[0], Ar[id].ξy[0], Ar[id].ξt[0], Ar[id].J[0]);
-				Fcr = VanLeerA(Ar[id], Ar[id].ξx[0], Ar[id].ξy[0], Ar[id].ξt[0], Ar[id].J[0]);
-				Frl = VanLeerB(Ar[n1], Ar[id].ξx[0], Ar[id].ξy[0], Ar[id].ξt[0], Ar[id].J[0]);
-				Frr = VanLeerA(Ar[n1], Ar[id].ξx[0], Ar[id].ξy[0], Ar[id].ξt[0], Ar[id].J[0]);
+				Fll = VanLeerB(Ar[n3], Ar[id].xix[0], Ar[id].xiy[0], Ar[id].xit[0], Ar[id].J[0]);
+				Flr = VanLeerA(Ar[n3], Ar[id].xix[0], Ar[id].xiy[0], Ar[id].xit[0], Ar[id].J[0]);
+				Fcl = VanLeerB(Ar[id], Ar[id].xix[0], Ar[id].xiy[0], Ar[id].xit[0], Ar[id].J[0]);
+				Fcr = VanLeerA(Ar[id], Ar[id].xix[0], Ar[id].xiy[0], Ar[id].xit[0], Ar[id].J[0]);
+				Frl = VanLeerB(Ar[n1], Ar[id].xix[0], Ar[id].xiy[0], Ar[id].xit[0], Ar[id].J[0]);
+				Frr = VanLeerA(Ar[n1], Ar[id].xix[0], Ar[id].xiy[0], Ar[id].xit[0], Ar[id].J[0]);
 
-				Gdd = VanLeerB(Ar[n4], Ar[id].ηx[0], Ar[id].ηy[0], Ar[id].ηt[0], Ar[id].J[0]);
-				Gdu = VanLeerA(Ar[n4], Ar[id].ηx[0], Ar[id].ηy[0], Ar[id].ηt[0], Ar[id].J[0]);
-				Gcd = VanLeerB(Ar[id], Ar[id].ηx[0], Ar[id].ηy[0], Ar[id].ηt[0], Ar[id].J[0]);
-				Gcu = VanLeerA(Ar[id], Ar[id].ηx[0], Ar[id].ηy[0], Ar[id].ηt[0], Ar[id].J[0]);
-				Gud = VanLeerB(Ar[n2], Ar[id].ηx[0], Ar[id].ηy[0], Ar[id].ηt[0], Ar[id].J[0]);
-				Guu = VanLeerA(Ar[n2], Ar[id].ηx[0], Ar[id].ηy[0], Ar[id].ηt[0], Ar[id].J[0]);
+				Gdd = VanLeerB(Ar[n4], Ar[id].etax[0], Ar[id].etay[0], Ar[id].etat[0], Ar[id].J[0]);
+				Gdu = VanLeerA(Ar[n4], Ar[id].etax[0], Ar[id].etay[0], Ar[id].etat[0], Ar[id].J[0]);
+				Gcd = VanLeerB(Ar[id], Ar[id].etax[0], Ar[id].etay[0], Ar[id].etat[0], Ar[id].J[0]);
+				Gcu = VanLeerA(Ar[id], Ar[id].etax[0], Ar[id].etay[0], Ar[id].etat[0], Ar[id].J[0]);
+				Gud = VanLeerB(Ar[n2], Ar[id].etax[0], Ar[id].etay[0], Ar[id].etat[0], Ar[id].J[0]);
+				Guu = VanLeerA(Ar[n2], Ar[id].etax[0], Ar[id].etay[0], Ar[id].etat[0], Ar[id].J[0]);
 				U[0] = U[0] - dt * A[i][j]->J[0] * (Fcr.f1 - Flr.f1 + Frl.f1 - Fcl.f1 + Gcu.f1 - Gdu.f1 + Gud.f1 - Gcd.f1);
 				U[1] = U[1] - dt * A[i][j]->J[0] * (Fcr.f2 - Flr.f2 + Frl.f2 - Fcl.f2 + Gcu.f2 - Gdu.f2 + Gud.f2 - Gcd.f2);
 				U[2] = U[2] - dt * A[i][j]->J[0] * (Fcr.f3 - Flr.f3 + Frl.f3 - Fcl.f3 + Gcu.f3 - Gdu.f3 + Gud.f3 - Gcd.f3);
@@ -1341,7 +1341,7 @@ void update_IN()
 			A[i][j]->ρ = U[0];
 			A[i][j]->u = U[1] / U[0];
 			A[i][j]->v = U[2] / U[0];
-			A[i][j]->p = (γ - 1) * (U[3] - 0.5 * A[i][j]->ρ * (A[i][j]->u * A[i][j]->u + A[i][j]->v * A[i][j]->v));
+			A[i][j]->p = (gama - 1) * (U[3] - 0.5 * A[i][j]->ρ * (A[i][j]->u * A[i][j]->u + A[i][j]->v * A[i][j]->v));
 			if (i == 0)
 			{
 				A[i][j]->ρ = A[i][j]->ρ * A[i][j]->sec_num;
@@ -1352,8 +1352,8 @@ void update_IN()
 			//if (A[i][j]->p < 0)
 			//{
 			//	std::cout << j << std::endl;
-			//	std::cout << A[i][j]->α.f1 << "   " << A[i][j]->α.f2 << "   " << A[i][j]->α.f3 << "   " << A[i][j]->α.f4 << std::endl;
-			//	std::cout << A[i][j]->β.f1 << "   " << A[i][j]->β.f2 << "   " << A[i][j]->β.f3 << "   " << A[i][j]->β.f4 << std::endl;
+			//	std::cout << A[i][j]->alpha.f1 << "   " << A[i][j]->alpha.f2 << "   " << A[i][j]->alpha.f3 << "   " << A[i][j]->alpha.f4 << std::endl;
+			//	std::cout << A[i][j]->beta.f1 << "   " << A[i][j]->beta.f2 << "   " << A[i][j]->beta.f3 << "   " << A[i][j]->beta.f4 << std::endl;
 			//	std::cout << std::endl;
 			//}
 
@@ -1363,56 +1363,56 @@ void update_IN()
 }
 Flux get_F(mesh N, mesh C, int method)//得到当地坐标系下的通量
 {
-	double ξx = C.ξx[method];
-	double ξy = C.ξy[method];
-	double ξt = C.ξt[method];
+	double xix = C.xix[method];
+	double xiy = C.xiy[method];
+	double xit = C.xit[method];
 	double J = C.J[method];
-	double Dξ = sqrt(ξx * ξx + ξy * ξy);
-	double ξ1 = ξx / Dξ;
-	double ξ2 = ξy / Dξ;
-	double ξ3 = ξt / Dξ;
-	double ub = N.u * ξ1 + N.v * ξ2 + ξ3;
+	double Dxi = sqrt(xix * xix + xiy * xiy);
+	double xi1 = xix / Dxi;
+	double xi2 = xiy / Dxi;
+	double xi3 = xit / Dxi;
+	double ub = N.u * xi1 + N.v * xi2 + xi3;
 	Flux F;
 	F.f1 = C.ρ;
 	F.f2 = C.ρ * C.u;
 	F.f3 = C.ρ * C.v;
-	F.f4 = C.p * γ / (γ - 1) + 0.5 * C.ρ * C.u * C.u + 0.5 * C.ρ * C.v * C.v;
+	F.f4 = C.p * gama / (gama - 1) + 0.5 * C.ρ * C.u * C.u + 0.5 * C.ρ * C.v * C.v;
 	F.f1 = F.f1 * ub;
-	F.f2 = F.f2 * ub + ξ1 * C.p;
-	F.f3 = F.f3 * ub + ξ2 * C.p;
-	F.f4 = F.f4 * ub - ξ3 * C.p;
-	F.f1 = F.f1 * Dξ;
-	F.f2 = F.f2 * Dξ;
-	F.f3 = F.f3 * Dξ;
-	F.f4 = F.f4 * Dξ;
+	F.f2 = F.f2 * ub + xi1 * C.p;
+	F.f3 = F.f3 * ub + xi2 * C.p;
+	F.f4 = F.f4 * ub - xi3 * C.p;
+	F.f1 = F.f1 * Dxi;
+	F.f2 = F.f2 * Dxi;
+	F.f3 = F.f3 * Dxi;
+	F.f4 = F.f4 * Dxi;
 	return F;
 
 }
 Flux get_G(mesh N, mesh C, int method)//得到当地坐标系下的通量
 {
-	double ηx = C.ηx[method];
-	double ηy = C.ηy[method];
-	double ηt = C.ηt[method];
+	double etax = C.etax[method];
+	double etay = C.etay[method];
+	double etat = C.etat[method];
 	double J = C.J[method];
-	double Dη = sqrt(ηx * ηx + ηy * ηy);
-	double η1 = ηx / Dη;
-	double η2 = ηy / Dη;
-	double η3 = ηt / Dη;
-	double ub = N.u * η1 + N.v * η2 + η3;
+	double Deta = sqrt(etax * etax + etay * etay);
+	double eta1 = etax / Deta;
+	double eta2 = etay / Deta;
+	double eta3 = etat / Deta;
+	double ub = N.u * eta1 + N.v * eta2 + eta3;
 
 	Flux F;
 	F.f1 = C.ρ;
 	F.f2 = C.ρ * C.u;
 	F.f3 = C.ρ * C.v;
-	F.f4 = C.p * γ / (γ - 1) + 0.5 * C.ρ * C.u * C.u + 0.5 * C.ρ * C.v * C.v;
+	F.f4 = C.p * gama / (gama - 1) + 0.5 * C.ρ * C.u * C.u + 0.5 * C.ρ * C.v * C.v;
 	F.f1 = F.f1 * ub;
-	F.f2 = F.f2 * ub + η1 * C.p;
-	F.f3 = F.f3 * ub + η2 * C.p;
-	F.f4 = F.f4 * ub - η3 * C.p;
-	F.f1 = F.f1 * Dη;
-	F.f2 = F.f2 * Dη;
-	F.f3 = F.f3 * Dη;
-	F.f4 = F.f4 * Dη;
+	F.f2 = F.f2 * ub + eta1 * C.p;
+	F.f3 = F.f3 * ub + eta2 * C.p;
+	F.f4 = F.f4 * ub - eta3 * C.p;
+	F.f1 = F.f1 * Deta;
+	F.f2 = F.f2 * Deta;
+	F.f3 = F.f3 * Deta;
+	F.f4 = F.f4 * Deta;
 	return F;
 
 }
@@ -1437,12 +1437,12 @@ Flux get_G(mesh N, mesh C, int method)//得到当地坐标系下的通量
 //	ρ0 = U0[i][0] / A[i].J[0];
 //	u0 = U0[i][1] / U0[i][0];
 //	v0 = U0[i][2] / U0[i][0];
-//	p0 = (γ - 1)*(U0[i][3] / A[i].J[0] - 0.5*A[i].ρ*(A[i].u*A[i].u + A[i].v*A[i].v));
+//	p0 = (gama - 1)*(U0[i][3] / A[i].J[0] - 0.5*A[i].ρ*(A[i].u*A[i].u + A[i].v*A[i].v));
 //
 //	ρ1 = U1[i][0] / A[i].J[1];
 //	u1 = U1[i][1] / U1[i][0];
 //	v1 = U1[i][2] / U1[i][0];
-//	p1 = (γ - 1)*(U1[i][3] / A[i].J[1] - 0.5*A[i].ρ*(A[i].u*A[i].u + A[i].v*A[i].v));
+//	p1 = (gama - 1)*(U1[i][3] / A[i].J[1] - 0.5*A[i].ρ*(A[i].u*A[i].u + A[i].v*A[i].v));
 //	//ρ0 = ρ1;
 //	//u0 = u1;
 //	//v0 = v1;
@@ -1451,7 +1451,7 @@ Flux get_G(mesh N, mesh C, int method)//得到当地坐标系下的通量
 //	ρ2 = U2[i][0] / A[i].J[2];
 //	u2 = U2[i][1] / U2[i][0];
 //	v2 = U2[i][2] / U2[i][0];
-//	p2 = (γ - 1)*(U2[i][3] / A[i].J[1] - 0.5*A[i].ρ*(A[i].u*A[i].u + A[i].v*A[i].v));
+//	p2 = (gama - 1)*(U2[i][3] / A[i].J[1] - 0.5*A[i].ρ*(A[i].u*A[i].u + A[i].v*A[i].v));
 //	ρ = absmax(absmax(ρ0, ρ1), ρ2);
 //	u = absmin(absmin(u0, u1), u2);
 //	v = absmax(absmax(v0, v1), v2);
@@ -1459,7 +1459,7 @@ Flux get_G(mesh N, mesh C, int method)//得到当地坐标系下的通量
 //	U[i][0] = ρ;
 //	U[i][1] = ρ * u;
 //	U[i][2] = ρ * v;
-//	U[i][3] = 0.5*ρ*(u*u + v * v) + p / (γ - 1);
+//	U[i][3] = 0.5*ρ*(u*u + v * v) + p / (gama - 1);
 //}
 //void choose_U(int i)
 //{
@@ -1526,12 +1526,12 @@ double min(double a, double b)
 		return b;
 
 }
-double get_β(mesh A, mesh B)//求出两个网格点与x轴的夹角
+double get_beta(mesh A, mesh B)//求出两个网格点与x轴的夹角
 {
 	double dy = abs(A.y - B.y);
 	double dx = abs(A.x - B.x);
-	double β = atan(dy / dx);
-	return β;
+	double beta = atan(dy / dx);
+	return beta;
 }
 void reorder_neighbor()
 {

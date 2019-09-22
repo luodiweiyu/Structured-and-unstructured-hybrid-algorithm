@@ -9,7 +9,7 @@ namespace ConstPara//常数
 	const double CFL = 0.3;
 	const double t_end = 300;
 	const double pi = 3.14159265358979323846264338327950288419716939937510582097494459230781640628;
-	const double γ = 1.4;
+	const double gama = 1.4;
 	const double random = 0.495;
 }
 namespace Init//初始网格
@@ -115,17 +115,17 @@ struct mesh
 	int step = 0;//表明该点在何步骤更新的
 	int neiborsec = -1;//相邻分区，如果该值为负，则表示该点不是激波点，反之为相邻分区共用的激波点
 	int neiborsec_ad = -1;//相邻分区的地址
-	vector <double> ξx;
-	vector <double> ξy;
-	vector <double> ξt;
-	vector <double> ηx;
-	vector <double> ηy;
-	vector <double> ηt;
-	vector <double> xξ;
-	vector <double> xη;
+	vector <double> xix;
+	vector <double> xiy;
+	vector <double> xit;
+	vector <double> etax;
+	vector <double> etay;
+	vector <double> etat;
+	vector <double> xxi;
+	vector <double> xeta;
 	vector <double> xτ;
-	vector <double> yξ;
-	vector <double> yη;
+	vector <double> yxi;
+	vector <double> yeta;
 	vector <double> yτ;
 	vector <double> J;//雅可比行列式
 	vector <mesh*>neibor;//记录该格点的相邻格点位置信息
@@ -133,8 +133,8 @@ struct mesh
 	int neibor1[4] = { 0 };//当相邻格点超过四个，筛选四个入此处，坐标变换和计算所用到的相邻格点都用此处
 	string type;//格点类型，分为上下左右边界以及内部，U，D,L,R,IN,激波点SHOCK，接触间断点DISCON（contact discontinuity）,激波相交点CENTER
 	string change = "Y";//周围网格物理量是否改变，没有“N”，改变“Y”；用于计算加速
-	Flux α = { 0 };
-	Flux β = { 0 };
+	Flux alpha = { 0 };
+	Flux beta = { 0 };
 
 
 };
@@ -159,7 +159,7 @@ struct polygon_mesh
 };
 namespace Oblique//斜激波
 {
-	extern double β;
+	extern double beta;
 	extern double δ;
 	extern int startpoint;
 	extern double  ρ1, p1, Ma1, u1, v1;
@@ -174,10 +174,10 @@ namespace Prandtl_Meyer//普朗特麦耶尔流动
 namespace ShockwaveCross//激波相交
 {
 
-	extern double  ρ1, p1, β1, δ1, Ma1, u1, v1;
-	extern double  ρ2, p2, β2, δ2, Ma2, u2, v2;
-	extern double  ρ3, p3, β3, δ3, Ma3, u3, v3;
-	extern double  ρ4, p4, β4, δ4, Ma4, u4, v4;
-	extern double  ρ5, p5, β5, δ5, Ma5, u5, v5;
+	extern double  ρ1, p1, beta1, δ1, Ma1, u1, v1;
+	extern double  ρ2, p2, beta2, δ2, Ma2, u2, v2;
+	extern double  ρ3, p3, beta3, δ3, Ma3, u3, v3;
+	extern double  ρ4, p4, beta4, δ4, Ma4, u4, v4;
+	extern double  ρ5, p5, beta5, δ5, Ma5, u5, v5;
 }
 

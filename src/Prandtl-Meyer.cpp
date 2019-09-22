@@ -1,10 +1,10 @@
 #include<cmath>
 #include"const.h"
 #include"shockwave.h"
-using ConstPara::γ;
+using ConstPara::gama;
 double getδfromλ(double λ)
 {
-	double k = (γ - 1) / (γ + 1);
+	double k = (gama - 1) / (gama + 1);
 	double λ2 = λ * λ;
 	return sqrt(1 / k)*atan(sqrt((k*(λ2 - 1)) / (1 - k * λ2))) - atan(sqrt((λ2 - 1) / (1 - k * λ2)));
 }
@@ -15,12 +15,12 @@ double getμfromMa(double Ma)
 double getθfromMa(double Ma)
 {
 	double λ = getλfromMa(Ma);
-	return sqrt((γ + 1) / (γ - 1))*asin(sqrt((γ - 1)*(λ*λ - 1) / 2));
+	return sqrt((gama + 1) / (gama - 1))*asin(sqrt((gama - 1)*(λ*λ - 1) / 2));
 }
 double getλfromδ(double δ)
 {
 	double Δ = 1e-6;
-	double λ1 = 1, λ2 = sqrt((γ + 1) / (γ - 1));
+	double λ1 = 1, λ2 = sqrt((gama + 1) / (gama - 1));
 	double λM = (λ1 + λ2) / 2;
 	double δ1, δM=0, δ2;
 	while (abs(δM - δ) > 1e-6)
@@ -39,35 +39,35 @@ double getλfromδ(double δ)
 //以下为等熵流公式，可以用于膨胀波计算
 double getTfromλ(double λ,double T0)
 {
-	double temp = 1 - (γ - 1)*λ*λ / (γ + 1);
+	double temp = 1 - (gama - 1)*λ*λ / (gama + 1);
 	return temp*T0;
 }
 double getT0fromλandT(double λ, double T)
 {
-	double temp = 1 - (γ - 1)*λ*λ / (γ + 1);
+	double temp = 1 - (gama - 1)*λ*λ / (gama + 1);
 	return T / temp;
 }
 double getpfromλ(double λ, double p0)
 {
-	double temp = 1 - (γ - 1)*λ*λ / (γ + 1);
-	temp = pow(temp, γ / (γ - 1));
+	double temp = 1 - (gama - 1)*λ*λ / (gama + 1);
+	temp = pow(temp, gama / (gama - 1));
 	return temp * p0;
 }
 double getp0fromλandp(double λ, double p)
 {
-	double temp = 1 - (γ - 1)*λ*λ / (γ + 1);
-	temp = pow(temp, γ / (γ - 1));
+	double temp = 1 - (gama - 1)*λ*λ / (gama + 1);
+	temp = pow(temp, gama / (gama - 1));
 	return p / temp;
 }
 double getρfromλ(double λ, double ρ0)
 {
-	double temp = 1 - (γ - 1)*λ*λ / (γ + 1);
-	temp = pow(temp, 1 / (γ - 1)); 
+	double temp = 1 - (gama - 1)*λ*λ / (gama + 1);
+	temp = pow(temp, 1 / (gama - 1)); 
 	return temp * ρ0;
 }
 double getρ0fromλandρ(double λ, double ρ)
 {
-	double temp = 1 - (γ - 1)*λ*λ / (γ + 1);
-	temp = pow(temp, 1 / (γ - 1));
+	double temp = 1 - (gama - 1)*λ*λ / (gama + 1);
+	temp = pow(temp, 1 / (gama - 1));
 	return ρ / temp;
 }

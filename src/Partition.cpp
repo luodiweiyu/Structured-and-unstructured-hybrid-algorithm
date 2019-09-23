@@ -1,7 +1,7 @@
 //Partition file for computing , divid the original mesh into several regions
 #include<iostream>
-#include"/Structured-and-unstructured-hybrid-algorithm/include/const.h"
-#include"/Structured-and-unstructured-hybrid-algorithm/include/functions.h"
+#include"include/const.h"
+#include"include/functions.h"
 #include<vector>
 #include<string>
 #include<fstream>

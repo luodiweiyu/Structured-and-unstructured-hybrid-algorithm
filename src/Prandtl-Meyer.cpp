@@ -1,6 +1,6 @@
 #include<cmath>
-#include"/Structured-and-unstructured-hybrid-algorithm/include/const.h"
-#include"/Structured-and-unstructured-hybrid-algorithm/include/shockwave.h"
+#include"include/const.h"
+#include"include/shockwave.h"
 using ConstPara::gama;
 double getdeltafromlambda(double lambda)
 {

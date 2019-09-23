@@ -1,5 +1,5 @@
-#include"/Structured-and-unstructured-hybrid-algorithm/include/const.h"
-#include"/Structured-and-unstructured-hybrid-algorithm/include/functions.h"
+#include"include/const.h"
+#include"include/functions.h"
 #include<vector>
 
 void coordinate_trans()

@@ -1,8 +1,8 @@
 #include<fstream>
-#include"/Structured-and-unstructured-hybrid-algorithm/include/const.h"
+#include"include/const.h"
 #include<iomanip>
 #include<string>
-#include"/Structured-and-unstructured-hybrid-algorithm/include/shockwave.h"
+#include"include/shockwave.h"
 using namespace std;
 using namespace MeshPara;
 void out_mesh(string name)

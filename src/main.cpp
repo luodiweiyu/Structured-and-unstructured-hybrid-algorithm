@@ -1,11 +1,11 @@
 #include<iostream>
 #include<fstream>
 #include<cmath>
-#include"/Structured-and-unstructured-hybrid-algorithm/include/const.h"
-#include"/Structured-and-unstructured-hybrid-algorithm/include/functions.h"
-#include"/Structured-and-unstructured-hybrid-algorithm/include/init.h"
-#include"/Structured-and-unstructured-hybrid-algorithm/include/output.h"
-#include"/Structured-and-unstructured-hybrid-algorithm/include/patition.h"
+#include"include/const.h"
+#include"include/functions.h"
+#include"include/init.h"
+#include"include/output.h"
+#include"include/patition.h"
 #include<stdlib.h>
 #include<ctime>
 #include<iomanip>

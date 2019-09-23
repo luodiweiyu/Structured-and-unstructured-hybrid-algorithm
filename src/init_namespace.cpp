@@ -1,7 +1,7 @@
-#include"/Structured-and-unstructured-hybrid-algorithm/include/const.h"
-#include"/Structured-and-unstructured-hybrid-algorithm/include/shockwave.h"
-#include"/Structured-and-unstructured-hybrid-algorithm/include/Prandtl-Meyer.h"
-#include"/Structured-and-unstructured-hybrid-algorithm/include/patition.h"
+#include"include/const.h"
+#include"include/shockwave.h"
+#include"include/Prandtl-Meyer.h"
+#include"include/patition.h"
 using namespace MeshPara;
 using ConstPara::t_end;
 

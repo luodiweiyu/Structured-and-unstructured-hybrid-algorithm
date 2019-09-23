@@ -1,8 +1,8 @@
 #include<cmath>
-#include"/Structured-and-unstructured-hybrid-algorithm/include/const.h"
+#include"include/const.h"
 #include<iostream>
 #include<omp.h>
-#include"/Structured-and-unstructured-hybrid-algorithm/include/functions.h"
+#include"include/functions.h"
 using namespace std;
 using namespace ConstPara;
 Flux VanLeerA(mesh& C, double xix, double xiy, double xit,double J)

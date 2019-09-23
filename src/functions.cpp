@@ -1,9 +1,9 @@
-#include"/Structured-and-unstructured-hybrid-algorithm/include/const.h"
-#include"/Structured-and-unstructured-hybrid-algorithm/include/functions.h"
+#include"include/const.h"
+#include"include/functions.h"
 #include<omp.h>
-#include"/Structured-and-unstructured-hybrid-algorithm/include/shockwave.h"
+#include"include/shockwave.h"
 #include<iostream>
-#include"/Structured-and-unstructured-hybrid-algorithm/include/Prandtl-Meyer.h"
+#include"include/Prandtl-Meyer.h"
 using std::vector;
 using namespace ConstPara;
 using namespace MeshPara;

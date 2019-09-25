@@ -115,7 +115,7 @@ void coordinate_trans()
 					A[i][j]->yeta[2] = 0.5 * (A[i][j]->neibor[0]->y - A[i][j]->neibor[1]->y);
 					A[i][j]->J[2] = 1 / (A[i][j]->xxi[2] * A[i][j]->yeta[2] - A[i][j]->xeta[2] * A[i][j]->yxi[2]);
 					A[i][j]->xix[2] = A[i][j]->yeta[2] * A[i][j]->J[2];
-					A[i][j]->xiy[2] = -A[i][j]->xeta[2] * A[i][j]->J[2];
+					A[i][j]->xiy[2] = -A[i][j]->xeta[2] * A[i][j]->J[2];         
 					A[i][j]->etax[2] = -A[i][j]->yxi[2] * A[i][j]->J[2];
 					A[i][j]->etay[2] = A[i][j]->xxi[2] * A[i][j]->J[2];
 					A[i][j]->xtau[2] = (A[i][j]->x - Ar[A[i][j]->id].x) / dt;

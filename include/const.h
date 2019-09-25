@@ -67,11 +67,11 @@ namespace MeshPara
 {2,0,1,2},
 {1,2,0,1},
 	};
-	const double delta_r= 1.5;
-	const int Xnum = 400;//x方向点的个数20,40,150
-	const int Ynum = Xnum;//y方向点的个数43,87,215
+
+	const int Xnum = 51;//x方向点的个数20,40,150
+	const int Ynum = 51;//y方向点的个数43,87,215
 	const int Pnum = Xnum * Ynum;//一共点的个数
-	const double dx = 0.02/Xnum;
+	const double dx = 0.0002*2;
 	const double dy = dx;
 }
 struct Flux

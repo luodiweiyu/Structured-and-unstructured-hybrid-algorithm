@@ -67,7 +67,7 @@ void partition_Point()//Partition existing grid points
 				xd = x;
 				yd = y - dy;
 				n1 = n2 = n3 = n4 = 0;
-				r1 = r + delta_r *dx;
+				r1 = r +0.5*dx;
 				//r1 decides the unstructural grid region 
 				//r1 is larger than r
 				//the larger of r1, the larger of the unstructural grid region

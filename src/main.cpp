@@ -49,18 +49,15 @@ int main()
 	coordinate_trans();
 	initFlow();
 	ofstream fout;
-	fout.open(to_string(Xnum)+"X"+to_string(Ynum)+".dat",ios::app);
+	fout.open("mesh1.dat");
 	fout << "variables=theta, delta_theta" << endl;
-	fout << "zone T = \"dr = r +"<<to_string(delta_r)+"r\"" << endl;
 	vector <double> delta_theta;
-	vector <double> delta_d;
 	vector<double>theta;
 	for (int i = 0; i < A0.size(); i++)
 	{
 		using namespace ConstPara;
 		if (A0[i].type == "Cy")
 		{
-			delta_d.push_back(distance(A0[i], *A0[i].neibor[0]));
 			theta.push_back(get_theta(A0[i].x, A0[i].y, a, b));
 			if (A0[i].x < a && A0[i].y > b)
 				theta[theta.size() - 1] = pi + theta[theta.size() - 1];
@@ -79,7 +76,6 @@ int main()
 
 		}
 		sort(theta.begin(), theta.end());
-		sort(delta_d.begin(), delta_d.end());
 	}
 	using ConstPara::pi;
 
@@ -90,13 +86,13 @@ int main()
 			delta_theta.push_back(theta[i + 1] - theta[i]);
 		else
 			delta_theta.push_back(theta[0] + 2 * pi - theta[i]);
+
 		fout << theta[i] * 180 / pi << "   " << delta_theta[i] * 180 / pi << endl;
 	}
 	fout.close();
 	fout.clear();
 	sort(delta_theta.begin(), delta_theta.end());
-	//cout << delta_theta[0] * 180 / pi << "   " << delta_theta[delta_theta.size() - 1] * 180 / pi << endl;
-	cout << delta_d[0]/dx << "dx   " << delta_d[delta_d.size() - 1] / dx <<"dx"<< endl;
+	cout << delta_theta[0] * 180 / pi << "   " << delta_theta[delta_theta.size() - 1] * 180 / pi << endl;
 
 
 	//out_M("mesh/" + methodType + "/step = " + to_string(step));
@@ -104,6 +100,7 @@ int main()
 	while (t_sim < t_end)
 	{
 		record();
+
 		get_dt();
 		if (t_sim + dt > t_end)
 			dt = t_end - t_sim;

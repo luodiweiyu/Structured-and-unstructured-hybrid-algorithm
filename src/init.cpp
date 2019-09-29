@@ -8,9 +8,6 @@
 #include"include/Prandtl-Meyer.h"
 #include"include/init.h"
 
-
-
-
 using std::vector;
 using namespace MeshPara;
 void init_mesh()

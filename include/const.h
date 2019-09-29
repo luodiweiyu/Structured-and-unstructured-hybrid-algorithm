@@ -81,7 +81,12 @@ struct Flux
 	double f3;
 	double f4;
 };
-
+struct VECTOR//vector
+{
+	double x;
+	double y;
+	double z;
+};
 struct mesh
 {
 	double x;
@@ -121,11 +126,6 @@ struct mesh
 	Flux beta = { 0 };
 
 
-};
-struct Coor//表示坐标
-{
-	double x;
-	double y;
 };
 struct Line//表示直线Ax+Bx+C=0
 {

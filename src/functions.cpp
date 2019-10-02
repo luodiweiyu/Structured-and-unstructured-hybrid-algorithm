@@ -8,12 +8,6 @@ using std::vector;
 using namespace ConstPara;
 using namespace MeshPara;
 
-double distance(mesh& a, mesh& b)
-{
-	double dx = a.x - b.x;
-	double dy = a.y - b.y;
-	return sqrt(dx * dx + dy * dy);
-}
 void get_dt()
 {
 	extern vector<vector <mesh*>> A;
@@ -541,27 +535,6 @@ void update_bound_shockwave()
 			}
 		}
 	}
-}
-double get_theta(double x1, double y1, double x2, double y2)//求直线与x轴的夹角
-{
-	double theta;
-	if (x1 == x2)
-	{
-		//if (y2 < y1)
-		//	theta = -pi / 2;
-		//else
-		//	theta = pi / 2;
-		theta = pi / 2;
-	}
-	else if (y1 == y2)
-		theta = 0;
-	else
-	{
-		theta = atan(abs((y2 - y1) / (x2 - x1)));
-		if ((x2 > x1 && y2 < y1) || (x2 < x1 && y2 > y1))
-			theta = -theta;
-	}
-	return theta;
 }
 void update_Vm()
 {
@@ -1477,36 +1450,6 @@ Flux get_G(mesh N, mesh C, int method)//得到当地坐标系下的通量
 //	}
 //
 //}
-double absmax(double a, double b)
-{
-	if (abs(a) >= abs(b))
-		return a;
-	else
-		return b;
-}
-double absmin(double a, double b)
-{
-	if (abs(a) <= abs(b))
-		return a;
-	else
-		return b;
-
-}
-double max(double a, double b)
-{
-	if (a >= b)
-		return a;
-	else
-		return b;
-}
-double min(double a, double b)
-{
-	if (a <= b)
-		return a;
-	else
-		return b;
-
-}
 double get_beta(mesh A, mesh B)//求出两个网格点与x轴的夹角
 {
 	double dy = abs(A.y - B.y);
@@ -1584,10 +1527,6 @@ void reorder_neighbor()
 
 	}
 }
-double area(mesh A, mesh B, mesh C, mesh D)//求任意四点构成四边形面积 
-{
-	return 0.5 * abs(A.x * B.y + B.x * C.y + C.x * D.y + D.x * A.y - B.x * A.y - C.x * B.y - D.x * C.y - A.x * D.y);
-}
 
 void movemesh()
 {
@@ -1619,58 +1558,6 @@ void movemesh()
 	//		A0[i].x = A0[Xnum - 1].x0 - (A0[Xnum - 1].x0 - A0[i].x0) * ((L0 - L) / L1);
 	//}
 }
-mesh getCrossPoint(Line L1, Line L2)
-{
-	mesh L;
-	L.x = (L2.B * L1.C - L1.B * L2.C) / (L2.A * L1.B - L1.A * L2.B);
-	L.y = (L2.A * L1.C - L1.A * L2.C) / (L1.A * L2.B - L2.A * L1.B);
-	return L;
-}
-mesh getCrossPoint(mesh M, double a, double b, double r)//某点和圆心的连线与圆的交点
-{
-	mesh P;
-	Line L = getLine(M.x, M.y, a, b);
-	if (L.A == 0)
-	{
-		if (M.x < a)
-			P.x = a - r, P.y = b;
-		else
-			P.x = a + r, P.y = b;
-	}
-	else if (L.B == 0)
-	{
-		if (M.y < b)
-			P.x = a, P.y = b - r;
-		else
-			P.x = a, P.y = b + r;
-	}
-	else
-	{
-		double diff = 1e-15;
-		double x0 = min(M.x, a);
-		double x1 = max(M.x, a);
-		double y0, y1;
-		double x2, y2;
-		double f0, f1, f2;
-		while (abs(x0 - x1) > diff)
-		{
-			y0 = -(L.A * x0 + L.C) / L.B;
-			y1 = -(L.A * x1 + L.C) / L.B;
-			x2 = (x0 + x1) / 2;
-			y2 = -(L.A * x2 + L.C) / L.B;
-			f0 = (x0 - a) * (x0 - a) + (y0 - b) * (y0 - b) - r * r;
-			f1 = (x1 - a) * (x1 - a) + (y1 - b) * (y1 - b) - r * r;
-			f2 = (x2 - a) * (x2 - a) + (y2 - b) * (y2 - b) - r * r;
-			if (f0 * f2 >= 0)
-				x0 = x2;
-			else
-				x1 = x2;
-		}
-		P.x = (x0 + x1) / 2;
-		P.y = (y0 + y1) / 2;
-	}
-	return P;
-}
 void findNeiborSec()
 {
 	extern vector<vector<mesh*>> A;
@@ -1699,56 +1586,4 @@ void findNeiborSec()
 
 		}
 	}
-}
-Line getLine(mesh A, mesh B)
-{
-	Line L;
-	if (A.x == B.x)
-	{
-		if (A.y == B.y)
-		{
-			std::cout << "something wrong in getLine !" << std::endl;
-			L.A = 0, L.B = 0, L.C = 0;
-		}
-		else
-			L.A = 1, L.B = 0, L.C = -A.x;
-	}
-	else if (A.y == B.y)
-	{
-		L.A = 0, L.B = 1, L.C = -A.y;
-	}
-	else
-		L.A = (B.y - A.y) / (B.x - A.x), L.B = -1, L.C = (B.x * A.y - A.x * B.y) / (B.x - A.x);
-	return L;
-}
-Line getLine(double x1, double y1, double x2, double y2)
-{
-	Line L;
-	double delta = 1e-10;
-	if (abs(x1 - x2) < delta)
-	{
-		if (abs(y1 - y2) < delta)
-		{
-			std::cout << "something wrong in getLine !" << std::endl;
-			L.A = 0, L.B = 0, L.C = 0;
-		}
-		else
-			L.A = 1, L.B = 0, L.C = -x1;
-	}
-	else if (abs(y1 - y2) < delta)
-	{
-		L.A = 0, L.B = 1, L.C = -y1;
-	}
-	else
-		L.A = (y2 - y1) / (x2 - x1), L.B = -1, L.C = (x2 * y1 - x1 * y2) / (x2 - x1);
-	return L;
-}
-Line getLine(double theta, mesh A)
-{
-	double k = tan(theta);
-	double b = A.y - k * A.x;
-	Line L;
-	L.A = k, L.B = -1, L.C = b;
-	return L;
-
 }

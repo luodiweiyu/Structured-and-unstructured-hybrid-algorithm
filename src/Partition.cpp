@@ -44,6 +44,7 @@ void partition_Point()//Partition existing grid points
 		}
 		if (FlowType == "cylinder")
 		{
+			extern vector <Coor> poly;
 			A.push_back(t);
 			A.push_back(t);
 			A.push_back(t);
@@ -67,22 +68,30 @@ void partition_Point()//Partition existing grid points
 				xd = x;
 				yd = y - dy;
 				n1 = n2 = n3 = n4 = 0;
-				r1 = r + delta_r *dx;
+				r1 = r + delta_r * dx;
 				//r1 decides the unstructural grid region 
 				//r1 is larger than r
 				//the larger of r1, the larger of the unstructural grid region
-				if ((xl - a) * (xl - a) + (yl - b) * (yl - b) > r1 * r1)
+				//if ((xl - a) * (xl - a) + (yl - b) * (yl - b) > r1* r1)
+				//	n1 = 1;
+				//if ((xr - a) * (xr - a) + (yr - b) * (yr - b) > r1* r1)
+				//	n2 = 1;
+				//if ((xu - a) * (xu - a) + (yu - b) * (yu - b) > r1* r1)
+				//	n3 = 1;
+				//if ((xd - a) * (xd - a) + (yd - b) * (yd - b) > r1* r1)
+				//	n4 = 1;
+				if (!judgeFieldInOut(xl, yl, poly))
 					n1 = 1;
-				if ((xr - a) * (xr - a) + (yr - b) * (yr - b) > r1 * r1)
+				if (!judgeFieldInOut(xr, yr, poly))
 					n2 = 1;
-				if ((xu - a) * (xu - a) + (yu - b) * (yu - b) > r1 * r1)
+				if (!judgeFieldInOut(xu, yu, poly))
 					n3 = 1;
-				if ((xd - a) * (xd - a) + (yd - b) * (yd - b) > r1 * r1)
+				if (!judgeFieldInOut(xd, yd, poly))
 					n4 = 1;
 				n = n1 + n2 + n3 + n4;
 				if ((x - a) * (x - a) + (y - b) * (y - b) <= r1 * r1)
 					A[0][i]->section = 0, A[0][i]->sec_num = 0;
-				if ((x - a) * (x - a) + (y - b) * (y - b) > r1 * r1)
+				if ((x - a) * (x - a) + (y - b) * (y - b) > r1* r1)
 				{
 					if (n == 4)
 					{

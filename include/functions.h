@@ -39,11 +39,15 @@ double max(double a, double b);
 double min(double a, double b);
 double absmax(double a, double b);
 double absmin(double a, double b);
+mesh getCrossPoint(double theta, double a, double b, double r);
+void polygonPoint(vector <Coor>& poly);
 
 mesh getCrossPoint(Line L1, Line L2);
 mesh getCrossPoint(mesh M, double a, double b, double r);//某点和圆心的连线与圆的交点
 Line getLine(mesh A, mesh B);
 Line getLine(double x1, double y1, double x2, double y2);
+bool judgeFieldInOut(mesh& A, vector<Coor>& Poly);
+bool judgeFieldInOut(double x, double y, vector<Coor>& poly);
 
 Line getLine(double theta, mesh A);
 double compute_res();//计算残差

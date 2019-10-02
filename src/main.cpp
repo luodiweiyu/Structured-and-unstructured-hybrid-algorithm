@@ -26,16 +26,17 @@ int step = 0;
 double xL, xR, yU, yD;
 vector <polygon_mesh> M0;
 vector<vector <polygon_mesh>> M;
+vector<Coor> poly;
 clock_t start;
 clock_t finish;
 double res;
 int main()
 {
-	srand((unsigned)time(NULL));
 	using namespace MeshPara;
 	using ConstPara::t_end;
 	//init_mesh1();
 	init_mesh();
+	polygonPoint(poly);
 	init_polygon_mesh();
 	getType();
 	reorderMesh();
@@ -49,9 +50,9 @@ int main()
 	coordinate_trans();
 	initFlow();
 	ofstream fout;
-	fout.open(to_string(Xnum)+"X"+to_string(Ynum)+".dat",ios::app);
+	fout.open(to_string(Xnum) + "X" + to_string(Ynum) + ".dat", ios::app);
 	fout << "variables=theta, delta_theta" << endl;
-	fout << "zone T = \"dr = r +"<<to_string(delta_r)+"r\"" << endl;
+	fout << "zone T = \"dr = r +" << to_string(delta_r) + "r\"" << endl;
 	vector <double> delta_theta;
 	vector <double> delta_d;
 	vector<double>theta;
@@ -66,13 +67,13 @@ int main()
 				theta[theta.size() - 1] = pi + theta[theta.size() - 1];
 			else if (A0[i].x < a && A0[i].y < b)
 				theta[theta.size() - 1] = pi + theta[theta.size() - 1];
-			else if (A0[i].x > a && A0[i].y < b)
+			else if (A0[i].x > a&& A0[i].y < b)
 				theta[theta.size() - 1] = 2 * pi + theta[theta.size() - 1];
 			else if (A0[i].x == a && A0[i].y > b)
 				theta[theta.size() - 1] = pi / 2;
 			else if (A0[i].x == a && A0[i].y < b)
 				theta[theta.size() - 1] = 3 * pi / 2;
-			else if (A0[i].x > a && A0[i].y == b)
+			else if (A0[i].x > a&& A0[i].y == b)
 				theta[theta.size() - 1] = 0;
 			else if (A0[i].x < a && A0[i].y == b)
 				theta[theta.size() - 1] = pi;
@@ -96,7 +97,7 @@ int main()
 	fout.clear();
 	sort(delta_theta.begin(), delta_theta.end());
 	//cout << delta_theta[0] * 180 / pi << "   " << delta_theta[delta_theta.size() - 1] * 180 / pi << endl;
-	cout << delta_d[0]/dx << "dx   " << delta_d[delta_d.size() - 1] / dx <<"dx"<< endl;
+	cout << delta_d[0] / dx << "dx   " << delta_d[delta_d.size() - 1] / dx << "dx" << endl;
 
 
 	//out_M("mesh/" + methodType + "/step = " + to_string(step));

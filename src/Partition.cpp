@@ -89,9 +89,12 @@ void partition_Point()//Partition existing grid points
 				if (!judgeFieldInOut(xd, yd, poly))
 					n4 = 1;
 				n = n1 + n2 + n3 + n4;
-				if ((x - a) * (x - a) + (y - b) * (y - b) <= r1 * r1)
+				//if ((x - a) * (x - a) + (y - b) * (y - b) <= r1 * r1)
+				if (judgeFieldInOut(A0[i], poly))
 					A[0][i]->section = 0, A[0][i]->sec_num = 0;
-				if ((x - a) * (x - a) + (y - b) * (y - b) > r1* r1)
+				if (!judgeFieldInOut(A0[i], poly))
+
+					//if ((x - a) * (x - a) + (y - b) * (y - b) > r1* r1)
 				{
 					if (n == 4)
 					{

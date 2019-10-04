@@ -15,6 +15,14 @@
 using namespace std;
 vector <mesh> A0;
 vector<vector <mesh*>> A;
+vector<mesh*> p3;//三相邻节点
+vector<mesh*> p4;//三相邻节点
+vector<mesh*> bl;//左边界
+vector<mesh*> br;//右边界
+vector<mesh*> bu;//上边界
+vector<mesh*> bd;//下边界
+vector<mesh*> bb;//物体边界
+
 vector <mesh*> B;
 vector <mesh*> C;
 vector<vector <int>> ad;
@@ -23,7 +31,6 @@ vector<mesh> Ar;//记录上一时刻的物理量；
 double dt;
 double t_sim = 0;
 int step = 0;
-double xL, xR, yU, yD;
 vector <polygon_mesh> M0;
 vector<vector <polygon_mesh>> M;
 vector<Coor> poly;
@@ -39,7 +46,6 @@ int main()
 	polygonPoint(poly);
 	init_polygon_mesh();
 	getType();
-	reorderMesh();
 	partition_Point();
 
 

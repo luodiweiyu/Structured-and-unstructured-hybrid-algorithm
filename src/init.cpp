@@ -18,7 +18,6 @@ void init_mesh()
 	vector<int> a;
 	int i, j;
 	i = 0;
-	extern double xL, xR, yU, yD;
 
 	if (FlowType == "oblique" || FlowType == "intersection" || FlowType == "normal" || FlowType == "couette" || FlowType == "cylinder")
 	{
@@ -56,17 +55,9 @@ void init_mesh()
 					i++;
 				}
 			}
-			xL = min(A0[0].x, A0[Xnum].x);
-			xR = max(A0[Xnum - 1].x, A0[Xnum - 1 + Xnum].x);
-			yU = A0[Pnum - 1].y;
-			yD = A0[0].y;
 		}
 		else
 		{
-			xL = 0;
-			xR = dx * (Xnum - 1);
-			yU = dy * (Ynum - 1);
-			yD = 0;
 			while (i < Pnum)
 			{
 				for (j = 0; j < Xnum; j++)
@@ -312,11 +303,6 @@ void reorderMesh()//将边界变为规则
 {
 	extern vector <mesh> A0;
 	extern vector<vector<int>> ad;
-	extern double xL, xR, yU, yD;
-	xL = min(A0[0].x, A0[Xnum].x);
-	xR = max(A0[Xnum - 1].x, A0[Xnum - 1 + Xnum].x);
-	yU = A0[Pnum - 1].y;
-	yD = A0[0].y;
 	using ConstPara::pi;
 	int i = 0;
 	if ((FlowType == "oblique" || FlowType == "intersection" || FlowType == "normal" || FlowType == "couette") && meshType != 20)
@@ -463,7 +449,6 @@ void init_polygon_mesh()
 	}
 	else
 	{
-		extern double xL, xR, yU, yD;
 		int s;
 		while (i < Pnum)
 		{
@@ -496,38 +481,41 @@ void init_polygon_mesh()
 void getType()
 {
 	extern vector <mesh> A0;
-	extern double xL, xR, yU, yD;
-
-
+	extern vector<mesh*> bl;//左边界
+	extern vector<mesh*> br;//右边界
+	extern vector<mesh*> bu;//上边界
+	extern vector<mesh*> bd;//下边界
 	if (FlowType == "oblique" || FlowType == "intersection" || FlowType == "normal" || FlowType == "couette" || FlowType == "cylinder")
 	{
 		int i;
+		int DELTA = 1e-10;
 		for (i = 0; i < Pnum; i++)
 		{
-			if (abs(A0[i].x - xL) < 1e-10)
+			if (abs(A0[i].x - xL) < DELTA)
 			{
-				//if (A[i].y == yD)
-				//	A[i].type = "LD";
-				//else if (A[i].y == yU)
-				//	A[i].type = "LU";
-				//else
 				A0[i].type = "L";
+				bl.push_back(&A0[i]);
 			}
-			else if (abs(A0[i].x - xR) < 1e-6)
+			else if (abs(A0[i].x - xR) < DELTA)
 			{
-				//if (A[i].y == yD)
-				//	A[i].type = "RD";
-				//else if (A[i].y == yU)
-				//	A[i].type = "RU";
-				//else
 				A0[i].type = "R";
+				br.push_back(&A0[i]);
+
 			}
-			else if (abs(A0[i].y - yD) < 1e-10)
+			else if (abs(A0[i].y - yD) < DELTA)
+			{
 				A0[i].type = "D";
-			else if (abs(A0[i].y - yU) < 1e-10)
+				bl.push_back(&A0[i]);
+			}
+			else if (abs(A0[i].y - yU) < DELTA)
+			{
 				A0[i].type = "U";
+				bl.push_back(&A0[i]);
+			}
 			else
+			{
 				A0[i].type = "IN";
+			}
 		}
 
 	}

@@ -337,7 +337,7 @@ void update_p4_s(mesh& p)
 	U[1] = U[1] - dt * p.J[0] * (Fcr.f2 - Flr.f2 + Frl.f2 - Fcl.f2 + Gcu.f2 - Gdu.f2 + Gud.f2 - Gcd.f2);
 	U[2] = U[2] - dt * p.J[0] * (Fcr.f3 - Flr.f3 + Frl.f3 - Fcl.f3 + Gcu.f3 - Gdu.f3 + Gud.f3 - Gcd.f3);
 	U[3] = U[3] - dt * p.J[0] * (Fcr.f4 - Flr.f4 + Frl.f4 - Fcl.f4 + Gcu.f4 - Gdu.f4 + Gud.f4 - Gcd.f4);
-	p.rho = U[0]*p.sec_num;
+	p.rho = U[0] * p.sec_num;
 	p.u = U[1] / U[0] * p.sec_num;
 	p.v = U[2] / U[0] * p.sec_num;
 	p.p = (gama - 1) * (U[3] - 0.5 * p.rho * (p.u * p.u + p.v * p.v)) * p.sec_num;
@@ -402,7 +402,7 @@ void update_bound()
 	for (i = 0; i < bl.size(); i++)
 	{
 		bl[i]->rho = rho0;
-		bl[i]->u = 3 * sqrt(ConstPara::gama * p0 / rho0);
+		bl[i]->u = 10 * sqrt(ConstPara::gama * p0 / rho0);
 		bl[i]->v = v0;
 		bl[i]->p = p0;
 	}
@@ -432,11 +432,43 @@ void update_bound()
 	}
 	for (i = 0; i < bb.size(); i++)
 	{
-		int id = bb[i]->id;
-		bb[i]->rho = rho0;
-		bb[i]->u = u0;
-		bb[i]->v = v0;
-		bb[i]->p = p0;
+		double DELTA = 1e-10;
+		double nx = bb[i]->x - a;
+		double ny = bb[i]->y - b;
+		double tx, ty;
+		if (ny > 0)
+		{
+			tx = ny;
+			ty = -nx;
+		}
+		else
+		{
+			tx = -ny;
+			ty = nx;
+		}
+		double n1 = bb[i]->neibor[0]->u;
+		double n2 = bb[i]->neibor[0]->v;
+		if ((abs(n1) < DELTA && abs(n2) < DELTA)/* || (abs(tx) < DELTA || abs(ty) < DELTA)*/)
+		{
+			bb[i]->rho = bb[i]->neibor[0]->rho;
+			bb[i]->u = bb[i]->neibor[0]->u;
+			bb[i]->v = bb[i]->neibor[0]->v;
+			bb[i]->p = bb[i]->neibor[0]->p;
+		}
+		else
+		{
+			double costheta = (tx * n1 + ty * n2) / (sqrt(tx * tx + ty * ty) * sqrt(n1 * n1 + n2 * n2));
+			double ex = tx / sqrt(tx * tx + ty * ty);
+			double ey = ty / sqrt(tx * tx + ty * ty);
+			double u = (n1 * n1 + n2 * n2) * costheta * ex;
+			double v = (n1 * n1 + n2 * n2) * costheta * ey;
+			//std::cout << costheta << "  " << ex << "  " << ey << std::endl;
+			//std::cout << A0[i].neibor[0]->u << "  " << A0[i].neibor[0]->v << "  " << u << "  " << v << std::endl;
+			bb[i]->rho = bb[i]->neibor[0]->rho;
+			bb[i]->u = u;
+			bb[i]->v = v;
+			bb[i]->p = bb[i]->neibor[0]->p;
+		}
 	}
 
 }
@@ -515,7 +547,7 @@ void sortPoint()
 	for (int i = 0; i < AP.size(); i++)
 	{
 		if (AP[i].type == "IN")
-			if (AP[i].neibor.size() == 4 && AP[i].id == i)
+			if (AP[i].neibor.size() == 4 && AP[i].section != -1)
 				ps.push_back(&AP[i]);
 			else if (AP[i].neibor.size() == 3 || AP[i].neibor.size() == 4)
 				pu.push_back(&AP[i]);

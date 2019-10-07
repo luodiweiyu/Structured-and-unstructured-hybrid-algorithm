@@ -312,4 +312,5 @@ int findNearPoint(mesh A, vector<Coor> &poly)//find the closest point of given g
 			n = i;
 		}
 	}
+	return n;
 }

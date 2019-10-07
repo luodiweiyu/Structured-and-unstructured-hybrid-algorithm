@@ -118,9 +118,9 @@ int main()
 			if (ps[i]->sec_num == 0)
 				continue;
 			update_p4_s(*ps[i]);
-			//cout << ps[i]->id << endl;
 		}
 		//cout << "******************" << endl;
+
 		for (i = 0; i < pu.size(); i++)
 		{
 			if (pu[i]->neibor.size() == 3)
@@ -129,6 +129,7 @@ int main()
 				update_p4_u(*pu[i]);
 			AP[pu[i]->connectId] = *pu[i];//replace
 		}
+
 		update_bound();
 		step++;
 		t_sim = t_sim + dt;
@@ -141,7 +142,7 @@ int main()
 			//fout << "solutiontime = "<<t_sim << endl;
 			for (int i = 0; i < AP.size(); i++)
 			{
-				if (AP[i].section != 0)
+				//if (AP[i].section != 0)
 					fout << AP[i].x << "  " << AP[i].y << "  " << AP[i].section << "  " << AP[i].u << "  " << AP[i].v << "  " << AP[i].p << endl;
 			}
 			fout.close();

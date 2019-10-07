@@ -6,7 +6,7 @@
 #include<string>
 #include<fstream>
 using std::vector;
-extern vector <mesh> A0;
+extern vector <mesh> AP;
 extern vector <polygon_mesh> M0;
 using namespace ShockwaveCross;
 using MeshPara::Pnum;
@@ -36,29 +36,26 @@ void partition_Point()//Partition existing grid points
 	{
 		vector<mesh*> t;
 		int i;
-		if (FlowType != "cylinder")
-		{
-			A.push_back(t);
-			for (i = 0; i < A0.size(); i++)
-				A[0].push_back(&A0[i]);
-		}
 		if (FlowType == "cylinder")
 		{
-			extern vector <Coor> poly;
-			A.push_back(t);
-			A.push_back(t);
-			A.push_back(t);
-			for (i = 0; i < A0.size(); i++)
-				A[0].push_back(&A0[i]), A[0][i]->id = i;
+			extern vector <mesh> poly;
 			double x, y, xl, yl, xr, yr, xu, yu, xd, yd;
 			double r1;
-
 			//the 2D cylinder (x-a)^2+(y-b)^2=r^2
-			int n1, n2, n3, n4, n, size;
-			for (i = 0; i < A[0].size(); i++)
+			int n1, n2, n3, n4, n, sizeA, size;
+			sizeA = AP.size();
+			for (i = 0; i < sizeA; i++)
 			{
-				x = A[0][i]->x;
-				y = A[0][i]->y;
+				AP[i].id = i;
+				if (AP[i].type == "IN")
+				{
+					AP[i].neibor.push_back(&AP[i + 1]);
+					AP[i].neibor.push_back(&AP[i + Xnum]);
+					AP[i].neibor.push_back(&AP[i - 1]);
+					AP[i].neibor.push_back(&AP[i - Xnum]);
+				}
+				x = AP[i].x;
+				y = AP[i].y;
 				xl = x - dx;
 				yl = y;
 				xr = x + dx;
@@ -90,108 +87,89 @@ void partition_Point()//Partition existing grid points
 					n4 = 1;
 				n = n1 + n2 + n3 + n4;
 				//if ((x - a) * (x - a) + (y - b) * (y - b) <= r1 * r1)
-				if (judgeFieldInOut(A0[i], poly))
-					A[0][i]->section = 0, A[0][i]->sec_num = 0;
-				if (!judgeFieldInOut(A0[i], poly))
+				if (judgeFieldInOut(AP[i], poly))
+					AP[i].section = 0, AP[i].sec_num = 0;
+				if (!judgeFieldInOut(AP[i], poly))
 
 					//if ((x - a) * (x - a) + (y - b) * (y - b) > r1* r1)
 				{
 					if (n == 4)
+						AP[i].section = 1, AP[i].sec_num = 1;
+					else
 					{
-						A[0][i]->section = 1, A[0][i]->sec_num = 1;
-						if (A[0][i]->type == "IN")
+						AP[i].section = -1, AP[i].sec_num = 0;
+						AP.push_back(AP[i]);
+						size = AP.size() - 1;
+						AP[size].id = size;
+						AP[size].connectId = i;
+						AP[i].connectId = size;
+						vector<mesh*> v;
+						AP[size].neibor.swap(v);
+						AP.push_back(getCrossPoint(AP[AP.size() - 1], a, b, r));//create a new point on the body
+						AP[AP.size() - 1].id = AP.size() - 1;
+						AP[AP.size() - 1].type = "Body";
+						AP[AP.size() - 1].neibor.push_back(&AP[size]);
+						AP[AP.size() - 1].section = -2;
+						if (n == 3)
 						{
-							A[0][i]->neibor.push_back(A[0][i + 1]);
-							A[0][i]->neibor.push_back(A[0][i + Xnum]);
-							A[0][i]->neibor.push_back(A[0][i - 1]);
-							A[0][i]->neibor.push_back(A[0][i - Xnum]);
+							if (n1 == 0)
+							{
+								AP[size].neibor.push_back(&AP[i + 1]);
+								AP[size].neibor.push_back(&AP[i + Xnum]);
+								AP[size].neibor.push_back(&AP[AP.size() - 1]);
+								AP[size].neibor.push_back(&AP[i - Xnum]);
+							}
+							else if (n2 == 0)
+							{
+								AP[size].neibor.push_back(&AP[AP.size() - 1]);
+								AP[size].neibor.push_back(&AP[i + Xnum]);
+								AP[size].neibor.push_back(&AP[i - 1]);
+								AP[size].neibor.push_back(&AP[i - Xnum]);
+							}
+							else if (n3 == 0)
+							{
+								AP[size].neibor.push_back(&AP[i + 1]);
+								AP[size].neibor.push_back(&AP[AP.size() - 1]);
+								AP[size].neibor.push_back(&AP[i - 1]);
+								AP[size].neibor.push_back(&AP[i - Xnum]);
+							}
+							else if (n4 == 0)
+							{
+								AP[size].neibor.push_back(&AP[i + 1]);
+								AP[size].neibor.push_back(&AP[i + Xnum]);
+								AP[size].neibor.push_back(&AP[i - 1]);
+								AP[size].neibor.push_back(&AP[AP.size() - 1]);
+							}
 						}
-					}
-					else if (n == 3)
-					{
-						A[1].push_back(&A0[i]);
-						A[0][i]->section = -1, A[0][i]->sec_num = 0;
-						size = A[1].size() - 1;
-						A[1][size]->neiborsec = 0;
-						A[1][size]->neiborsec_ad = i;
-						A0.push_back(getCrossPoint(*A[1][size], a, b, r));
-						A[1][size]->id = i;
-						A0[A0.size() - 1].id = A0.size() - 1;
-						A0[A0.size() - 1].type = "Cy";
-						A0[A0.size() - 1].neibor.push_back(A[1][size]);
-
-						if (n1 == 0)
-						{
-							A[1][size]->neibor.push_back(&A0[i + 1]);
-							A[1][size]->neibor.push_back(&A0[i + Xnum]);
-							A[1][size]->neibor.push_back(&A0[A0.size() - 1]);
-							A[1][size]->neibor.push_back(&A0[i - Xnum]);
-						}
-						else if (n2 == 0)
-						{
-							A[1][size]->neibor.push_back(&A0[A0.size() - 1]);
-							A[1][size]->neibor.push_back(&A0[i + Xnum]);
-							A[1][size]->neibor.push_back(&A0[i - 1]);
-							A[1][size]->neibor.push_back(&A0[i - Xnum]);
-						}
-						else if (n3 == 0)
-						{
-							A[1][size]->neibor.push_back(&A0[i + 1]);
-							A[1][size]->neibor.push_back(&A0[A0.size() - 1]);
-							A[1][size]->neibor.push_back(&A0[i - 1]);
-							A[1][size]->neibor.push_back(&A0[i - Xnum]);
-						}
-						else if (n4 == 0)
-						{
-							A[1][size]->neibor.push_back(&A0[i + 1]);
-							A[1][size]->neibor.push_back(&A0[i + Xnum]);
-							A[1][size]->neibor.push_back(&A0[i - 1]);
-							A[1][size]->neibor.push_back(&A0[A0.size() - 1]);
-						}
-					}
-					else if (n == 2)
-					{
-						A0[i].section = -1, A0[i].sec_num = 0;
-						A[2].push_back(&A0[i]);
-						size = A[2].size() - 1;
-						A[2][size]->neiborsec = 0;
-						A[2][size]->neiborsec_ad = i;
-						A0.push_back(getCrossPoint(*A[2][size], a, b, r));
-						A[2][size]->id = i;
-						A0[A0.size() - 1].id = A0.size() - 1;
-						A0[A0.size() - 1].type = "Cy";
-						A0[A0.size() - 1].neibor.push_back(A[2][size]);
-						if (A[0][i]->type == "IN")
+						else if (n == 2)
 						{
 							if (n1 == 0 && n3 == 0)
 							{
-								A[2][size]->neibor.push_back(&A0[i + 1]);
-								A[2][size]->neibor.push_back(&A0[A0.size() - 1]);
-								A[2][size]->neibor.push_back(&A0[i - Xnum]);
+								AP[size].neibor.push_back(&AP[i + 1]);
+								AP[size].neibor.push_back(&AP[AP.size() - 1]);
+								AP[size].neibor.push_back(&AP[i - Xnum]);
 							}
 							if (n1 == 0 && n4 == 0)
 							{
-								A[2][size]->neibor.push_back(&A0[i + 1]);
-								A[2][size]->neibor.push_back(&A0[i + Xnum]);
-								A[2][size]->neibor.push_back(&A0[A0.size() - 1]);
+								AP[size].neibor.push_back(&AP[i + 1]);
+								AP[size].neibor.push_back(&AP[i + Xnum]);
+								AP[size].neibor.push_back(&AP[AP.size() - 1]);
 							}
 							if (n2 == 0 && n3 == 0)
 							{
-								A[2][size]->neibor.push_back(&A0[A0.size() - 1]);
-								A[2][size]->neibor.push_back(&A0[i - 1]);
-								A[2][size]->neibor.push_back(&A0[i - Xnum]);
+								AP[size].neibor.push_back(&AP[AP.size() - 1]);
+								AP[size].neibor.push_back(&AP[i - 1]);
+								AP[size].neibor.push_back(&AP[i - Xnum]);
 							}
 							if (n2 == 0 && n4 == 0)
 							{
-								A[2][size]->neibor.push_back(&A0[i + Xnum]);
-								A[2][size]->neibor.push_back(&A0[i - 1]);
-								A[2][size]->neibor.push_back(&A0[A0.size() - 1]);
+								AP[size].neibor.push_back(&AP[i + Xnum]);
+								AP[size].neibor.push_back(&AP[i - 1]);
+								AP[size].neibor.push_back(&AP[AP.size() - 1]);
 							}
-
 						}
 					}
 				}
-
 			}
 		}
 	}

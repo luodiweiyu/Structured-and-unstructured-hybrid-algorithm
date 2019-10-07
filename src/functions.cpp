@@ -10,7 +10,7 @@ using namespace MeshPara;
 
 void get_dt()
 {
-	extern vector<vector <mesh*>> A;
+	extern vector<mesh>AP;
 	double maxxi = 0, maxeta = 0;
 	extern double dt;
 	double t;
@@ -20,527 +20,53 @@ void get_dt()
 
 	dt = t_end;
 	max1 = max2 = 0;
-	for (i = 0; i < A.size(); i++)
+	for (i = 0; i < AP.size(); i++)
 	{
-		for (j = 0; j < A[i].size(); j++)
+		maxxi = maxeta = 0;
+		if (AP[i].type != "IN")
+			continue;
+		if (AP[i].neibor.size() > 3)
 		{
-			if (A[i][j]->type != "IN" || A[i][j]->section == 0)
-				continue;
-			maxxi = maxeta = 0;
-			if (A[i][j]->neibor.size() > 3)
+			Sxi = sqrt(AP[i].xix[0] * AP[i].xix[0] + AP[i].xiy[0] * AP[i].xiy[0]);
+			Seta = sqrt(AP[i].etax[0] * AP[i].etax[0] + AP[i].etay[0] * AP[i].etay[0]);
+			c = sqrt(gama * AP[i].p / AP[i].rho);
+			uxi = AP[i].u * AP[i].xix[0] + AP[i].v * AP[i].xiy[0];
+			ueta = AP[i].u * AP[i].etax[0] + AP[i].v * AP[i].etay[0];
+			//maxxi = max(Sxi, uxi);
+			//maxeta = max(Seta, ueta);
+			maxxi = abs(uxi) + c * Sxi;
+			maxeta = abs(uxi) + c * Seta;
+			max1 = max(max1, maxxi);
+			max2 = max(max2, maxeta);
+		}
+		else
+		{
+			for (k = 0; k < 3; k++)
 			{
-				Sxi = sqrt(A[i][j]->xix[0] * A[i][j]->xix[0] + A[i][j]->xiy[0] * A[i][j]->xiy[0]);
-				Seta = sqrt(A[i][j]->etax[0] * A[i][j]->etax[0] + A[i][j]->etay[0] * A[i][j]->etay[0]);
-				c = sqrt(gama * A[i][j]->p / A[i][j]->rho);
-				uxi = A[i][j]->u * A[i][j]->xix[0] + A[i][j]->v * A[i][j]->xiy[0];
-				ueta = A[i][j]->u * A[i][j]->etax[0] + A[i][j]->v * A[i][j]->etay[0];
+				Sxi = sqrt(AP[i].xix[k] * AP[i].xix[k] + AP[i].xiy[k] * AP[i].xiy[k]);
+				Seta = sqrt(AP[i].etax[k] * AP[i].etax[k] + AP[i].etay[k] * AP[i].etay[k]);
+				c = sqrt(gama * AP[i].p / AP[i].rho);
+				uxi = AP[i].u * AP[i].xix[k] + AP[i].v * AP[i].xiy[k];
+				ueta = AP[i].u * AP[i].etax[k] + AP[i].v * AP[i].etay[k];
 				//maxxi = max(Sxi, uxi);
 				//maxeta = max(Seta, ueta);
-				maxxi = abs(uxi) + c * Sxi;
-				maxeta = abs(uxi) + c * Seta;
-				max1 = max(max1, maxxi);
-				max2 = max(max2, maxeta);
-
+				maxxi += abs(uxi) + c * Sxi;
+				maxeta += abs(uxi) + c * Seta;
 			}
-			else
-			{
-				for (k = 0; k < 3; k++)
-				{
-					Sxi = sqrt(A[i][j]->xix[k] * A[i][j]->xix[k] + A[i][j]->xiy[k] * A[i][j]->xiy[k]);
-					Seta = sqrt(A[i][j]->etax[k] * A[i][j]->etax[k] + A[i][j]->etay[k] * A[i][j]->etay[k]);
-					c = sqrt(gama * A[i][j]->p / A[i][j]->rho);
-					uxi = A[i][j]->u * A[i][j]->xix[k] + A[i][j]->v * A[i][j]->xiy[k];
-					ueta = A[i][j]->u * A[i][j]->etax[k] + A[i][j]->v * A[i][j]->etay[k];
-					//maxxi = max(Sxi, uxi);
-					//maxeta = max(Seta, ueta);
-					maxxi += abs(uxi) + c * Sxi;
-					maxeta += abs(uxi) + c * Seta;
-				}
-				maxxi = maxxi / 3;
-				maxeta = maxeta / 3;
-				max1 = max(max1, maxxi);
-				max2 = max(max2, maxeta);
-			}
+			maxxi = maxxi / 3;
+			maxeta = maxeta / 3;
+			max1 = max(max1, maxxi);
+			max2 = max(max2, maxeta);
 		}
 	}
 	t = CFL / (max1 + max2);
 	//t = CFL / (maxxi + maxeta);
 	dt = min(dt, t);
 }
-//void update_AfromU()
-//{
-//	extern vector<vector <mesh*>> A;
-//	extern vector<vector<vector <double>>> U;
-//	int i, j;
-//	extern int step;
-//
-//	for (i = 0; i < A.size(); i++)
-//	{
-//#pragma omp parallel
-//
-//		for (j = 0; j < A[i].size(); j++)
-//		{
-//			A[i][j]->rho = U[i][j][0];
-//			A[i][j]->u = U[i][j][1] / U[i][j][0];
-//			A[i][j]->v = U[i][j][2] / U[i][j][0];
-//			A[i][j]->p = (gama - 1) * (U[i][j][3] - 0.5 * A[i][j]->rho * (A[i][j]->u * A[i][j]->u + A[i][j]->v * A[i][j]->v));
-//			A[i][j]->step = step;
-//		}
-//	}
-//
-//}
-void update_bound_uniform()
-{
-	extern vector<vector <mesh*>> A;
-	int i, j;
-	using namespace Init;
-
-#pragma omp parallel
-
-	for (i = 0; i < A.size(); i++)
-	{
-		for (j = 0; j < A[i].size(); j++)
-		{
-			if (A[i][j]->type == "IN" || A[i][j]->type == "N")
-				continue;
-			A[i][j]->rho = rho0;
-			A[i][j]->u = u0;
-			A[i][j]->v = v0;
-			A[i][j]->p = p0;
-			//if (A[i].type == "L")
-			//{
-			//	A[i].rho = rho1;
-			//	A[i].u = u1;
-			//	A[i].v = v1;
-			//	A[i].p = p1;
-
-			//}
-			if (A[i][j]->type != "L" || A[i][j]->type != "R")
-				A[i][j]->v = 0;
-		}
-	}
-}
-void update_bound_shockwave()
-{
-	extern vector <mesh> A0;
-	extern vector<vector <mesh*>> A;
-	int i, j;
-	if (FlowType == "normal")
-	{
-		using namespace Normal;
-		for (i = 0; i < A.size(); i++)
-		{
-			for (j = 0; j < A[i].size(); j++)
-			{
-				if (A[i][j]->type == "IN")
-					continue;
-				else if (A[i][j]->type == "U")
-				{
-					A[i][j]->rho = A[i][j - Xnum]->rho;
-					A[i][j]->u = A[i][j - Xnum]->u;
-					A[i][j]->v = A[i][j - Xnum]->v;
-					A[i][j]->p = A[i][j - Xnum]->p;
-					if (A[i][j]->neibor.size() == 2)
-					{
-						A[i][j]->rho = (A[i][j]->neibor[0]->rho + A[i][j]->neibor[1]->rho) / 2;
-						A[i][j]->u = (A[i][j]->neibor[0]->u + A[i][j]->neibor[1]->u) / 2;
-						A[i][j]->v = (A[i][j]->neibor[0]->v + A[i][j]->neibor[1]->v) / 2;
-						A[i][j]->p = (A[i][j]->neibor[0]->p + A[i][j]->neibor[1]->p) / 2;
-					}
-				}
-				else if (A[i][j]->type == "D")
-				{
-					A[i][j]->rho = A[i][j + Xnum]->rho;
-					A[i][j]->u = A[i][j + Xnum]->u;
-					A[i][j]->v = A[i][j + Xnum]->v;
-					A[i][j]->p = A[i][j + Xnum]->p;
-					if (A[i][j]->neibor.size() == 2)
-					{
-						A[i][j]->rho = (A[i][j]->neibor[0]->rho + A[i][j]->neibor[1]->rho) / 2;
-						A[i][j]->u = (A[i][j]->neibor[0]->u + A[i][j]->neibor[1]->u) / 2;
-						A[i][j]->v = (A[i][j]->neibor[0]->v + A[i][j]->neibor[1]->v) / 2;
-						A[i][j]->p = (A[i][j]->neibor[0]->p + A[i][j]->neibor[1]->p) / 2;
-					}
-
-				}
-				else if (A[i][j]->type == "L")
-				{
-					A[i][j]->rho = rho1;
-					A[i][j]->u = u1;
-					A[i][j]->v = v1;
-					A[i][j]->p = p1;
-					if (A[i][j]->neibor.size() == 2)
-					{
-						A[i][j]->rho = (A[i][j]->neibor[0]->rho + A[i][j]->neibor[1]->rho) / 2;
-						A[i][j]->u = (A[i][j]->neibor[0]->u + A[i][j]->neibor[1]->u) / 2;
-						A[i][j]->v = (A[i][j]->neibor[0]->v + A[i][j]->neibor[1]->v) / 2;
-						A[i][j]->p = (A[i][j]->neibor[0]->p + A[i][j]->neibor[1]->p) / 2;
-					}
-
-				}
-				else if (A[i][j]->type == "R")
-				{
-					A[i][j]->rho = A[i][j - 1]->rho;
-					A[i][j]->u = A[i][j - 1]->u;
-					A[i][j]->v = A[i][j - 1]->v;
-					A[i][j]->p = A[i][j - 1]->p;
-					if (A[i][j]->neibor.size() == 2)
-					{
-						A[i][j]->rho = (A[i][j]->neibor[0]->rho + A[i][j]->neibor[1]->rho) / 2;
-						A[i][j]->u = (A[i][j]->neibor[0]->u + A[i][j]->neibor[1]->u) / 2;
-						A[i][j]->v = (A[i][j]->neibor[0]->v + A[i][j]->neibor[1]->v) / 2;
-						A[i][j]->p = (A[i][j]->neibor[0]->p + A[i][j]->neibor[1]->p) / 2;
-					}
-
-				}
-
-			}
-		}
-		for (i = 0; i < A.size(); i++)
-		{
-			for (j = 0; j < A[i].size(); j++)
-			{
-				if (A[i][j]->type == "U" || A[i][j]->type == "D")
-				{
-					if (A[i][j]->neibor.size() == 2)
-					{
-						if (abs(A[i][j]->x - A[i][j]->neibor[0]->x) < 1e-10 && abs(A[i][j]->y - A[i][j]->neibor[0]->y) < 1e-10)
-						{
-							A[i][j]->rho = A[i][j]->neibor[0]->rho;
-							A[i][j]->u = A[i][j]->neibor[0]->u;
-							A[i][j]->v = A[i][j]->neibor[0]->v;
-							A[i][j]->p = A[i][j]->neibor[0]->p;
-						}
-						else
-						{
-							A[i][j]->rho = A[i][j]->neibor[1]->rho;
-							A[i][j]->u = A[i][j]->neibor[1]->u;
-							A[i][j]->v = A[i][j]->neibor[1]->v;
-							A[i][j]->p = A[i][j]->neibor[1]->p;
-
-						}
-					}
-				}
-
-			}
-		}
-	}
-	else if (FlowType == "intersection")
-	{
-		using namespace ShockwaveCross;
-		double theta12 = -30 / 180.0 * ConstPara::pi;
-		double theta13 = 30 / 180.0 * ConstPara::pi;
-		mesh A12, A13, C;
-		Line L12, L13;
-		A12.x = -dx / 2, A12.y = A0[Pnum - 1].y - 2 * dy * 5 * Ynum / 45;
-		A13.x = -dx / 2, A13.y = 2 * dy * 5 * Ynum / 45;
-		L12 = getLine(theta12, A12);
-		L13 = getLine(theta13, A13);
-		C = getCrossPoint(L12, L13);
-		L12 = getLine(beta2, C);
-		L13 = getLine(beta3, C);
-		mesh A1, A2, A3;
-		A1.rho = rho1, A1.p = p1, A1.u = u1, A1.v = v1;
-		get_down(A1, A2, beta2);
-		get_down(A1, A3, beta3);
-
-		rho2 = A2.rho, p2 = A2.p, u2 = A2.u, v2 = A2.v;
-		rho3 = A3.rho, p3 = A3.p, u3 = A3.u, v3 = A3.v;
-#pragma omp parallel
-		for (i = 0; i < A.size(); i++)
-		{
-
-
-			for (j = 0; j < A[i].size(); j++)
-			{
-				if (A[i][j]->type == "IN")
-					continue;
-				else if (A[i][j]->type == "L")
-				{
-					if (A[i][j]->x * L12.A + A[i][j]->y * L12.B + L12.C < 0)
-					{
-						A[i][j]->rho = rho2;
-						A[i][j]->u = u2;
-						A[i][j]->v = v2;
-						A[i][j]->p = p2;
-					}
-					else if (A[i][j]->x * L13.A + A[i][j]->y * L13.B + L13.C > 0)
-					{
-						A[i][j]->rho = rho3;
-						A[i][j]->u = u3;
-						A[i][j]->v = v3;
-						A[i][j]->p = p3;
-					}
-					else
-					{
-						A[i][j]->rho = rho1;
-						A[i][j]->u = u1;
-						A[i][j]->v = v1;
-						A[i][j]->p = p1;
-					}
-				}
-				else if (A[i][j]->type == "R")
-				{
-					A[i][j]->rho = A[i][j - 1]->rho;
-					A[i][j]->u = A[i][j - 1]->u;
-					A[i][j]->v = A[i][j - 1]->v;
-					A[i][j]->p = A[i][j - 1]->p;
-
-				}
-				else if (A[i][j]->type == "U")
-				{
-					A[i][j]->rho = A[i][j - Xnum]->rho;
-					A[i][j]->u = A[i][j - Xnum]->u;
-					A[i][j]->v = A[i][j - Xnum]->v;
-					A[i][j]->p = A[i][j - Xnum]->p;
-
-				}
-				else if (A[i][j]->type == "D")
-				{
-					A[i][j]->rho = A[i][j + Xnum]->rho;
-					A[i][j]->u = A[i][j + Xnum]->u;
-					A[i][j]->v = A[i][j + Xnum]->v;
-					A[i][j]->p = A[i][j + Xnum]->p;
-				}
-			}
-		}
-	}
-	else if (FlowType == "oblique")
-	{
-		using namespace Oblique;
-		mesh M1;
-		Line L;
-		vector<mesh> t;
-		M1.x = 0.0014, M1.y = 0;
-
-		L = getLine(beta, M1);
-
-		for (i = 0; i < A.size(); i++)
-		{
-			for (j = 0; j < A[i].size(); j++)
-			{
-				if (A[i][j]->type == "IN")
-					continue;
-				else if (A[i][j]->type == "U")
-				{
-
-					A[i][j]->rho = A[i][j - Xnum]->rho;
-					A[i][j]->u = A[i][j - Xnum]->u;
-					A[i][j]->v = A[i][j - Xnum]->v;
-					A[i][j]->p = A[i][j - Xnum]->p;
-
-				}
-				else if (A[i][j]->type == "D")
-				{
-					if (A[i][j]->x > 0.0075)
-					{
-						A[i][j]->rho = rho2;
-						A[i][j]->u = u2;
-						A[i][j]->v = v2;
-						A[i][j]->p = p2;
-
-					}
-					else
-					{
-						A[i][j]->rho = A[i][j + Xnum]->rho;
-						A[i][j]->u = A[i][j + Xnum]->u;
-						A[i][j]->v = A[i][j + Xnum]->v;
-						A[i][j]->p = A[i][j + Xnum]->p;
-
-					}
-
-				}
-				else if (A[i][j]->type == "L")
-				{
-					A[i][j]->rho = rho1;
-					A[i][j]->u = u1;
-					A[i][j]->v = v1;
-					A[i][j]->p = p1;
-				}
-				else if (A[i][j]->type == "R")
-				{
-					A[i][j]->rho = A[i][j - 1]->rho;
-					A[i][j]->u = A[i][j - 1]->u;
-					A[i][j]->v = A[i][j - 1]->v;
-					A[i][j]->p = A[i][j - 1]->p;
-				}
-
-			}
-		}
-		for (i = 0; i < A.size(); i++)
-		{
-			for (j = 0; j < A[i].size(); j++)
-			{
-				if (A[i][j]->type == "U" || A[i][j]->type == "D")
-				{
-					if (A[i][j]->neibor.size() == 2)
-					{
-						if (abs(A[i][j]->x - A[i][j]->neibor[0]->x) < 1e-10 && abs(A[i][j]->y - A[i][j]->neibor[0]->y) < 1e-10)
-						{
-							A[i][j]->rho = A[i][j]->neibor[0]->rho;
-							A[i][j]->u = A[i][j]->neibor[0]->u;
-							A[i][j]->v = A[i][j]->neibor[0]->v;
-							A[i][j]->p = A[i][j]->neibor[0]->p;
-						}
-						else
-						{
-							A[i][j]->rho = A[i][j]->neibor[1]->rho;
-							A[i][j]->u = A[i][j]->neibor[1]->u;
-							A[i][j]->v = A[i][j]->neibor[1]->v;
-							A[i][j]->p = A[i][j]->neibor[1]->p;
-
-						}
-					}
-				}
-
-			}
-		}
-
-	}
-	else if (FlowType == "couette")
-	{
-		using namespace Couette;
-		extern double yU;
-		for (i = 0; i < A.size(); i++)
-		{
-			for (j = 0; j < A[i].size(); j++)
-			{
-				if (A[i][j]->type == "IN")
-					continue;
-				else if (A[i][j]->type == "U")
-				{
-					A[i][j]->rho = rho1;
-					A[i][j]->u = u1;
-					A[i][j]->v = v1;
-					A[i][j]->p = p1;
-					A[i][j]->rho = A[i][j - Xnum]->rho;
-					A[i][j]->u = A[i][j - Xnum]->u;
-					A[i][j]->v = A[i][j - Xnum]->v;
-					A[i][j]->p = A[i][j - Xnum]->p;
-
-				}
-				else if (A[i][j]->type == "D")
-				{
-					A[i][j]->rho = rho1;
-					A[i][j]->u = 0;
-					A[i][j]->v = v1;
-					A[i][j]->p = p1;
-				}
-				else if (A[i][j]->type == "L")
-				{
-					A[i][j]->rho = rho1;
-					A[i][j]->u = u1 * A[i][j]->y / yU;
-					A[i][j]->v = v1;
-					A[i][j]->p = p1;
-				}
-				A[i][j]->rho = rho1;
-				A[i][j]->u = u1 * A[i][j]->y / yU;
-				A[i][j]->v = v1;
-				A[i][j]->p = p1;
-
-				if (A[i][j]->type == "R")
-				{
-					A[i][j]->rho = A[i][j - 1]->rho;
-					A[i][j]->u = A[i][j - 1]->u;
-					A[i][j]->v = A[i][j - 1]->v;
-					A[i][j]->p = A[i][j - 1]->p;
-				}
-
-			}
-		}
-
-
-	}
-	else if (FlowType == "cylinder")
-	{
-		for (i = 0; i < A0.size(); i++)
-		{
-			if (A0[i].type == "L")
-			{
-				A0[i].rho = 20;
-				A0[i].u = 10;
-				A0[i].v = 0;
-				A0[i].p = 1;
-			}
-			else if (A0[i].type == "R")
-			{
-				A0[i].rho = A0[i - 1].rho;
-				A0[i].u = A0[i - 1].u;
-				A0[i].v = A0[i - 1].v;
-				A0[i].p = A0[i - 1].p;
-			}
-			else if (A0[i].type == "U")
-			{
-				A0[i].rho = A0[i - Xnum].rho;
-				A0[i].u = A0[i - Xnum].u;
-				A0[i].v = A0[i - Xnum].v;
-				A0[i].p = A0[i - Xnum].p;
-			}
-			else if (A0[i].type == "D")
-			{
-				A0[i].rho = A0[i + Xnum].rho;
-				A0[i].u = A0[i + Xnum].u;
-				A0[i].v = A0[i + Xnum].v;
-				A0[i].p = A0[i + Xnum].p;
-			}
-			else if (A0[i].type == "Cy")
-			{
-
-				double nx = A0[i].x - a;
-				double ny = A0[i].y - b;
-				double tx, ty;
-				if (ny > 0)
-				{
-					tx = ny;
-					ty = -nx;
-				}
-				else
-				{
-					tx = -ny;
-					ty = nx;
-				}
-				double n1 = A0[i].neibor[0]->u;
-				double n2 = A0[i].neibor[0]->v;
-				if ((abs(n1) < 1e-10 && abs(n2) < 1e-10) || (abs(tx) < 1e-8 || abs(ty) < 1e-8))
-				{
-					A0[i].rho = A0[i].neibor[0]->rho;
-					A0[i].u = A0[i].neibor[0]->u;
-					A0[i].v = A0[i].neibor[0]->v;
-					A0[i].p = A0[i].neibor[0]->p;
-				}
-				else
-				{
-					double costheta = (tx * n1 + ty * n2) / (sqrt(tx * tx + ty * ty) * sqrt(n1 * n1 + n2 * n2));
-					double ex = tx / sqrt(tx * tx + ty * ty);
-					double ey = ty / sqrt(tx * tx + ty * ty);
-					double u = (n1 * n1 + n2 * n2) * costheta * ex;
-					double v = (n1 * n1 + n2 * n2) * costheta * ey;
-					//std::cout << costheta << "  " << ex << "  " << ey << std::endl;
-					//std::cout << A0[i].neibor[0]->u << "  " << A0[i].neibor[0]->v << "  " << u << "  " << v << std::endl;
-					A0[i].rho = A0[i].neibor[0]->rho;
-					A0[i].u = u;
-					A0[i].v = v;
-					A0[i].p = A0[i].neibor[0]->p;
-					//A0[i].rho = A0[i].neibor[0]->rho;
-					//A0[i].u = A0[i].neibor[0]->u;
-					//A0[i].v = A0[i].neibor[0]->v;
-					//A0[i].p = A0[i].neibor[0]->p;
-
-				}
-				//A0[i].rho = 2;
-				//A0[i].u = 0;
-				//A0[i].v = 0;
-				//A0[i].p = A0[i].p;
-
-			}
-		}
-	}
-}
 void update_Vm()
 {
-	extern double  yU, yD;
 	extern vector<vector<mesh*>> A;
-	extern vector<mesh>A0;
+	extern vector<mesh>AP;
 	int i, j, k, n;
 	double d1;
 	extern int step;
@@ -584,8 +110,8 @@ void update_Vm()
 				}
 				if (i == 1)
 				{
-					A[i][j]->um = (A0[Xnum - 1].x - A[i][j]->x) / (A0[Xnum - 1].x - x) * um;
-					A[i][j]->vm = (A0[Xnum - 1].x - A[i][j]->x) / (A0[Xnum - 1].x - x) * vm;
+					A[i][j]->um = (AP[Xnum - 1].x - A[i][j]->x) / (AP[Xnum - 1].x - x) * um;
+					A[i][j]->vm = (AP[Xnum - 1].x - A[i][j]->x) / (AP[Xnum - 1].x - x) * vm;
 				}
 			}
 		}
@@ -675,478 +201,6 @@ void clear_Vm()
 		}
 	}
 }
-void update_bound()
-{
-	extern vector<vector<mesh*>> A;
-
-	int i, j, k, m, n;
-	if (methodType == "C")
-	{
-		if (FlowType == "normal")
-		{
-			using namespace Normal;
-#pragma omp parallel
-
-			for (i = 0; i < A.size(); i++)
-			{
-
-				for (j = 0; j < A[i].size(); j++)
-				{
-					if (A[i][j]->type == "IN" || A[i][j]->type == "SHOCK")
-						continue;
-					if (i == 0)
-					{
-						A[i][j]->rho = rho1;
-						A[i][j]->u = u1;
-						A[i][j]->v = v1;
-						A[i][j]->p = p1;
-					}
-					if (i == 1)
-					{
-						A[i][j]->rho = rho2;
-						A[i][j]->u = u2;
-						A[i][j]->v = v2;
-						A[i][j]->p = p2;
-					}
-
-				}
-			}
-		}
-		if (FlowType == "oblique")
-		{
-			using namespace Oblique;
-#pragma omp parallel
-			for (i = 0; i < A.size(); i++)
-			{
-
-
-				for (j = 0; j < A[i].size(); j++)
-				{
-					if (A[i][j]->type == "IN" || A[i][j]->type == "SHOCK")
-						continue;
-					if (i == 0)
-					{
-						A[i][j]->rho = rho1;
-						A[i][j]->u = u1;
-						A[i][j]->v = v1;
-						A[i][j]->p = p1;
-					}
-					if (i == 1)
-					{
-						A[i][j]->rho = rho2;
-						A[i][j]->u = u2;
-						A[i][j]->v = v2;
-						A[i][j]->p = p2;
-					}
-					if (A[i][j]->type == "R")
-					{
-						A[i][j]->rho = A[i][j - 1]->rho;
-						A[i][j]->u = A[i][j - 1]->u;
-						A[i][j]->v = A[i][j - 1]->v;
-						A[i][j]->p = A[i][j - 1]->p;
-					}
-
-				}
-			}
-		}
-	}
-	else if (methodType == "F")
-	{
-		if (FlowType == "normal")
-		{
-			using namespace Normal;
-			for (i = 0; i < A.size(); i++)
-			{
-
-				for (j = 0; j < A[i].size(); j++)
-				{
-					if (A[i][j]->type == "IN" || A[i][j]->type == "SHOCK" || A[i][j]->type == "DISCON")
-						continue;
-					else if (A[i][j]->type == "U")
-					{
-						for (k = 0; k < A[i][j]->neibor.size(); k++)
-						{
-							m = A[i][j]->neibor[k]->id;
-							if (A[i][j]->neibor[k]->type == "SHOCK")
-								continue;
-							else if (abs(A[i][j]->y - A[i][j]->neibor[k]->y) > 1e-10)
-							{
-								n = m;
-								break;
-							}
-							else
-								n = m;
-						}
-						A[i][j]->rho = A[i][n]->rho;
-						A[i][j]->u = A[i][n]->u;
-						A[i][j]->v = A[i][n]->v;
-						A[i][j]->p = A[i][n]->p;
-					}
-					else if (A[i][j]->type == "D")
-					{
-						if (i == 0)
-						{
-							A[i][j]->rho = rho1;
-							A[i][j]->u = u1;
-							A[i][j]->v = v1;
-							A[i][j]->p = p1;
-						}
-						else
-						{
-							A[i][j]->rho = rho2;
-							A[i][j]->u = u2;
-							A[i][j]->v = v2;
-							A[i][j]->p = p2;
-
-						}
-
-					}
-					else if (A[i][j]->type == "L")
-					{
-						A[i][j]->rho = rho1;
-						A[i][j]->u = u1;
-						A[i][j]->v = v1;
-						A[i][j]->p = p1;
-					}
-					else if (A[i][j]->type == "R")
-					{
-						for (k = 0; k < A[i][j]->neibor.size(); k++)
-						{
-							if (A[i][j]->neibor[k]->type == "SHOCK")
-								continue;
-							else if (abs(A[i][j]->x - A[i][m]->x) > 1e-10)
-							{
-								n = m;
-								break;
-							}
-							else
-								n = m;
-						}
-						A[i][j]->rho = A[i][n]->rho;
-						A[i][j]->u = A[i][n]->u;
-						A[i][j]->v = A[i][n]->v;
-						A[i][j]->p = A[i][n]->p;
-					}
-				}
-			}
-
-		}
-		else if (FlowType == "oblique")
-		{
-			using namespace Oblique;
-
-			for (i = 0; i < A.size(); i++)
-			{
-
-				for (j = 0; j < A[i].size(); j++)
-				{
-					if (A[i][j]->type == "IN" || A[i][j]->type == "SHOCK" || A[i][j]->type == "DISCON")
-						continue;
-					else if (A[i][j]->type == "U")
-					{
-						for (k = 0; k < A[i][j]->neibor.size(); k++)
-						{
-							m = A[i][j]->neibor[k]->id;
-							if (A[i][j]->neibor[k]->type == "SHOCK")
-								continue;
-							else if (abs(A[i][j]->y - A[i][m]->y) > 1e-10)
-							{
-								n = m;
-								break;
-							}
-							else
-								n = m;
-						}
-						A[i][j]->rho = A[i][n]->rho;
-						A[i][j]->u = A[i][n]->u;
-						A[i][j]->v = A[i][n]->v;
-						A[i][j]->p = A[i][n]->p;
-					}
-					else if (A[i][j]->type == "D")
-					{
-						if (i == 0)
-						{
-							A[i][j]->rho = rho1;
-							A[i][j]->u = u1;
-							A[i][j]->v = v1;
-							A[i][j]->p = p1;
-						}
-						else
-						{
-							A[i][j]->rho = rho2;
-							A[i][j]->u = u2;
-							A[i][j]->v = v2;
-							A[i][j]->p = p2;
-
-						}
-
-					}
-					else if (A[i][j]->type == "L")
-					{
-						A[i][j]->rho = rho1;
-						A[i][j]->u = u1;
-						A[i][j]->v = v1;
-						A[i][j]->p = p1;
-					}
-					else if (A[i][j]->type == "R")
-					{
-						for (k = 0; k < A[i][j]->neibor.size(); k++)
-						{
-							if (A[i][j]->neibor[k]->type == "SHOCK")
-								continue;
-							else if (abs(A[i][j]->x - A[i][m]->x) > 1e-10)
-							{
-								n = m;
-								break;
-							}
-							else
-								n = m;
-						}
-						A[i][j]->rho = A[i][n]->rho;
-						A[i][j]->u = A[i][n]->u;
-						A[i][j]->v = A[i][n]->v;
-						A[i][j]->p = A[i][n]->p;
-					}
-				}
-			}
-		}
-		else if (FlowType == "intersection")
-		{
-			using namespace ShockwaveCross;
-			for (i = 0; i < A.size(); i++)
-			{
-
-				for (j = 0; j < A[i].size(); j++)
-				{
-					if (A[i][j]->type == "IN")
-						continue;
-					else if (A[i][j]->type == "U" || A[i][j]->type == "D")
-					{
-						for (k = 0; k < A[i][j]->neibor.size(); k++)
-						{
-							m = A[i][j]->neibor[k]->id;
-							if (A[i][j]->neibor[k]->type == "SHOCK")
-								continue;
-							else if (abs(A[i][j]->y - A[i][m]->y) > 1e-10)
-							{
-								n = m;
-								break;
-							}
-							else
-								n = m;
-						}
-						A[i][j]->rho = A[i][n]->rho;
-						A[i][j]->u = A[i][n]->u;
-						A[i][j]->v = A[i][n]->v;
-						A[i][j]->p = A[i][n]->p;
-					}
-					else if (A[i][j]->type == "L")
-					{
-						if (i == 0)
-						{
-							A[i][j]->rho = rho1;
-							A[i][j]->u = u1;
-							A[i][j]->v = v1;
-							A[i][j]->p = p1;
-						}
-						else if (i == 1)
-						{
-							A[i][j]->rho = rho2;
-							A[i][j]->u = u2;
-							A[i][j]->v = v2;
-							A[i][j]->p = p2;
-						}
-						else if (i == 2)
-						{
-							A[i][j]->rho = rho3;
-							A[i][j]->u = u3;
-							A[i][j]->v = v3;
-							A[i][j]->p = p3;
-
-						}
-					}
-					else if (A[i][j]->type == "R")
-					{
-						for (k = 0; k < A[i][j]->neibor.size(); k++)
-						{
-							if (A[i][j]->neibor[k]->type == "SHOCK")
-								continue;
-							else if (abs(A[i][j]->x - A[i][m]->x) > 1e-10)
-							{
-								n = m;
-								break;
-							}
-							else
-								n = m;
-						}
-						A[i][j]->rho = A[i][n]->rho;
-						A[i][j]->u = A[i][n]->u;
-						A[i][j]->v = A[i][n]->v;
-						A[i][j]->p = A[i][n]->p;
-					}
-				}
-			}
-
-		}
-	}
-}
-void update_bound_shockwaveCross()
-{
-	using namespace ShockwaveCross;
-	extern vector<vector <mesh*>> A;
-	int i, j;
-#pragma omp parallel
-
-	for (i = 0; i < A.size(); i++)
-	{
-		for (j = 0; j < A[i].size(); j++)
-		{
-			if (A[i][j]->type == "IN")
-				continue;
-			else if (A[i][j]->type == "U")
-			{
-				A[i][j]->rho = rho2;
-				A[i][j]->u = u2;
-				A[i][j]->v = v2;
-				A[i][j]->p = p2;
-			}
-			else if (A[i][j]->type == "L")
-			{
-				A[i][j]->rho = rho1;
-				A[i][j]->u = u1;
-				A[i][j]->v = v1;
-				A[i][j]->p = p1;
-
-			}
-			else if (A[i][j]->type == "D")
-			{
-				A[i][j]->rho = rho3;
-				A[i][j]->u = u3;
-				A[i][j]->v = v3;
-				A[i][j]->p = p3;
-			}
-			else if (A[i][j]->type == "R")
-			{
-				A[i][j]->rho = A[i][j - 1]->rho;
-				A[i][j]->u = A[i][j - 1]->u;
-				A[i][j]->v = A[i][j - 1]->v;
-				A[i][j]->p = A[i][j - 1]->p;
-			}
-
-		}
-	}
-}
-void update_bound_Prandtl_Meyer()
-{
-	using namespace Prandtl_Meyer;
-	extern vector<vector <mesh*>> A;
-	int i, j;
-#pragma omp parallel
-
-	for (i = 0; i < A.size(); i++)
-	{
-		for (j = 0; j < A[i].size(); j++)
-		{
-			if (A[i][j]->type == "IN")
-				continue;
-			else if (A[i][j]->type == "L")
-			{
-				A[i][j]->rho = rho1;
-				A[i][j]->u = u1;
-				A[i][j]->v = v1;
-				A[i][j]->p = p1;
-			}
-			else if (A[i][j]->type == "DL")
-			{
-				A[i][j]->rho = rho1;
-				A[i][j]->u = u1;
-				A[i][j]->v = v1;
-				A[i][j]->p = p1;
-			}
-			else if (A[i][j]->type == "DR")
-			{
-				A[i][j]->rho = rho2;
-				A[i][j]->u = u2;
-				A[i][j]->v = v2;
-				A[i][j]->p = p2;
-			}
-			else if (A[i][j]->type == "R")
-			{
-				A[i][j]->rho = A[i][j - 1]->rho;
-				A[i][j]->u = A[i][j - 1]->u;
-				A[i][j]->v = A[i][j - 1]->v;
-				A[i][j]->p = A[i][j - 1]->p;
-			}
-		}
-	}
-}
-
-
-
-//void get_F()
-//{
-//	extern vector <mesh> A;
-//	extern double F[Pnum][4];
-//	for (int i = 0; i < Pnum; i++)
-//	{
-//		F[i][0] = A[i].rho*A[i].u;
-//		F[i][1] = A[i].rho*A[i].u*A[i].u + A[i].p;
-//		F[i][2] = A[i].rho*A[i].u*A[i].v;
-//		F[i][3] = A[i].u*(A[i].p / (gama - 1) + 0.5*A[i].rho*(A[i].u*A[i].u + A[i].v*A[i].v) + A[i].p);
-//	}
-//}
-//void get_G()
-//{
-//	extern vector <mesh> A;
-//	extern double G[Pnum][4];
-//	for (int i = 0; i < Pnum; i++)
-//	{
-//		G[i][0] = A[i].rho*A[i].v; extern vector<vector<vector <double>>> Utr;
-//		G[i][1] = A[i].rho*A[i].u *A[i].v;
-//		G[i][2] = A[i].rho*A[i].u*A[i].v + A[i].p;
-//		G[i][3] = A[i].v*(A[i].p / (gama - 1) + 0.5*A[i].rho*(A[i].u*A[i].u + A[i].v*A[i].v) + A[i].p);
-//	}
-//}
-
-//void update_INtrans()
-//{
-//	extern vector <mesh> A0;
-//	extern vector<vector<vector <double>>> U;
-//	extern vector<vector<vector <double>>> Utr;
-//	extern int i;
-//
-//#pragma omp parallel 
-//
-//	for (int i = 0; i < A0.size(); i++)
-//	{
-//		if (A0[i].type != "IN")
-//			continue;
-//		if (A0[i].neibor.size() != 3)
-//		{
-//			Utr[i][0][0] = U[0][i][0] * A0[i].J[0];
-//			Utr[i][0][1] = U[0][i][1] * A0[i].J[0];
-//			Utr[i][0][2] = U[0][i][2] * A0[i].J[0];
-//			Utr[i][0][3] = U[0][i][3] * A0[i].J[0];
-//		}
-//		else
-//		{
-//			Utr[i][0][0] = U[0][i][0] * A0[i].J[0];
-//			Utr[i][0][1] = U[0][i][1] * A0[i].J[0];
-//			Utr[i][0][2] = U[0][i][2] * A0[i].J[0];
-//			Utr[i][0][3] = U[0][i][3] * A0[i].J[0];
-//
-//			Utr[i][1][0] = U[0][i][0] * A0[i].J[0];
-//			Utr[i][1][1] = U[0][i][1] * A0[i].J[0];
-//			Utr[i][1][2] = U[0][i][2] * A0[i].J[0];
-//			Utr[i][1][3] = U[0][i][3] * A0[i].J[0];
-//
-//			Utr[i][2][0] = U[0][i][0] * A0[i].J[0];
-//			Utr[i][2][1] = U[0][i][1] * A0[i].J[0];
-//			Utr[i][2][2] = U[0][i][2] * A0[i].J[0];
-//			Utr[i][2][3] = U[0][i][3] * A0[i].J[0];
-//		}
-//	}
-//}
 double compute_res()//计算残差
 {
 	extern vector<vector <mesh*>> A;
@@ -1167,365 +221,224 @@ double compute_res()//计算残差
 }
 void record()
 {
-	extern vector <mesh> A0;
+	extern vector <mesh> AP;
 	extern vector <mesh> Ar;
 	extern double t_sim;
 	int i, j;
 	vector<mesh>t;
-	for (i = 0; i < A0.size(); i++)
+	for (i = 0; i < AP.size(); i++)
 	{
 		if (t_sim == 0)
-			Ar.push_back(A0[i]);
+			Ar.push_back(AP[i]);
 		else
-			Ar[i] = A0[i];
+			Ar[i] = AP[i];
 	}
 
 }
 
-void update_IN()
+void update_p3(mesh& p)
+//unstructral grid point,3 neighbor points
 {
-	extern vector<vector <mesh*>> A;
 	extern vector <mesh> Ar;
-	double U[4], U1[4], U2[4];
-	double temp[4] = { 0 };
 	extern double dt;
-	int i, j, k;
-	Flux F1, F2, G1, G2;
-	Flux F1_, F2_, G1_, G2_;
+	int i, j;
 	int n1, n2, n3, n4;
-
-	double d1, d2;
-	Flux Rf_xieta, Rg_xieta;
-	Flux Rf_phiψ, Rg_phiψ;
-	Flux FL, FC, FR;
-	mesh CL, CR, C;
-	Flux GU, GC, GD;
-	mesh CU, CD;
+	double U[4], U1[4], U2[4];
 
 	Flux Fll, Flr, Fcl, Fcr, Frl, Frr;
 	Flux Gdd, Gdu, Gcd, Gcu, Gud, Guu;
 
-	Flux fll, flr, fcl, fcr, frl, frr;
-	Flux gdd, gdu, gcd, gcu, gud, guu;
-	double c1, c2;
 	int id;
-	//#pragma omp parallel for private(F1,F2,G1,G2,temp)
-	extern double t_sim;
-	for (i = 0; i < A.size(); i++)
+	id = p.id;
+	U[0] = Ar[id].rho;
+	U[1] = Ar[id].rho * p.u;
+	U[2] = Ar[id].rho * p.v;
+	U[3] = 0.5 * Ar[id].rho * (Ar[id].u * Ar[id].u + Ar[id].v * Ar[id].v) + Ar[id].p / (gama - 1);
+
+	for (j = 0; j < 12; j++)
 	{
-		for (j = 0; j < A[i].size(); j++)
-		{
-			if (A[i][j]->type == "L" || A[i][j]->type == "R" || A[i][j]->type == "U" || A[i][j]->type == "D" || A[i][j]->type == "Cy" || A[i][j]->section == 0 /*|| A[i][j]->change == "N"*/)
-				continue;
-			id = A[i][j]->id;
-			U[0] = Ar[id].rho;
-			U[1] = Ar[id].rho * A[i][j]->u;
-			U[2] = Ar[id].rho * A[i][j]->v;
-			U[3] = 0.5 * Ar[id].rho * (Ar[id].u * Ar[id].u + Ar[id].v * Ar[id].v) + Ar[id].p / (gama - 1);
+		n1 = method[j][0];
+		n2 = method[j][1];
+		n3 = method[j][2];
+		n4 = method[j][3];
+		n1 = p.neibor[n1]->id;
+		n2 = p.neibor[n2]->id;
+		n3 = p.neibor[n3]->id;
+		n4 = p.neibor[n4]->id;
+		Fll = Flr = Fcl = Fcr = Frl = Frr = { 0 };
+		Gdd = Gdu = Gcd = Gcu = Gud = Guu = { 0 };
 
-			if (A[i][j]->neibor.size() == 3)
-			{
-				F1 = F2 = G1 = G2 = { 0 };
+		Fll = Fll + VanLeerB(Ar[n3], Ar[id].xix[0], Ar[id].xiy[0], Ar[id].xit[0], Ar[id].J[0]);
+		Flr = Flr + VanLeerA(Ar[n3], Ar[id].xix[0], Ar[id].xiy[0], Ar[id].xit[0], Ar[id].J[0]);
+		Fcl = Fcl + VanLeerB(Ar[id], Ar[id].xix[0], Ar[id].xiy[0], Ar[id].xit[0], Ar[id].J[0]);
+		Fcr = Fcr + VanLeerA(Ar[id], Ar[id].xix[0], Ar[id].xiy[0], Ar[id].xit[0], Ar[id].J[0]);
+		Frl = Frl + VanLeerB(Ar[n1], Ar[id].xix[0], Ar[id].xiy[0], Ar[id].xit[0], Ar[id].J[0]);
+		Frr = Frr + VanLeerA(Ar[n1], Ar[id].xix[0], Ar[id].xiy[0], Ar[id].xit[0], Ar[id].J[0]);
 
-				for (k = 0; k < 12; k++)
-				{
-					n1 = method[k][0];
-					n2 = method[k][1];
-					n3 = method[k][2];
-					n4 = method[k][3];
-					n1 = A[i][j]->neibor[n1]->id;
-					n2 = A[i][j]->neibor[n2]->id;
-					n3 = A[i][j]->neibor[n3]->id;
-					n4 = A[i][j]->neibor[n4]->id;
-					id = A[i][j]->id;
-					F1_ = HLLC_Χ(Ar[n3], Ar[id], Ar[id], k);
-					F2_ = HLLC_Χ(Ar[id], Ar[n1], Ar[id], k);
-					G1_ = HLLC_Υ(Ar[n4], Ar[id], Ar[id], k);
-					G2_ = HLLC_Υ(Ar[id], Ar[n2], Ar[id], k);
-					F1.f1 += F1_.f1, F1.f2 += F1_.f2, F1.f3 += F1_.f3, F1.f4 += F1_.f4;
-					F2.f1 += F2_.f1, F2.f2 += F2_.f2, F2.f3 += F2_.f3, F2.f4 += F2_.f4;
-					G1.f1 += G1_.f1, G1.f2 += G1_.f2, G1.f3 += G1_.f3, G1.f4 += G1_.f4;
-					G2.f1 += G2_.f1, G2.f2 += G2_.f2, G2.f3 += G2_.f3, G2.f4 += G2_.f4;
-				}
-				F1.f1 /= k, F1.f2 /= k, F1.f3 /= k, F1.f4 /= k;
-				F2.f1 /= k, F2.f2 /= k, F2.f3 /= k, F2.f4 /= k;
-				G1.f1 /= k, G1.f2 /= k, G1.f3 /= k, G1.f4 /= k;
-				G2.f1 /= k, G2.f2 /= k, G2.f3 /= k, G2.f4 /= k;
+		Gdd = Gdd + VanLeerB(Ar[n4], Ar[id].etax[0], Ar[id].etay[0], Ar[id].etat[0], Ar[id].J[0]);
+		Gdu = Gdu + VanLeerA(Ar[n4], Ar[id].etax[0], Ar[id].etay[0], Ar[id].etat[0], Ar[id].J[0]);
+		Gcd = Gcd + VanLeerB(Ar[id], Ar[id].etax[0], Ar[id].etay[0], Ar[id].etat[0], Ar[id].J[0]);
+		Gcu = Gcu + VanLeerA(Ar[id], Ar[id].etax[0], Ar[id].etay[0], Ar[id].etat[0], Ar[id].J[0]);
+		Gud = Gud + VanLeerB(Ar[n2], Ar[id].etax[0], Ar[id].etay[0], Ar[id].etat[0], Ar[id].J[0]);
+		Guu = Guu + VanLeerA(Ar[n2], Ar[id].etax[0], Ar[id].etay[0], Ar[id].etat[0], Ar[id].J[0]);
+	}
+	Fll = Fll / j, Flr = Flr / j, Fcl = Fcl / j, Fcr = Fcr / j, Frl = Frl / j, Frr = Frr / j;
+	Gdd = Gdd / j, Gdu = Gdu / j, Gcd = Gcd / j, Gcu = Gcu / j, Gud = Gud / j, Guu = Guu / j;
 
-				U[0] = U[0] - dt * (F2.f1 - F1.f1) - dt * (G2.f1 - G1.f1);
-				U[1] = U[1] - dt * (F2.f2 - F1.f2) - dt * (G2.f2 - G1.f2);
-				U[2] = U[2] - dt * (F2.f3 - F1.f3) - dt * (G2.f3 - G1.f3);
-				U[3] = U[3] - dt * (F2.f4 - F1.f4) - dt * (G2.f4 - G1.f4);
-			}
+	U[0] = U[0] - dt * p.J[0] * (Fcr.f1 - Flr.f1 + Frl.f1 - Fcl.f1 + Gcu.f1 - Gdu.f1 + Gud.f1 - Gcd.f1);
+	U[1] = U[1] - dt * p.J[0] * (Fcr.f2 - Flr.f2 + Frl.f2 - Fcl.f2 + Gcu.f2 - Gdu.f2 + Gud.f2 - Gcd.f2);
+	U[2] = U[2] - dt * p.J[0] * (Fcr.f3 - Flr.f3 + Frl.f3 - Fcl.f3 + Gcu.f3 - Gdu.f3 + Gud.f3 - Gcd.f3);
+	U[3] = U[3] - dt * p.J[0] * (Fcr.f4 - Flr.f4 + Frl.f4 - Fcl.f4 + Gcu.f4 - Gdu.f4 + Gud.f4 - Gcd.f4);
+	p.rho = U[0];
+	p.u = U[1] / U[0];
+	p.v = U[2] / U[0];
+	p.p = (gama - 1) * (U[3] - 0.5 * p.rho * (p.u * p.u + p.v * p.v));
+}
+void update_p4_s(mesh& p)
+//structral grid point,4 neighbor points
+{
+	extern vector <mesh> Ar;
+	extern double dt;
+	int i, j;
+	int n1, n2, n3, n4;
+	double U[4], U1[4], U2[4];
 
-			else if (A[i][j]->neibor.size() >= 4)
-			{
-				F1 = F2 = G1 = G2 = { 0 };
-				n1 = A[i][j]->neibor[0]->id;
-				n2 = A[i][j]->neibor[1]->id;
-				n3 = A[i][j]->neibor[2]->id;
-				n4 = A[i][j]->neibor[3]->id;
-				//VanLeer
-				Fll = VanLeerB(Ar[n3], Ar[id].xix[0], Ar[id].xiy[0], Ar[id].xit[0], Ar[id].J[0]);
-				Flr = VanLeerA(Ar[n3], Ar[id].xix[0], Ar[id].xiy[0], Ar[id].xit[0], Ar[id].J[0]);
-				Fcl = VanLeerB(Ar[id], Ar[id].xix[0], Ar[id].xiy[0], Ar[id].xit[0], Ar[id].J[0]);
-				Fcr = VanLeerA(Ar[id], Ar[id].xix[0], Ar[id].xiy[0], Ar[id].xit[0], Ar[id].J[0]);
-				Frl = VanLeerB(Ar[n1], Ar[id].xix[0], Ar[id].xiy[0], Ar[id].xit[0], Ar[id].J[0]);
-				Frr = VanLeerA(Ar[n1], Ar[id].xix[0], Ar[id].xiy[0], Ar[id].xit[0], Ar[id].J[0]);
+	Flux Fll, Flr, Fcl, Fcr, Frl, Frr;
+	Flux Gdd, Gdu, Gcd, Gcu, Gud, Guu;
 
-				Gdd = VanLeerB(Ar[n4], Ar[id].etax[0], Ar[id].etay[0], Ar[id].etat[0], Ar[id].J[0]);
-				Gdu = VanLeerA(Ar[n4], Ar[id].etax[0], Ar[id].etay[0], Ar[id].etat[0], Ar[id].J[0]);
-				Gcd = VanLeerB(Ar[id], Ar[id].etax[0], Ar[id].etay[0], Ar[id].etat[0], Ar[id].J[0]);
-				Gcu = VanLeerA(Ar[id], Ar[id].etax[0], Ar[id].etay[0], Ar[id].etat[0], Ar[id].J[0]);
-				Gud = VanLeerB(Ar[n2], Ar[id].etax[0], Ar[id].etay[0], Ar[id].etat[0], Ar[id].J[0]);
-				Guu = VanLeerA(Ar[n2], Ar[id].etax[0], Ar[id].etay[0], Ar[id].etat[0], Ar[id].J[0]);
-				U[0] = U[0] - dt * A[i][j]->J[0] * (Fcr.f1 - Flr.f1 + Frl.f1 - Fcl.f1 + Gcu.f1 - Gdu.f1 + Gud.f1 - Gcd.f1);
-				U[1] = U[1] - dt * A[i][j]->J[0] * (Fcr.f2 - Flr.f2 + Frl.f2 - Fcl.f2 + Gcu.f2 - Gdu.f2 + Gud.f2 - Gcd.f2);
-				U[2] = U[2] - dt * A[i][j]->J[0] * (Fcr.f3 - Flr.f3 + Frl.f3 - Fcl.f3 + Gcu.f3 - Gdu.f3 + Gud.f3 - Gcd.f3);
-				U[3] = U[3] - dt * A[i][j]->J[0] * (Fcr.f4 - Flr.f4 + Frl.f4 - Fcl.f4 + Gcu.f4 - Gdu.f4 + Gud.f4 - Gcd.f4);
-			}
-			else if (A[i][j]->neibor.size() == 2)
-			{
-				if (A[i][j]->type == "SHOCK")
-				{
-					double m, n;
+	int id;
+	id = p.id;
+	U[0] = Ar[id].rho;
+	U[1] = Ar[id].rho * p.u;
+	U[2] = Ar[id].rho * p.v;
+	U[3] = 0.5 * Ar[id].rho * (Ar[id].u * Ar[id].u + Ar[id].v * Ar[id].v) + Ar[id].p / (gama - 1);
 
-					A[i][j]->rho = (A[i][j]->neibor[0]->rho + A[i][j]->neibor[1]->rho) / 2;
-					A[i][j]->u = (A[i][j]->neibor[0]->u + A[i][j]->neibor[1]->u) / 2;
-					A[i][j]->v = (A[i][j]->neibor[0]->v + A[i][j]->neibor[1]->v) / 2;
-					A[i][j]->p = (A[i][j]->neibor[0]->p + A[i][j]->neibor[1]->p) / 2;
-				}
-				else
-					continue;
-			}
-			else
-				std::cout << i << "   " << j << "   " << "somthing wrong in updat_u" << std::endl;
-			A[i][j]->rho = U[0];
-			A[i][j]->u = U[1] / U[0];
-			A[i][j]->v = U[2] / U[0];
-			A[i][j]->p = (gama - 1) * (U[3] - 0.5 * A[i][j]->rho * (A[i][j]->u * A[i][j]->u + A[i][j]->v * A[i][j]->v));
-			if (i == 0 & FlowType == "cylinder")
-			{
-				A[i][j]->rho = A[i][j]->rho * A[i][j]->sec_num;
-				A[i][j]->u = A[i][j]->u * A[i][j]->sec_num;
-				A[i][j]->v = A[i][j]->v * A[i][j]->sec_num;
-				A[i][j]->p = A[i][j]->p * A[i][j]->sec_num;
-			}
-		}
+	n1 = p.neibor[0]->id;
+	n2 = p.neibor[1]->id;
+	n3 = p.neibor[2]->id;
+	n4 = p.neibor[3]->id;
+
+
+	Fll = VanLeerB(Ar[n3], Ar[id].xix[0], Ar[id].xiy[0], Ar[id].xit[0], Ar[id].J[0]);
+	Flr = VanLeerA(Ar[n3], Ar[id].xix[0], Ar[id].xiy[0], Ar[id].xit[0], Ar[id].J[0]);
+	Fcl = VanLeerB(Ar[id], Ar[id].xix[0], Ar[id].xiy[0], Ar[id].xit[0], Ar[id].J[0]);
+	Fcr = VanLeerA(Ar[id], Ar[id].xix[0], Ar[id].xiy[0], Ar[id].xit[0], Ar[id].J[0]);
+	Frl = VanLeerB(Ar[n1], Ar[id].xix[0], Ar[id].xiy[0], Ar[id].xit[0], Ar[id].J[0]);
+	Frr = VanLeerA(Ar[n1], Ar[id].xix[0], Ar[id].xiy[0], Ar[id].xit[0], Ar[id].J[0]);
+
+	Gdd = VanLeerB(Ar[n4], Ar[id].etax[0], Ar[id].etay[0], Ar[id].etat[0], Ar[id].J[0]);
+	Gdu = VanLeerA(Ar[n4], Ar[id].etax[0], Ar[id].etay[0], Ar[id].etat[0], Ar[id].J[0]);
+	Gcd = VanLeerB(Ar[id], Ar[id].etax[0], Ar[id].etay[0], Ar[id].etat[0], Ar[id].J[0]);
+	Gcu = VanLeerA(Ar[id], Ar[id].etax[0], Ar[id].etay[0], Ar[id].etat[0], Ar[id].J[0]);
+	Gud = VanLeerB(Ar[n2], Ar[id].etax[0], Ar[id].etay[0], Ar[id].etat[0], Ar[id].J[0]);
+	Guu = VanLeerA(Ar[n2], Ar[id].etax[0], Ar[id].etay[0], Ar[id].etat[0], Ar[id].J[0]);
+
+	U[0] = U[0] - dt * p.J[0] * (Fcr.f1 - Flr.f1 + Frl.f1 - Fcl.f1 + Gcu.f1 - Gdu.f1 + Gud.f1 - Gcd.f1);
+	U[1] = U[1] - dt * p.J[0] * (Fcr.f2 - Flr.f2 + Frl.f2 - Fcl.f2 + Gcu.f2 - Gdu.f2 + Gud.f2 - Gcd.f2);
+	U[2] = U[2] - dt * p.J[0] * (Fcr.f3 - Flr.f3 + Frl.f3 - Fcl.f3 + Gcu.f3 - Gdu.f3 + Gud.f3 - Gcd.f3);
+	U[3] = U[3] - dt * p.J[0] * (Fcr.f4 - Flr.f4 + Frl.f4 - Fcl.f4 + Gcu.f4 - Gdu.f4 + Gud.f4 - Gcd.f4);
+	p.rho = U[0]*p.sec_num;
+	p.u = U[1] / U[0] * p.sec_num;
+	p.v = U[2] / U[0] * p.sec_num;
+	p.p = (gama - 1) * (U[3] - 0.5 * p.rho * (p.u * p.u + p.v * p.v)) * p.sec_num;
+}
+void update_p4_u(mesh& p)
+//unstructral grid point,4 neighbor points
+{
+	extern vector <mesh> Ar;
+	extern double dt;
+	int i, j;
+	int n1, n2, n3, n4;
+	double U[4], U1[4], U2[4];
+
+	Flux Fll, Flr, Fcl, Fcr, Frl, Frr;
+	Flux Gdd, Gdu, Gcd, Gcu, Gud, Guu;
+
+	int id;
+	id = p.id;
+	U[0] = Ar[id].rho;
+	U[1] = Ar[id].rho * p.u;
+	U[2] = Ar[id].rho * p.v;
+	U[3] = 0.5 * Ar[id].rho * (Ar[id].u * Ar[id].u + Ar[id].v * Ar[id].v) + Ar[id].p / (gama - 1);
+
+	n1 = p.neibor[0]->id;
+	n2 = p.neibor[1]->id;
+	n3 = p.neibor[2]->id;
+	n4 = p.neibor[3]->id;
+	Fll = VanLeerB(Ar[n3], Ar[id].xix[0], Ar[id].xiy[0], Ar[id].xit[0], Ar[id].J[0]);
+	Flr = VanLeerA(Ar[n3], Ar[id].xix[0], Ar[id].xiy[0], Ar[id].xit[0], Ar[id].J[0]);
+	Fcl = VanLeerB(Ar[id], Ar[id].xix[0], Ar[id].xiy[0], Ar[id].xit[0], Ar[id].J[0]);
+	Fcr = VanLeerA(Ar[id], Ar[id].xix[0], Ar[id].xiy[0], Ar[id].xit[0], Ar[id].J[0]);
+	Frl = VanLeerB(Ar[n1], Ar[id].xix[0], Ar[id].xiy[0], Ar[id].xit[0], Ar[id].J[0]);
+	Frr = VanLeerA(Ar[n1], Ar[id].xix[0], Ar[id].xiy[0], Ar[id].xit[0], Ar[id].J[0]);
+
+	Gdd = VanLeerB(Ar[n4], Ar[id].etax[0], Ar[id].etay[0], Ar[id].etat[0], Ar[id].J[0]);
+	Gdu = VanLeerA(Ar[n4], Ar[id].etax[0], Ar[id].etay[0], Ar[id].etat[0], Ar[id].J[0]);
+	Gcd = VanLeerB(Ar[id], Ar[id].etax[0], Ar[id].etay[0], Ar[id].etat[0], Ar[id].J[0]);
+	Gcu = VanLeerA(Ar[id], Ar[id].etax[0], Ar[id].etay[0], Ar[id].etat[0], Ar[id].J[0]);
+	Gud = VanLeerB(Ar[n2], Ar[id].etax[0], Ar[id].etay[0], Ar[id].etat[0], Ar[id].J[0]);
+	Guu = VanLeerA(Ar[n2], Ar[id].etax[0], Ar[id].etay[0], Ar[id].etat[0], Ar[id].J[0]);
+
+	U[0] = U[0] - dt * p.J[0] * (Fcr.f1 - Flr.f1 + Frl.f1 - Fcl.f1 + Gcu.f1 - Gdu.f1 + Gud.f1 - Gcd.f1);
+	U[1] = U[1] - dt * p.J[0] * (Fcr.f2 - Flr.f2 + Frl.f2 - Fcl.f2 + Gcu.f2 - Gdu.f2 + Gud.f2 - Gcd.f2);
+	U[2] = U[2] - dt * p.J[0] * (Fcr.f3 - Flr.f3 + Frl.f3 - Fcl.f3 + Gcu.f3 - Gdu.f3 + Gud.f3 - Gcd.f3);
+	U[3] = U[3] - dt * p.J[0] * (Fcr.f4 - Flr.f4 + Frl.f4 - Fcl.f4 + Gcu.f4 - Gdu.f4 + Gud.f4 - Gcd.f4);
+	p.rho = U[0];
+	p.u = U[1] / U[0];
+	p.v = U[2] / U[0];
+	p.p = (gama - 1) * (U[3] - 0.5 * p.rho * (p.u * p.u + p.v * p.v));
+}
+void update_bound()
+{
+	extern vector<mesh*> bl;//左边界
+	extern vector<mesh*> br;//右边界
+	extern vector<mesh*> bu;//上边界
+	extern vector<mesh*> bd;//下边界
+	extern vector<mesh*> bb;//物体边界
+	int i;
+	using namespace Init;
+	extern vector<mesh>AP;
+
+	for (i = 0; i < bl.size(); i++)
+	{
+		bl[i]->rho = rho0;
+		bl[i]->u = 3 * sqrt(ConstPara::gama * p0 / rho0);
+		bl[i]->v = v0;
+		bl[i]->p = p0;
+	}
+	for (i = 0; i < br.size(); i++)
+	{
+		int id = br[i]->id;
+		br[i]->rho = AP[id - 1].rho;
+		br[i]->u = AP[id - 1].u;
+		br[i]->v = AP[id - 1].v;
+		br[i]->p = AP[id - 1].p;
+	}
+	for (i = 0; i < bu.size(); i++)
+	{
+		int id = bu[i]->id;
+		bu[i]->rho = AP[id - Xnum].rho;
+		bu[i]->u = AP[id - Xnum].u;
+		bu[i]->v = AP[id - Xnum].v;
+		bu[i]->p = AP[id - Xnum].p;
+	}
+	for (i = 0; i < bd.size(); i++)
+	{
+		int id = bd[i]->id;
+		bd[i]->rho = AP[id + Xnum].rho;
+		bd[i]->u = AP[id + Xnum].u;
+		bd[i]->v = AP[id + Xnum].v;
+		bd[i]->p = AP[id + Xnum].p;
+	}
+	for (i = 0; i < bb.size(); i++)
+	{
+		int id = bb[i]->id;
+		bb[i]->rho = rho0;
+		bb[i]->u = u0;
+		bb[i]->v = v0;
+		bb[i]->p = p0;
 	}
 
-}
-Flux get_F(mesh N, mesh C, int method)//得到当地坐标系下的通量
-{
-	double xix = C.xix[method];
-	double xiy = C.xiy[method];
-	double xit = C.xit[method];
-	double J = C.J[method];
-	double Dxi = sqrt(xix * xix + xiy * xiy);
-	double xi1 = xix / Dxi;
-	double xi2 = xiy / Dxi;
-	double xi3 = xit / Dxi;
-	double ub = N.u * xi1 + N.v * xi2 + xi3;
-	Flux F;
-	F.f1 = C.rho;
-	F.f2 = C.rho * C.u;
-	F.f3 = C.rho * C.v;
-	F.f4 = C.p * gama / (gama - 1) + 0.5 * C.rho * C.u * C.u + 0.5 * C.rho * C.v * C.v;
-	F.f1 = F.f1 * ub;
-	F.f2 = F.f2 * ub + xi1 * C.p;
-	F.f3 = F.f3 * ub + xi2 * C.p;
-	F.f4 = F.f4 * ub - xi3 * C.p;
-	F.f1 = F.f1 * Dxi;
-	F.f2 = F.f2 * Dxi;
-	F.f3 = F.f3 * Dxi;
-	F.f4 = F.f4 * Dxi;
-	return F;
-
-}
-Flux get_G(mesh N, mesh C, int method)//得到当地坐标系下的通量
-{
-	double etax = C.etax[method];
-	double etay = C.etay[method];
-	double etat = C.etat[method];
-	double J = C.J[method];
-	double Deta = sqrt(etax * etax + etay * etay);
-	double eta1 = etax / Deta;
-	double eta2 = etay / Deta;
-	double eta3 = etat / Deta;
-	double ub = N.u * eta1 + N.v * eta2 + eta3;
-
-	Flux F;
-	F.f1 = C.rho;
-	F.f2 = C.rho * C.u;
-	F.f3 = C.rho * C.v;
-	F.f4 = C.p * gama / (gama - 1) + 0.5 * C.rho * C.u * C.u + 0.5 * C.rho * C.v * C.v;
-	F.f1 = F.f1 * ub;
-	F.f2 = F.f2 * ub + eta1 * C.p;
-	F.f3 = F.f3 * ub + eta2 * C.p;
-	F.f4 = F.f4 * ub - eta3 * C.p;
-	F.f1 = F.f1 * Deta;
-	F.f2 = F.f2 * Deta;
-	F.f3 = F.f3 * Deta;
-	F.f4 = F.f4 * Deta;
-	return F;
-
-}
-//void choose_U(int i)
-//{
-//	extern vector <mesh> A;
-//	extern vector <mesh> A;
-//	extern vector<vector <double>> U;
-//	extern double U0[Pnum][4];
-//	extern double U1[Pnum][4];
-//	extern double U2[Pnum][4];
-//	double rho00, u00, v00, p00;
-//	double rho, u, v, p;
-//	double rho0, u0, v0, p0;
-//	double rho1, u1, v1, p1;
-//	double rho2, u2, v2, p2;
-//	rho00 = A[i].rho;
-//	u00 = A[i].u;
-//	v00 = A[i].v;
-//	p00 = A[i].p;
-//
-//	rho0 = U0[i][0] / A[i].J[0];
-//	u0 = U0[i][1] / U0[i][0];
-//	v0 = U0[i][2] / U0[i][0];
-//	p0 = (gama - 1)*(U0[i][3] / A[i].J[0] - 0.5*A[i].rho*(A[i].u*A[i].u + A[i].v*A[i].v));
-//
-//	rho1 = U1[i][0] / A[i].J[1];
-//	u1 = U1[i][1] / U1[i][0];
-//	v1 = U1[i][2] / U1[i][0];
-//	p1 = (gama - 1)*(U1[i][3] / A[i].J[1] - 0.5*A[i].rho*(A[i].u*A[i].u + A[i].v*A[i].v));
-//	//rho0 = rho1;
-//	//u0 = u1;
-//	//v0 = v1;
-//	//p0 = p1;
-//
-//	rho2 = U2[i][0] / A[i].J[2];
-//	u2 = U2[i][1] / U2[i][0];
-//	v2 = U2[i][2] / U2[i][0];
-//	p2 = (gama - 1)*(U2[i][3] / A[i].J[1] - 0.5*A[i].rho*(A[i].u*A[i].u + A[i].v*A[i].v));
-//	rho = absmax(absmax(rho0, rho1), rho2);
-//	u = absmin(absmin(u0, u1), u2);
-//	v = absmax(absmax(v0, v1), v2);
-//	p = absmax(absmax(p0, p1), p2);
-//	U[i][0] = rho;
-//	U[i][1] = rho * u;
-//	U[i][2] = rho * v;
-//	U[i][3] = 0.5*rho*(u*u + v * v) + p / (gama - 1);
-//}
-//void choose_U(int i)
-//{
-//	extern vector <mesh> A;
-//
-//	extern double U[Pnum][4];
-//	extern double U0[Pnum][4];
-//	extern double U1[Pnum][4];
-//	extern double U2[Pnum][4];
-//
-//	double u0 = abs(U0[i][1] / U0[i][0]);
-//	double u1 = abs(U1[i][1] / U1[i][0]);
-//	double u2 = abs(U2[i][1] / U2[i][0]);
-//	if (u0 < u1&&u0 < u2)
-//	{
-//		U[i][0] = U0[i][0] / A[i].J[0];
-//		U[i][1] = U0[i][1] / A[i].J[0];
-//		U[i][2] = U0[i][2] / A[i].J[0];
-//		U[i][3] = U0[i][3] / A[i].J[0];
-//	}
-//	else if (u1 < u0&&u1 < u2)
-//	{
-//		U[i][0] = U1[i][0] / A[i].J[1];
-//		U[i][1] = U1[i][1] / A[i].J[1];
-//		U[i][2] = U1[i][2] / A[i].J[1];
-//		U[i][3] = U1[i][3] / A[i].J[1];
-//	}
-//	else
-//	{
-//		U[i][0] = U2[i][0] / A[i].J[2];
-//		U[i][1] = U2[i][1] / A[i].J[2];
-//		U[i][2] = U2[i][2] / A[i].J[2];
-//		U[i][3] = U2[i][3] / A[i].J[2];
-//	}
-//
-//}
-double get_beta(mesh A, mesh B)//求出两个网格点与x轴的夹角
-{
-	double dy = abs(A.y - B.y);
-	double dx = abs(A.x - B.x);
-	double beta = atan(dy / dx);
-	return beta;
-}
-void reorder_neighbor()
-//make the neighbor point store in this order
-//R,U,L,D
-{
-	extern vector<vector <mesh*>> A;
-	double maxy, miny, maxx, minx;
-	mesh* t;
-	for (int i = 0; i < A.size(); i++)
-	{
-		for (int j = 0; j < A[i].size(); j++)
-		{
-			if (A[i][j]->type != "IN" || A[i][j]->neibor.size() < 3)
-				continue;
-			if (A[i][j]->neibor.size() == 4)
-			{
-				mesh* n1 = A[i][j]->neibor[0];
-				mesh* n2 = A[i][j]->neibor[1];
-				mesh* n3 = A[i][j]->neibor[2];
-				mesh* n4 = A[i][j]->neibor[3];
-				double maxy = max(max(max(n1->y, n2->y), n3->y), n4->y);
-				if (n1->y == maxy)
-					t = n1, n1 = n2, n2 = t;
-				else if (n3->y == maxy)
-					t = n3, n3 = n2, n2 = t;
-				else if (n4->y == maxy)
-					t = n4, n4 = n2, n2 = t;
-				double miny = min(min(n1->y, n3->y), n4->y);
-				if (n1->y == miny)
-					t = n1, n1 = n4, n4 = t;
-				else if (n3->y == miny)
-					t = n3, n3 = n4, n4 = t;
-				maxx = max(n1->x, n3->x);
-				if (n3->x == maxx)
-					t = n1, n1 = n3, n3 = t;
-				A[i][j]->neibor[0] = n1;
-				A[i][j]->neibor[1] = n2;
-				A[i][j]->neibor[2] = n3;
-				A[i][j]->neibor[3] = n4;
-			}
-			if (A[i][j]->neibor.size() > 4)
-			{
-				mesh* n1 = A[i][j]->neibor[0];
-				mesh* n2 = A[i][j]->neibor[1];
-				mesh* n3 = A[i][j]->neibor[2];
-				mesh* n4 = A[i][j]->neibor[3];
-				double maxy = max(max(max(n1->y, n2->y), n3->y), n4->y);
-				if (n1->y == maxy)
-					t = n1, n1 = n2, n2 = t;
-				else if (n3->y == maxy)
-					t = n3, n3 = n2, n2 = t;
-				else if (n4->y == maxy)
-					t = n4, n4 = n2, n2 = t;
-				double miny = min(min(n1->y, n3->y), n4->y);
-				if (n1->y == miny)
-					t = n1, n1 = n4, n4 = t;
-				else if (n3->y == miny)
-					t = n3, n3 = n4, n4 = t;
-				maxx = max(n1->x, n3->x);
-				if (n3->x == maxx)
-					t = n1, n1 = n3, n3 = t;
-				A[i][j]->neibor[0] = n1;
-				A[i][j]->neibor[1] = n2;
-				A[i][j]->neibor[2] = n3;
-				A[i][j]->neibor[3] = n4;
-			}
-
-		}
-
-	}
 }
 
 void movemesh()
@@ -1545,17 +458,17 @@ void movemesh()
 	}
 	//extern double t_sim;
 	//extern int step;
-	//extern vector <mesh> A0;
-	//double L0 = A0[Xnum - 1].x0 - A0[0].x0;
+	//extern vector <mesh> AP;
+	//double L0 = AP[Xnum - 1].x0 - AP[0].x0;
 	//double L1 = L0 / 2;
 	////double L = L1 + 0.5*L1*sin(20 * pi*t_sim);
 	//double L = L1 + 0.5 * L1 * sin(pi * step / 2000);
-	//for (int i = 0; i < A0.size(); i++)
+	//for (int i = 0; i < AP.size(); i++)
 	//{
-	//	if (A0[i].x0 < L1)
-	//		A0[i].x = A0[i].x0 * (L / L1);
+	//	if (AP[i].x0 < L1)
+	//		AP[i].x = AP[i].x0 * (L / L1);
 	//	else
-	//		A0[i].x = A0[Xnum - 1].x0 - (A0[Xnum - 1].x0 - A0[i].x0) * ((L0 - L) / L1);
+	//		AP[i].x = AP[Xnum - 1].x0 - (AP[Xnum - 1].x0 - AP[i].x0) * ((L0 - L) / L1);
 	//}
 }
 void findNeiborSec()
@@ -1584,6 +497,508 @@ void findNeiborSec()
 				}
 			}
 
+		}
+	}
+}
+
+void sortPoint()
+//put mesh point into different arrays
+{
+	extern vector<mesh*> ps;//结构网格节点
+	extern vector<mesh*> pu;//非结构网格节点
+	extern vector<mesh*> bl;//左边界
+	extern vector<mesh*> br;//右边界
+	extern vector<mesh*> bu;//上边界
+	extern vector<mesh*> bd;//下边界
+	extern vector<mesh*> bb;//物体边界
+	extern vector <mesh> AP;
+	for (int i = 0; i < AP.size(); i++)
+	{
+		if (AP[i].type == "IN")
+			if (AP[i].neibor.size() == 4 && AP[i].id == i)
+				ps.push_back(&AP[i]);
+			else if (AP[i].neibor.size() == 3 || AP[i].neibor.size() == 4)
+				pu.push_back(&AP[i]);
+			else
+				std::cout << "not a ps or pu inner point" << std::endl;
+		else if (AP[i].type == "L")
+			bl.push_back(&AP[i]);
+		else if (AP[i].type == "R")
+			br.push_back(&AP[i]);
+		else if (AP[i].type == "U")
+			bu.push_back(&AP[i]);
+		else if (AP[i].type == "D")
+			bd.push_back(&AP[i]);
+		else if (AP[i].type == "Body")
+			bb.push_back(&AP[i]);
+		else
+			std::cout << "need to confirm the point's type of ID" << AP[i].id << std::endl;
+	}
+}
+void polymesh()
+//get polygon mesh from grid points
+{
+	extern vector<mesh> AP;
+	extern vector<polygon_mesh>PM;
+	polygon_mesh Ptemp;
+	int i, j;
+	double DELTA = 1e-10;
+	int n1, n2, n3, n4, n5;
+	int size;
+	int id, id1, id2;
+	for (i = 0; i < Xnum * Ynum; i++)
+	{
+		if (i + Xnum + 1 < Xnum * Ynum && abs(AP[i + 1].x - AP[i].x - dx) < DELTA)
+		{
+			n1 = i;
+			n2 = i + 1;
+			n3 = i + Xnum + 1;
+			n4 = i + Xnum;
+			//if only one point is out of body
+			if ((AP[n1].section != 0 && AP[n2].section == 0 && AP[n3].section == 0 && AP[n4].section == 0) ||
+				(AP[n1].section == 0 && AP[n2].section != 0 && AP[n3].section == 0 && AP[n4].section == 0) ||
+				(AP[n1].section == 0 && AP[n2].section == 0 && AP[n3].section != 0 && AP[n4].section == 0) ||
+				(AP[n1].section == 0 && AP[n2].section == 0 && AP[n3].section == 0 && AP[n4].section != 0) ||
+				(AP[n1].section == 0 && AP[n2].section == 0 && AP[n3].section == 0 && AP[n4].section == 0))
+				continue;
+			//if all four points are out of body
+			else if (AP[n1].section != 0 && AP[n2].section != 0 && AP[n3].section != 0 && AP[n4].section != 0)
+			{
+				PM.push_back(Ptemp);
+				size = PM.size() - 1;
+				PM[size].node.push_back(n1);
+				PM[size].node.push_back(n2);
+				PM[size].node.push_back(n3);
+				PM[size].node.push_back(n4);
+				PM[size].face_start.push_back(n1);
+				PM[size].face_start.push_back(n2);
+				PM[size].face_start.push_back(n3);
+				PM[size].face_start.push_back(n4);
+				PM[size].face_end.push_back(n2);
+				PM[size].face_end.push_back(n3);
+				PM[size].face_end.push_back(n4);
+				PM[size].face_end.push_back(n1);
+			}
+			else if (AP[n1].section == 0 && AP[n2].section != 0 && AP[n3].section != 0 && AP[n4].section != 0)
+			{
+				id = AP[n2].connectId;
+				for (j = 0; j < AP[id].neibor.size(); j++)
+				{
+					if (AP[id].neibor[j]->type == "Body")
+						id1 = AP[id].neibor[j]->id;
+				}
+				id = AP[n4].connectId;
+				for (j = 0; j < AP[id].neibor.size(); j++)
+				{
+					if (AP[id].neibor[j]->type == "Body")
+						id2 = AP[id].neibor[j]->id;
+				}
+				if (id1 == id2)
+				{
+					n1 = id1;
+					PM.push_back(Ptemp);
+					size = PM.size() - 1;
+					PM[size].node.push_back(n1);
+					PM[size].node.push_back(n2);
+					PM[size].node.push_back(n3);
+					PM[size].node.push_back(n4);
+					PM[size].face_start.push_back(n1);
+					PM[size].face_start.push_back(n2);
+					PM[size].face_start.push_back(n3);
+					PM[size].face_start.push_back(n4);
+					PM[size].face_end.push_back(n2);
+					PM[size].face_end.push_back(n3);
+					PM[size].face_end.push_back(n4);
+					PM[size].face_end.push_back(n1);
+				}
+				else
+				{
+					n1 = id1;
+					n5 = id2;
+					//judge whether n1 and n5 are already be marked as neighbors
+					int n = 0;
+					for (j = 0; j < AP[n1].neibor.size(); j++)
+					{
+						if (AP[n5].id == AP[n1].neibor[j]->id)
+						{
+							n++;
+							break;
+						}
+					}
+					if (n == 0)
+						AP[n1].neibor.push_back(&AP[n5]);
+					n = 0;
+					for (j = 0; j < AP[n5].neibor.size(); j++)
+					{
+						if (AP[n1].id == AP[n5].neibor[j]->id)
+						{
+							n++;
+							break;
+						}
+					}
+					if (n == 0)
+						AP[n5].neibor.push_back(&AP[n1]);
+					PM.push_back(Ptemp);
+					size = PM.size() - 1;
+					PM[size].node.push_back(n1);
+					PM[size].node.push_back(n2);
+					PM[size].node.push_back(n3);
+					PM[size].node.push_back(n4);
+					PM[size].node.push_back(n5);
+					PM[size].face_start.push_back(n1);
+					PM[size].face_start.push_back(n2);
+					PM[size].face_start.push_back(n3);
+					PM[size].face_start.push_back(n4);
+					PM[size].face_start.push_back(n5);
+					PM[size].face_end.push_back(n2);
+					PM[size].face_end.push_back(n3);
+					PM[size].face_end.push_back(n4);
+					PM[size].face_end.push_back(n5);
+					PM[size].face_end.push_back(n1);
+				}
+			}
+			else if (AP[n1].section != 0 && AP[n2].section == 0 && AP[n3].section != 0 && AP[n4].section != 0)
+			{
+				id = AP[n3].connectId;
+				for (j = 0; j < AP[id].neibor.size(); j++)
+				{
+					if (AP[id].neibor[j]->type == "Body")
+						id1 = AP[id].neibor[j]->id;
+				}
+				id = AP[n1].connectId;
+				for (j = 0; j < AP[id].neibor.size(); j++)
+				{
+					if (AP[id].neibor[j]->type == "Body")
+						id2 = AP[id].neibor[j]->id;
+				}
+				if (id1 == id2)
+				{
+					n2 = id1;
+					PM.push_back(Ptemp);
+					size = PM.size() - 1;
+					PM[size].node.push_back(n1);
+					PM[size].node.push_back(n2);
+					PM[size].node.push_back(n3);
+					PM[size].node.push_back(n4);
+					PM[size].face_start.push_back(n1);
+					PM[size].face_start.push_back(n2);
+					PM[size].face_start.push_back(n3);
+					PM[size].face_start.push_back(n4);
+					PM[size].face_end.push_back(n2);
+					PM[size].face_end.push_back(n3);
+					PM[size].face_end.push_back(n4);
+					PM[size].face_end.push_back(n1);
+				}
+				else
+				{
+					n2 = id1;
+					n5 = id2;
+					//judge whether n1 and n5 are already be marked as neighbors
+					int n = 0;
+					for (j = 0; j < AP[n2].neibor.size(); j++)
+					{
+						if (AP[n5].id == AP[n2].neibor[j]->id)
+						{
+							n++;
+							break;
+						}
+					}
+					if (n == 0)
+						AP[n2].neibor.push_back(&AP[n5]);
+					n = 0;
+					for (j = 0; j < AP[n5].neibor.size(); j++)
+					{
+						if (AP[n2].id == AP[n5].neibor[j]->id)
+						{
+							n++;
+							break;
+						}
+					}
+					if (n == 0)
+						AP[n5].neibor.push_back(&AP[n2]);
+					PM.push_back(Ptemp);
+					size = PM.size() - 1;
+					PM[size].node.push_back(n1);
+					PM[size].node.push_back(n5);
+					PM[size].node.push_back(n2);
+					PM[size].node.push_back(n3);
+					PM[size].node.push_back(n4);
+					PM[size].face_start.push_back(n1);
+					PM[size].face_start.push_back(n5);
+					PM[size].face_start.push_back(n2);
+					PM[size].face_start.push_back(n3);
+					PM[size].face_start.push_back(n4);
+					PM[size].face_end.push_back(n5);
+					PM[size].face_end.push_back(n2);
+					PM[size].face_end.push_back(n3);
+					PM[size].face_end.push_back(n4);
+					PM[size].face_end.push_back(n1);
+				}
+			}
+			else if (AP[n1].section != 0 && AP[n2].section != 0 && AP[n3].section == 0 && AP[n4].section != 0)
+			{
+				id = AP[n4].connectId;
+				for (j = 0; j < AP[id].neibor.size(); j++)
+				{
+					if (AP[id].neibor[j]->type == "Body")
+						id1 = AP[id].neibor[j]->id;
+				}
+				id = AP[n2].connectId;
+				for (j = 0; j < AP[id].neibor.size(); j++)
+				{
+					if (AP[id].neibor[j]->type == "Body")
+						id2 = AP[id].neibor[j]->id;
+				}
+				if (id1 == id2)
+				{
+					n3 = id1;
+					PM.push_back(Ptemp);
+					size = PM.size() - 1;
+					PM[size].node.push_back(n1);
+					PM[size].node.push_back(n2);
+					PM[size].node.push_back(n3);
+					PM[size].node.push_back(n4);
+					PM[size].face_start.push_back(n1);
+					PM[size].face_start.push_back(n2);
+					PM[size].face_start.push_back(n3);
+					PM[size].face_start.push_back(n4);
+					PM[size].face_end.push_back(n2);
+					PM[size].face_end.push_back(n3);
+					PM[size].face_end.push_back(n4);
+					PM[size].face_end.push_back(n1);
+				}
+				else
+				{
+					n3 = id1;
+					n5 = id2;
+					//judge whether n1 and n5 are already be marked as neighbors
+					int n = 0;
+					for (j = 0; j < AP[n3].neibor.size(); j++)
+					{
+						if (AP[n5].id == AP[n3].neibor[j]->id)
+						{
+							n++;
+							break;
+						}
+					}
+					if (n == 0)
+						AP[n3].neibor.push_back(&AP[n5]);
+					n = 0;
+					for (j = 0; j < AP[n5].neibor.size(); j++)
+					{
+						if (AP[n3].id == AP[n5].neibor[j]->id)
+						{
+							n++;
+							break;
+						}
+					}
+					if (n == 0)
+						AP[n5].neibor.push_back(&AP[n3]);
+					PM.push_back(Ptemp);
+					size = PM.size() - 1;
+					PM[size].node.push_back(n1);
+					PM[size].node.push_back(n2);
+					PM[size].node.push_back(n5);
+					PM[size].node.push_back(n3);
+					PM[size].node.push_back(n4);
+					PM[size].face_start.push_back(n1);
+					PM[size].face_start.push_back(n2);
+					PM[size].face_start.push_back(n5);
+					PM[size].face_start.push_back(n3);
+					PM[size].face_start.push_back(n4);
+					PM[size].face_end.push_back(n2);
+					PM[size].face_end.push_back(n5);
+					PM[size].face_end.push_back(n3);
+					PM[size].face_end.push_back(n4);
+					PM[size].face_end.push_back(n1);
+				}
+			}
+			else if (AP[n1].section != 0 && AP[n2].section != 0 && AP[n3].section != 0 && AP[n4].section == 0)
+			{
+				id = AP[n1].connectId;
+				for (j = 0; j < AP[id].neibor.size(); j++)
+				{
+					if (AP[id].neibor[j]->type == "Body")
+						id1 = AP[id].neibor[j]->id;
+				}
+				id = AP[n3].connectId;
+				for (j = 0; j < AP[id].neibor.size(); j++)
+				{
+					if (AP[id].neibor[j]->type == "Body")
+						id2 = AP[id].neibor[j]->id;
+				}
+				if (id1 == id2)
+				{
+					n4 = id1;
+					PM.push_back(Ptemp);
+					size = PM.size() - 1;
+					PM[size].node.push_back(n1);
+					PM[size].node.push_back(n2);
+					PM[size].node.push_back(n3);
+					PM[size].node.push_back(n4);
+					PM[size].face_start.push_back(n1);
+					PM[size].face_start.push_back(n2);
+					PM[size].face_start.push_back(n3);
+					PM[size].face_start.push_back(n4);
+					PM[size].face_end.push_back(n2);
+					PM[size].face_end.push_back(n3);
+					PM[size].face_end.push_back(n4);
+					PM[size].face_end.push_back(n1);
+				}
+				else
+				{
+					n4 = id1;
+					n5 = id2;
+					//judge whether n1 and n5 are already be marked as neighbors
+					int n = 0;
+					for (j = 0; j < AP[n4].neibor.size(); j++)
+					{
+						if (AP[n5].id == AP[n4].neibor[j]->id)
+						{
+							n++;
+							break;
+						}
+					}
+					if (n == 0)
+						AP[n4].neibor.push_back(&AP[n5]);
+					n = 0;
+					for (j = 0; j < AP[n5].neibor.size(); j++)
+					{
+						if (AP[n4].id == AP[n5].neibor[j]->id)
+						{
+							n++;
+							break;
+						}
+					}
+					if (n == 0)
+						AP[n5].neibor.push_back(&AP[n4]);
+					PM.push_back(Ptemp);
+					size = PM.size() - 1;
+					PM[size].node.push_back(n1);
+					PM[size].node.push_back(n2);
+					PM[size].node.push_back(n3);
+					PM[size].node.push_back(n5);
+					PM[size].node.push_back(n4);
+					PM[size].face_start.push_back(n1);
+					PM[size].face_start.push_back(n2);
+					PM[size].face_start.push_back(n3);
+					PM[size].face_start.push_back(n5);
+					PM[size].face_start.push_back(n4);
+					PM[size].face_end.push_back(n2);
+					PM[size].face_end.push_back(n3);
+					PM[size].face_end.push_back(n5);
+					PM[size].face_end.push_back(n4);
+					PM[size].face_end.push_back(n1);
+				}
+			}
+			else
+			{
+				if (AP[n1].section == 0 && AP[n2].section == 0 && AP[n3].section != 0 && AP[n4].section != 0)
+				{
+					id = AP[n3].connectId;
+					for (j = 0; j < AP[id].neibor.size(); j++)
+					{
+						if (AP[id].neibor[j]->type == "Body")
+							id1 = AP[id].neibor[j]->id;
+					}
+					id = AP[n4].connectId;
+					for (j = 0; j < AP[id].neibor.size(); j++)
+					{
+						if (AP[id].neibor[j]->type == "Body")
+							id2 = AP[id].neibor[j]->id;
+					}
+					n1 = id2;
+					n2 = id1;
+				}
+				else if (AP[n1].section != 0 && AP[n2].section == 0 && AP[n3].section == 0 && AP[n4].section != 0)
+				{
+					id = AP[n4].connectId;
+					for (j = 0; j < AP[id].neibor.size(); j++)
+					{
+						if (AP[id].neibor[j]->type == "Body")
+							id1 = AP[id].neibor[j]->id;
+					}
+					id = AP[n1].connectId;
+					for (j = 0; j < AP[id].neibor.size(); j++)
+					{
+						if (AP[id].neibor[j]->type == "Body")
+							id2 = AP[id].neibor[j]->id;
+					}
+					n2 = id2;
+					n3 = id1;
+				}
+				else if (AP[n1].section != 0 && AP[n2].section != 0 && AP[n3].section == 0 && AP[n4].section == 0)
+				{
+					id = AP[n1].connectId;
+					for (j = 0; j < AP[id].neibor.size(); j++)
+					{
+						if (AP[id].neibor[j]->type == "Body")
+							id1 = AP[id].neibor[j]->id;
+					}
+					id = AP[n2].connectId;
+					for (j = 0; j < AP[id].neibor.size(); j++)
+					{
+						if (AP[id].neibor[j]->type == "Body")
+							id2 = (*AP[id].neibor[j]).id;
+					}
+					n3 = id2;
+					n4 = id1;
+				}
+				else if (AP[n1].section == 0 && AP[n2].section != 0 && AP[n3].section != 0 && AP[n4].section == 0)
+				{
+					id = AP[n2].connectId;
+					for (j = 0; j < AP[id].neibor.size(); j++)
+					{
+						if (AP[id].neibor[j]->type == "Body")
+							id1 = AP[id].neibor[j]->id;
+					}
+					id = AP[n3].connectId;
+					for (j = 0; j < AP[id].neibor.size(); j++)
+					{
+						if (AP[id].neibor[j]->type == "Body")
+							id2 = AP[id].neibor[j]->id;
+					}
+					n4 = id2;
+					n1 = id1;
+				}
+				int n = 0;
+				for (j = 0; j < AP[id1].neibor.size(); j++)
+				{
+					if (AP[id2].id == AP[id1].neibor[j]->id)
+					{
+						n++;
+						break;
+					}
+				}
+				if (n == 0)
+					AP[id1].neibor.push_back(&AP[id2]);
+				n = 0;
+				for (j = 0; j < AP[id2].neibor.size(); j++)
+				{
+					if (AP[id1].id == AP[id2].neibor[j]->id)
+					{
+						n++;
+						break;
+					}
+				}
+				if (n == 0)
+					AP[id2].neibor.push_back(&AP[id1]);
+				PM.push_back(Ptemp);
+				size = PM.size() - 1;
+				PM[size].node.push_back(n1);
+				PM[size].node.push_back(n2);
+				PM[size].node.push_back(n3);
+				PM[size].node.push_back(n4);
+				PM[size].face_start.push_back(n1);
+				PM[size].face_start.push_back(n2);
+				PM[size].face_start.push_back(n3);
+				PM[size].face_start.push_back(n4);
+				PM[size].face_end.push_back(n2);
+				PM[size].face_end.push_back(n3);
+				PM[size].face_end.push_back(n4);
+				PM[size].face_end.push_back(n1);
+
+			}
 		}
 	}
 }

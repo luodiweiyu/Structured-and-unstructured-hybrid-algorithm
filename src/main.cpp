@@ -13,16 +13,17 @@
 #include<ctime>
 #include<algorithm>
 using namespace std;
-vector <mesh> A0;
+vector <mesh> AP;//all points
 vector<vector <mesh*>> A;
-vector<mesh*> p3;//三相邻节点
-vector<mesh*> p4;//三相邻节点
+vector<mesh*> ps;//结构网格节点
+vector<mesh*> pu;//非结构网格节点
 vector<mesh*> bl;//左边界
 vector<mesh*> br;//右边界
 vector<mesh*> bu;//上边界
 vector<mesh*> bd;//下边界
 vector<mesh*> bb;//物体边界
-
+vector <polygon_mesh> M0;
+vector<vector <polygon_mesh>> M;
 vector <mesh*> B;
 vector <mesh*> C;
 vector<vector <int>> ad;
@@ -31,9 +32,8 @@ vector<mesh> Ar;//记录上一时刻的物理量；
 double dt;
 double t_sim = 0;
 int step = 0;
-vector <polygon_mesh> M0;
-vector<vector <polygon_mesh>> M;
-vector<Coor> poly;
+vector <polygon_mesh> PM;
+vector<mesh> poly;
 clock_t start;
 clock_t finish;
 double res;
@@ -47,12 +47,11 @@ int main()
 	init_polygon_mesh();
 	getType();
 	partition_Point();
-
-
+	sortPoint();
+	polymesh();
 	//findConnectPoint();
 
 	//out_neighbor();
-	reorder_neighbor();
 	coordinate_trans();
 	initFlow();
 	ofstream fout;
@@ -62,28 +61,27 @@ int main()
 	vector <double> delta_theta;
 	vector <double> delta_d;
 	vector<double>theta;
-	for (int i = 0; i < A0.size(); i++)
+	for (int i = 0; i < AP.size(); i++)
 	{
 		using namespace ConstPara;
-		if (A0[i].type == "Cy")
+		if (AP[i].type == "Body")
 		{
-			delta_d.push_back(distance(A0[i], *A0[i].neibor[0]));
-			theta.push_back(get_theta(A0[i].x, A0[i].y, a, b));
-			if (A0[i].x < a && A0[i].y > b)
+			delta_d.push_back(distance(AP[i], *AP[i].neibor[0]));
+			theta.push_back(get_theta(AP[i].x, AP[i].y, a, b));
+			if (AP[i].x < a && AP[i].y > b)
 				theta[theta.size() - 1] = pi + theta[theta.size() - 1];
-			else if (A0[i].x < a && A0[i].y < b)
+			else if (AP[i].x < a && AP[i].y < b)
 				theta[theta.size() - 1] = pi + theta[theta.size() - 1];
-			else if (A0[i].x > a&& A0[i].y < b)
+			else if (AP[i].x > a&& AP[i].y < b)
 				theta[theta.size() - 1] = 2 * pi + theta[theta.size() - 1];
-			else if (A0[i].x == a && A0[i].y > b)
+			else if (AP[i].x == a && AP[i].y > b)
 				theta[theta.size() - 1] = pi / 2;
-			else if (A0[i].x == a && A0[i].y < b)
+			else if (AP[i].x == a && AP[i].y < b)
 				theta[theta.size() - 1] = 3 * pi / 2;
-			else if (A0[i].x > a&& A0[i].y == b)
+			else if (AP[i].x > a&& AP[i].y == b)
 				theta[theta.size() - 1] = 0;
-			else if (A0[i].x < a && A0[i].y == b)
+			else if (AP[i].x < a && AP[i].y == b)
 				theta[theta.size() - 1] = pi;
-
 		}
 		sort(theta.begin(), theta.end());
 		sort(delta_d.begin(), delta_d.end());
@@ -108,16 +106,30 @@ int main()
 
 	//out_M("mesh/" + methodType + "/step = " + to_string(step));
 	start = clock();
+	int i;
 	while (t_sim < t_end)
 	{
 		record();
 		get_dt();
 		if (t_sim + dt > t_end)
 			dt = t_end - t_sim;
-		//if (t_sim < 1)
-		//	dt = 2.5e-4;
-		update_IN();
-		update_bound_shockwave();
+		for (i = 0; i < ps.size(); i++)
+		{
+			if (ps[i]->sec_num == 0)
+				continue;
+			update_p4_s(*ps[i]);
+			//cout << ps[i]->id << endl;
+		}
+		//cout << "******************" << endl;
+		for (i = 0; i < pu.size(); i++)
+		{
+			if (pu[i]->neibor.size() == 3)
+				update_p3(*pu[i]);
+			else
+				update_p4_u(*pu[i]);
+			AP[pu[i]->connectId] = *pu[i];//replace
+		}
+		update_bound();
 		step++;
 		t_sim = t_sim + dt;
 		if (step % 100 == 0)
@@ -127,23 +139,25 @@ int main()
 			fout.open("mesh/" + to_string(step) + ".dat");
 			fout << "variables=x,y,rho,u,v,p" << endl;
 			//fout << "solutiontime = "<<t_sim << endl;
-			for (int i = 0; i < A0.size(); i++)
+			for (int i = 0; i < AP.size(); i++)
 			{
-				if (A0[i].section != 0)
-					fout << A0[i].x << "  " << A0[i].y << "  " << A0[i].rho << "  " << A0[i].u << "  " << A0[i].v << "  " << A0[i].p << endl;
+				if (AP[i].section != 0)
+					fout << AP[i].x << "  " << AP[i].y << "  " << AP[i].section << "  " << AP[i].u << "  " << AP[i].v << "  " << AP[i].p << endl;
 			}
 			fout.close();
 			fout.clear();
 			fout.open("mesh/C/" + to_string(step) + ".dat");
 			fout << "variables=x,y,rho,u,v,p" << endl;
-			fout << "zone i = 101 j=101 F=point" << endl;
+			fout << "zone i = " << Xnum << " j = " << Ynum << " F = point" << endl;
 			fout << "solutiontime = " << t_sim << endl;
-			for (int i = 0; i < A[0].size(); i++)
+			for (int i = 0; i < ps.size(); i++)
 			{
-				fout << A[0][i]->x << "  " << A[0][i]->y << "  " << A[0][i]->rho << "  " << A[0][i]->u << "  " << A[0][i]->v << "  " << A[0][i]->p << endl;
+				fout << ps[i]->x << "  " << ps[i]->y << "  " << ps[i]->rho << "  " << ps[i]->u << "  " << ps[i]->v << "  " << ps[i]->p << endl;
 			}
 			fout.close();
 			fout.clear();
+			out_M("mesh/step = " + to_string(step));
+
 		}
 
 		//if (step % 10 == 0)

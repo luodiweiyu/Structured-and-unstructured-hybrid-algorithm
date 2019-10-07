@@ -12,7 +12,7 @@ using std::vector;
 using namespace MeshPara;
 void init_mesh()
 {
-	extern vector <mesh> A0;
+	extern vector <mesh> AP;
 	extern vector<vector<int>> ad;
 	mesh t;
 	vector<int> a;
@@ -27,31 +27,31 @@ void init_mesh()
 			{
 				for (j = 0; j < Xnum; j++)
 				{
-					A0.push_back(t);
+					AP.push_back(t);
 					if (j == 0)
 					{
 						if (i == 0)
-							A0[i].x = dx / 2, A0[i].y = 0;
-						else if (A0[i - Xnum].x == 0)
-							A0[i].x = dx / 2, A0[i].y = A0[i - Xnum].y + dy;
+							AP[i].x = dx / 2, AP[i].y = 0;
+						else if (AP[i - Xnum].x == 0)
+							AP[i].x = dx / 2, AP[i].y = AP[i - Xnum].y + dy;
 						else
-							A0[i].x = 0, A0[i].y = A0[i - Xnum].y + dy;
+							AP[i].x = 0, AP[i].y = AP[i - Xnum].y + dy;
 					}
-					else if (A0[i - j].x == 0)
+					else if (AP[i - j].x == 0)
 					{
 						if (j % 2 == 0)
-							A0[i].x = A0[i - 1].x + dx, A0[i].y = A0[i - 1].y;
+							AP[i].x = AP[i - 1].x + dx, AP[i].y = AP[i - 1].y;
 						else
-							A0[i].x = A0[i - 1].x + 2 * dx, A0[i].y = A0[i - 1].y;
+							AP[i].x = AP[i - 1].x + 2 * dx, AP[i].y = AP[i - 1].y;
 					}
 					else
 					{
 						if (j % 2 == 0)
-							A0[i].x = A0[i - 1].x + 2 * dx, A0[i].y = A0[i - 1].y;
+							AP[i].x = AP[i - 1].x + 2 * dx, AP[i].y = AP[i - 1].y;
 						else
-							A0[i].x = A0[i - 1].x + dx, A0[i].y = A0[i - 1].y;
+							AP[i].x = AP[i - 1].x + dx, AP[i].y = AP[i - 1].y;
 					}
-					A0[i].id = i;
+					AP[i].id = i;
 					i++;
 				}
 			}
@@ -62,17 +62,17 @@ void init_mesh()
 			{
 				for (j = 0; j < Xnum; j++)
 				{
-					A0.push_back(t);
+					AP.push_back(t);
 
 					if (j == 0)
 					{
 						if (i == 0)
-							A0[i].x = 0, A0[i].y = 0;
+							AP[i].x = 0, AP[i].y = 0;
 						else
-							A0[i].x = 0, A0[i].y = A0[i - Xnum].y + dy;
+							AP[i].x = 0, AP[i].y = AP[i - Xnum].y + dy;
 					}
 					else
-						A0[i].x = A0[i - 1].x + dx, A0[i].y = A0[i - 1].y;
+						AP[i].x = AP[i - 1].x + dx, AP[i].y = AP[i - 1].y;
 					i++;
 				}
 			}
@@ -98,23 +98,23 @@ void init_mesh()
 			}
 			else
 			{
-				xend = dl * ex + A0[i - 1].x;
-				yend = dl * ey + A0[i - 1].y;
+				xend = dl * ex + AP[i - 1].x;
+				yend = dl * ey + AP[i - 1].y;
 			}
 			dx = xend / (Xnum - 1);
 			for (j = 0; j < Xnum; j++)
 			{
-				A0.push_back(t);
+				AP.push_back(t);
 				if (j == 0)
 				{
 					if (i == 0)
-						A0[i].x = 0, A0[i].y = 0;
+						AP[i].x = 0, AP[i].y = 0;
 					else
-						A0[i].x = 0, A0[i].y = yend;
+						AP[i].x = 0, AP[i].y = yend;
 				}
 				else
 				{
-					A0[i].x = A0[i - 1].x + dx, A0[i].y = A0[i - 1].y;
+					AP[i].x = AP[i - 1].x + dx, AP[i].y = AP[i - 1].y;
 				}
 				i++;
 			}
@@ -155,16 +155,16 @@ void init_mesh()
 			{
 				if (s == 1)
 				{
-					xstart = 1.3 * dl * ex + A0[Xnum - 1].x;
-					ystart = 1.3 * dl * ey + A0[Xnum - 1].y;
+					xstart = 1.3 * dl * ex + AP[Xnum - 1].x;
+					ystart = 1.3 * dl * ey + AP[Xnum - 1].y;
 				}
 				else
 				{
-					xstart = 1.3 * dl * ex + A0[i - Xnum].x;
-					ystart = 1.3 * dl * ey + A0[i - Xnum].y;
+					xstart = 1.3 * dl * ex + AP[i - Xnum].x;
+					ystart = 1.3 * dl * ey + AP[i - Xnum].y;
 				}
-				xend = dl2 * sin(delta2) + A0[i - 1].x;
-				yend = dl2 * cos(delta2) + A0[i - 1].y;
+				xend = dl2 * sin(delta2) + AP[i - 1].x;
+				yend = dl2 * cos(delta2) + AP[i - 1].y;
 			}
 			double d = sqrt((xend - xstart) * (xend - xstart) + (yend - ystart) * (yend - ystart)) / (Xnum - 1);
 			double ex1 = (xend - xstart) / sqrt((xend - xstart) * (xend - xstart) + (yend - ystart) * (yend - ystart));
@@ -173,15 +173,15 @@ void init_mesh()
 			{
 				if (j == 0 && i == Pnum)
 					continue;
-				A0.push_back(t);
+				AP.push_back(t);
 				if (j == 0)
-					A0[i].x = xstart, A0[i].y = ystart;
+					AP[i].x = xstart, AP[i].y = ystart;
 				else
 				{
 					if (i == Pnum)
-						A0[i].x = A0[Xnum - 1].x + d * ex1, A0[i].y = A0[Xnum - 1].y + d * ey1;
+						AP[i].x = AP[Xnum - 1].x + d * ex1, AP[i].y = AP[Xnum - 1].y + d * ey1;
 					else
-						A0[i].x = A0[i - 1].x + d * ex1, A0[i].y = A0[i - 1].y + d * ey1;
+						AP[i].x = AP[i - 1].x + d * ex1, AP[i].y = AP[i - 1].y + d * ey1;
 				}
 				i++;
 				if (i >= 2 * Pnum - 1)
@@ -224,32 +224,32 @@ void init_mesh()
 			else
 			{
 				//本层的起始点和结束点
-				xstart = A0[(j + 1) * Xnum - 1].x;
-				ystart = A0[(j + 1) * Xnum - 1].y;
-				xend = A0[j * Xnum - 1 + Pnum].x;
-				yend = A0[j * Xnum - 1 + Pnum].y;
+				xstart = AP[(j + 1) * Xnum - 1].x;
+				ystart = AP[(j + 1) * Xnum - 1].y;
+				xend = AP[j * Xnum - 1 + Pnum].x;
+				yend = AP[j * Xnum - 1 + Pnum].y;
 				//起始点到结束点的等分长度，以及单位方向向量的xy值
 				double d = sqrt((xend - xstart) * (xend - xstart) + (yend - ystart) * (yend - ystart)) / j;
 				double ex1 = (xend - xstart) / sqrt((xend - xstart) * (xend - xstart) + (yend - ystart) * (yend - ystart));
 				double ey1 = (yend - ystart) / sqrt((xend - xstart) * (xend - xstart) + (yend - ystart) * (yend - ystart));
-				int size = A0.size();
+				int size = AP.size();
 				for (k = 0; k < j - 1; k++)
 				{
-					A0.push_back(t);
-					A0[A0.size() - 1].x = xstart + (k + 1) * d * ex1;
-					A0[A0.size() - 1].y = ystart + (k + 1) * d * ey1;
+					AP.push_back(t);
+					AP[AP.size() - 1].x = xstart + (k + 1) * d * ex1;
+					AP[AP.size() - 1].y = ystart + (k + 1) * d * ey1;
 					if (j == 2)
 					{
 						ad.push_back(a);
 						ad[ad.size() - 1].push_back((j + 1) * Xnum - 1);
 						ad[ad.size() - 1].push_back(j * Xnum - 1);
-						ad[ad.size() - 1].push_back(A0.size() - 1);
+						ad[ad.size() - 1].push_back(AP.size() - 1);
 						ad.push_back(a);
-						ad[ad.size() - 1].push_back(A0.size() - 1);
+						ad[ad.size() - 1].push_back(AP.size() - 1);
 						ad[ad.size() - 1].push_back(j * Xnum - 1);
 						ad[ad.size() - 1].push_back((j - 1) * Xnum - 1 + Pnum);
 						ad.push_back(a);
-						ad[ad.size() - 1].push_back(A0.size() - 1);
+						ad[ad.size() - 1].push_back(AP.size() - 1);
 						ad[ad.size() - 1].push_back((j - 1) * Xnum - 1 + Pnum);
 						ad[ad.size() - 1].push_back(j * Xnum - 1 + Pnum);
 					}
@@ -258,24 +258,24 @@ void init_mesh()
 						ad.push_back(a);
 						ad[ad.size() - 1].push_back((j + 1) * Xnum - 1);
 						ad[ad.size() - 1].push_back(j * Xnum - 1);
-						ad[ad.size() - 1].push_back(A0.size() - 1);
+						ad[ad.size() - 1].push_back(AP.size() - 1);
 						ad.push_back(a);
-						ad[ad.size() - 1].push_back(A0.size() - 1);
+						ad[ad.size() - 1].push_back(AP.size() - 1);
 						ad[ad.size() - 1].push_back(j * Xnum - 1);
 						ad[ad.size() - 1].push_back(size - j + 2);
 					}
 					else if (k == j - 2)
 					{
 						ad.push_back(a);
-						ad[ad.size() - 1].push_back(A0.size() - 1);
+						ad[ad.size() - 1].push_back(AP.size() - 1);
 						ad[ad.size() - 1].push_back((j - 1) * Xnum - 1 + Pnum);
 						ad[ad.size() - 1].push_back(j * Xnum - 1 + Pnum);
 						ad.push_back(a);
-						ad[ad.size() - 1].push_back(A0.size() - 1);
-						ad[ad.size() - 1].push_back(A0.size() - 2);
+						ad[ad.size() - 1].push_back(AP.size() - 1);
+						ad[ad.size() - 1].push_back(AP.size() - 2);
 						ad[ad.size() - 1].push_back(size - j + 2 + k - 1);
 						ad.push_back(a);
-						ad[ad.size() - 1].push_back(A0.size() - 1);
+						ad[ad.size() - 1].push_back(AP.size() - 1);
 						ad[ad.size() - 1].push_back(size - j + 2 + k - 1);
 						ad[ad.size() - 1].push_back((j - 1) * Xnum - 1 + Pnum);
 
@@ -283,11 +283,11 @@ void init_mesh()
 					else
 					{
 						ad.push_back(a);
-						ad[ad.size() - 1].push_back(A0.size() - 1);
-						ad[ad.size() - 1].push_back(A0.size() - 2);
+						ad[ad.size() - 1].push_back(AP.size() - 1);
+						ad[ad.size() - 1].push_back(AP.size() - 2);
 						ad[ad.size() - 1].push_back(size - j + 2 + k - 1);
 						ad.push_back(a);
-						ad[ad.size() - 1].push_back(A0.size() - 1);
+						ad[ad.size() - 1].push_back(AP.size() - 1);
 						ad[ad.size() - 1].push_back(size - j + 2 + k - 1);
 						ad[ad.size() - 1].push_back(size - j + 2 + k);
 					}
@@ -301,24 +301,24 @@ void init_mesh()
 
 void reorderMesh()//将边界变为规则
 {
-	extern vector <mesh> A0;
+	extern vector <mesh> AP;
 	extern vector<vector<int>> ad;
 	using ConstPara::pi;
 	int i = 0;
 	if ((FlowType == "oblique" || FlowType == "intersection" || FlowType == "normal" || FlowType == "couette") && meshType != 20)
 	{
-		for (i = 0; i < A0.size(); i++)
+		for (i = 0; i < AP.size(); i++)
 		{
-			if (abs(A0[i].x - xL) <= 1e-10 || abs(A0[i].x - xR) <= 1e-10)
+			if (abs(AP[i].x - xL) <= 1e-10 || abs(AP[i].x - xR) <= 1e-10)
 				continue;
-			if (abs(A0[i].x - (xL + dx * cos(pi / 3))) <= 1e-10)
-				A0[i].x = xL, A0[i].type = "L";
-			else if (abs(A0[i].x - (xR - dx * cos(pi / 3))) <= 1e-10)
-				A0[i].x = xR, A0[i].type = "R";
-			else if (abs(A0[i].y - (yD + dx * sin(pi / 3))) <= 1e-10)
-				A0[i].y = yD, A0[i].type = "D";
-			else if (abs(A0[i].y - (yU - dx * sin(pi / 3))) <= 1e-10)
-				A0[i].y = yU, A0[i].type = "U";
+			if (abs(AP[i].x - (xL + dx * cos(pi / 3))) <= 1e-10)
+				AP[i].x = xL, AP[i].type = "L";
+			else if (abs(AP[i].x - (xR - dx * cos(pi / 3))) <= 1e-10)
+				AP[i].x = xR, AP[i].type = "R";
+			else if (abs(AP[i].y - (yD + dx * sin(pi / 3))) <= 1e-10)
+				AP[i].y = yD, AP[i].type = "D";
+			else if (abs(AP[i].y - (yU - dx * sin(pi / 3))) <= 1e-10)
+				AP[i].y = yU, AP[i].type = "U";
 		}
 	}
 }
@@ -350,7 +350,7 @@ void remesh_bound()//将边界x或y坐标移动到和内部点相同，改善边界条件
 }
 void init_mesh1()
 {
-	extern vector <mesh> A0;
+	extern vector <mesh> AP;
 	int i, j;
 	i = 0;
 	mesh t;
@@ -358,33 +358,33 @@ void init_mesh1()
 	{
 		for (j = 0; j < Xnum; j++)
 		{
-			A0.push_back(t);
+			AP.push_back(t);
 
 			if (j == 0)
 			{
 				if (i == 0)
-					A0[i].x = 0, A0[i].y = 0;
-				else if (A0[i - Xnum].x == 0)
-					A0[i].x = 0, A0[i].y = A0[i - Xnum].y + dy;
+					AP[i].x = 0, AP[i].y = 0;
+				else if (AP[i - Xnum].x == 0)
+					AP[i].x = 0, AP[i].y = AP[i - Xnum].y + dy;
 				else
-					A0[i].x = 0, A0[i].y = A0[i - Xnum].y + dy;
+					AP[i].x = 0, AP[i].y = AP[i - Xnum].y + dy;
 			}
-			else if (A0[i - j].x == 0)
+			else if (AP[i - j].x == 0)
 			{
 				if (j % 2 == 0)
-					A0[i].x = A0[i - 1].x + dx, A0[i].y = A0[i - 1].y;
+					AP[i].x = AP[i - 1].x + dx, AP[i].y = AP[i - 1].y;
 				else
-					A0[i].x = A0[i - 1].x + dx, A0[i].y = A0[i - 1].y;
+					AP[i].x = AP[i - 1].x + dx, AP[i].y = AP[i - 1].y;
 			}
 			else
 			{
 				if (j % 2 == 0)
-					A0[i].x = A0[i - 1].x + dx, A0[i].y = A0[i - 1].y;
+					AP[i].x = AP[i - 1].x + dx, AP[i].y = AP[i - 1].y;
 				else
-					A0[i].x = A0[i - 1].x + dx, A0[i].y = A0[i - 1].y;
+					AP[i].x = AP[i - 1].x + dx, AP[i].y = AP[i - 1].y;
 			}
-			A0[i].x0 = A0[i].x;
-			A0[i].y0 = A0[i].y;
+			AP[i].x0 = AP[i].x;
+			AP[i].y0 = AP[i].y;
 			i++;
 		}
 	}
@@ -392,7 +392,7 @@ void init_mesh1()
 void init_polygon_mesh()
 {
 
-	extern vector <mesh> A0;
+	extern vector <mesh> AP;
 	extern vector <polygon_mesh> M0;
 	polygon_mesh t;
 	int i, j;
@@ -409,7 +409,7 @@ void init_polygon_mesh()
 			k++;
 			for (int j = 0; j < Xnum; j++)
 			{
-				if (abs(abs(A0[i].x - A0[i + 1].x) - dx) > 1e-10)
+				if (abs(abs(AP[i].x - AP[i + 1].x) - dx) > 1e-10)
 				{
 					i++;
 					continue;
@@ -452,7 +452,7 @@ void init_polygon_mesh()
 		int s;
 		while (i < Pnum)
 		{
-			if (abs(A0[i].x - xR) < 1e-10 || abs(A0[i].y - yU) < 1e-10)
+			if (abs(AP[i].x - xR) < 1e-10 || abs(AP[i].y - yU) < 1e-10)
 			{
 				i++;
 				continue;
@@ -480,41 +480,33 @@ void init_polygon_mesh()
 }
 void getType()
 {
-	extern vector <mesh> A0;
-	extern vector<mesh*> bl;//左边界
-	extern vector<mesh*> br;//右边界
-	extern vector<mesh*> bu;//上边界
-	extern vector<mesh*> bd;//下边界
+	extern vector <mesh> AP;
 	if (FlowType == "oblique" || FlowType == "intersection" || FlowType == "normal" || FlowType == "couette" || FlowType == "cylinder")
 	{
 		int i;
-		int DELTA = 1e-10;
+		float DELTA = 1e-10;
 		for (i = 0; i < Pnum; i++)
 		{
-			if (abs(A0[i].x - xL) < DELTA)
+			if (abs(AP[i].x - xL) < DELTA)
 			{
-				A0[i].type = "L";
-				bl.push_back(&A0[i]);
+				AP[i].type = "L";
 			}
-			else if (abs(A0[i].x - xR) < DELTA)
+			else if (abs(AP[i].x - xR) < DELTA)
 			{
-				A0[i].type = "R";
-				br.push_back(&A0[i]);
+				AP[i].type = "R";
 
 			}
-			else if (abs(A0[i].y - yD) < DELTA)
+			else if (abs(AP[i].y - yD) < DELTA)
 			{
-				A0[i].type = "D";
-				bl.push_back(&A0[i]);
+				AP[i].type = "D";
 			}
-			else if (abs(A0[i].y - yU) < DELTA)
+			else if (abs(AP[i].y - yU) < DELTA)
 			{
-				A0[i].type = "U";
-				bl.push_back(&A0[i]);
+				AP[i].type = "U";
 			}
 			else
 			{
-				A0[i].type = "IN";
+				AP[i].type = "IN";
 			}
 		}
 
@@ -524,28 +516,28 @@ void getType()
 		int i;
 		for (i = 0; i < Pnum; i++)
 		{
-			if (A0[i].x == 0)
-				A0[i].type = "L";
-			else if (A0[i].y == 0)
-				A0[i].type = "DL";//下边界的左半边
+			if (AP[i].x == 0)
+				AP[i].type = "L";
+			else if (AP[i].y == 0)
+				AP[i].type = "DL";//下边界的左半边
 			else
-				A0[i].type = "IN";
+				AP[i].type = "IN";
 
 		}
 		for (i = Pnum; i < 2 * Pnum - 1; i++)
 		{
 			if (i < Pnum + Xnum - 1)
-				A0[i].type = "DR";//下边界的右半边
+				AP[i].type = "DR";//下边界的右半边
 			else if ((i - (Pnum + Xnum - 2)) % Xnum == 0)
-				A0[i].type = "R";
+				AP[i].type = "R";
 			else
-				A0[i].type = "IN";
+				AP[i].type = "IN";
 		}
-		for (i = 2 * Pnum - 1; i < A0.size(); i++)
+		for (i = 2 * Pnum - 1; i < AP.size(); i++)
 		{
-			A0[i].type = "IN";
+			AP[i].type = "IN";
 		}
-		A0[Xnum - 1].type = "IN";
+		AP[Xnum - 1].type = "IN";
 	}
 }
 
@@ -812,7 +804,6 @@ void initFlow()
 			A1.rho = rho1, A1.p = p1, A1.u = u1, A1.v = v1;
 			int i, j;
 			extern vector<vector <mesh*>> A;
-			extern double yU;
 			for (i = 0; i < A.size(); i++)
 			{
 				for (j = 0; j < A[i].size(); j++)
@@ -964,7 +955,7 @@ void init_flow_shockwave()//斜激波
 void init_flow_shockwaveCross()//同侧激波相交
 {
 	extern vector<vector <mesh*>> A;
-	extern vector <mesh> A0;
+	extern vector <mesh> AP;
 	double Ma1;
 	using namespace ShockwaveCross;
 	using namespace Init;
@@ -985,7 +976,7 @@ void init_flow_shockwaveCross()//同侧激波相交
 	mesh A12;
 	mesh A13;
 	vector<mesh> t;
-	A12.x = -dx / 2, A12.y = A0[Pnum - 1].y - 2 * dy * 5 * Ynum / 43;
+	A12.x = -dx / 2, A12.y = AP[Pnum - 1].y - 2 * dy * 5 * Ynum / 43;
 	A13.x = -dx / 2, A13.y = 2 * dy * 5 * Ynum / 43;
 	L12 = getLine(theta12, A12);
 	L13 = getLine(theta13, A13);
@@ -1030,19 +1021,19 @@ void init_flow_shockwaveCross()//同侧激波相交
 void init_flow_cylinder()//圆柱绕流
 {
 	extern vector<vector <mesh*>> A;
-	extern vector <mesh> A0;
+	extern vector <mesh> AP;
 	double Ma1;
 	using namespace Init;
 	int i;
 	using namespace ConstPara;
-	for (i = 0; i < A0.size(); i++)
+	for (i = 0; i < AP.size(); i++)
 	{
-		if (A0[i].section == 0)
-			continue;
-		A0[i].rho = rho0;
-		A0[i].u = u0;
-		A0[i].v = v0;
-		A0[i].p = p0;
+		//if (AP[i].section == 0)
+		//	continue;
+		AP[i].rho = rho0;
+		AP[i].u = u0;
+		AP[i].v = v0;
+		AP[i].p = p0;
 	}
 }
 
@@ -1118,16 +1109,16 @@ void findConnectPoint()
 }
 //void init_Ar()
 //{
-//	extern vector <mesh> A0;
+//	extern vector <mesh> AP;
 //	extern vector <mesh> Ar;
 //	for (int i = 0; i < Pnum; i++)
 //	{
-//		Ar[i].x = A0[i].x;
-//		Ar[i].y = A0[i].y;
-//		Ar[i].rho = A0[i].rho;
-//		Ar[i].u = A0[i].u;
-//		Ar[i].v = A0[i].v;
-//		Ar[i].p = A0[i].p;
-//		Ar[i].neibor = A0[i].neibor;
+//		Ar[i].x = AP[i].x;
+//		Ar[i].y = AP[i].y;
+//		Ar[i].rho = AP[i].rho;
+//		Ar[i].u = AP[i].u;
+//		Ar[i].v = AP[i].v;
+//		Ar[i].p = AP[i].p;
+//		Ar[i].neibor = AP[i].neibor;
 //	}
 //}

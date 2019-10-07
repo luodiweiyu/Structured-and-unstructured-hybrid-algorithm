@@ -67,13 +67,13 @@ namespace MeshPara
 {2,0,1,2},
 {1,2,0,1},
 	};
-	const float delta_r = 1.5;
-	const float xL = 0, xR = 3.0, yU = 3.0, yD = 0;
-	const int Xnum = 400;//x方向点的个数20,40,150
+	const double delta_r = 1.5;
+	const double xL = 0, xR = 3.0, yU = 3.0, yD = 0;
+	const int Xnum = 200;//x方向点的个数20,40,150
 	const int Ynum = Xnum;//y方向点的个数43,87,215
 	const int Pnum = Xnum * Ynum;//一共点的个数
-	const float dx = (xR - xL) / Xnum;
-	const float dy = dx;
+	const double dx = (xR - xL) / (Xnum - 1);
+	const double dy = dx;
 }
 struct Flux
 {
@@ -81,6 +81,31 @@ struct Flux
 	double f2;
 	double f3;
 	double f4;
+	Flux& operator +(const Flux& f)
+	{
+		f1 += f.f1;
+		f2 += f.f2;
+		f3 += f.f3;
+		f4 += f.f4;
+		return *this;
+	}
+	Flux& operator *(unsigned x)
+	{
+		f1 = f1 * x;
+		f2 = f2 * x;
+		f3 = f3 * x;
+		f4 = f4 * x;
+		return *this;
+	}
+	Flux& operator /(unsigned x)
+	{
+		f1 = f1 / x;
+		f2 = f2 / x;
+		f3 = f3 / x;
+		f4 = f4 / x;
+		return *this;
+	}
+
 };
 struct VECTOR//vector
 {
@@ -98,7 +123,8 @@ struct mesh
 {
 	double x;
 	double y;
-	int id;
+	int id;//the address of point
+	int connectId;//connected to same loacation of point
 	double rho;//密度
 	double u;//水平速度
 	double v;//竖直速度
@@ -131,8 +157,6 @@ struct mesh
 	string change = "Y";//周围网格物理量是否改变，没有“N”，改变“Y”；用于计算加速
 	Flux alpha = { 0 };
 	Flux beta = { 0 };
-
-
 };
 struct Line//表示直线Ax+Bx+C=0
 {

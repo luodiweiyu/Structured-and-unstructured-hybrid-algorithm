@@ -9,6 +9,13 @@ double distance(mesh& a, mesh& b)
 	double dy = a.y - b.y;
 	return sqrt(dx * dx + dy * dy);
 }
+double distance(double x1,double y1,double x2,double y2)
+{
+	double dx = x1 - x2;
+	double dy = y1 - y2;
+	return sqrt(dx * dx + dy * dy);
+}
+
 double get_theta(double x1, double y1, double x2, double y2)//求直线与x轴的夹角
 {
 	double theta;
@@ -115,7 +122,7 @@ Line getLine(double theta, mesh A)
 	L.A = k, L.B = -1, L.C = b;
 	return L;
 }
-bool judgeFieldInOut(mesh& A, vector<Coor>& poly)
+bool judgeFieldInOut(mesh& A, vector <mesh> &poly)
 //judge whether the point is inside the polygon
 //html: https://blog.csdn.net/u011722133/article/details/52813374 
 {
@@ -131,18 +138,18 @@ bool judgeFieldInOut(mesh& A, vector<Coor>& poly)
 		minY = min(minY, poly[i].y);
 	}
 	if (A.x<minX || A.x>maxX || A.y<minY || A.y>maxY)
-		c=0;
+		c = 0;
 	else
 		for (i = 0, j = poly.size() - 1; i < poly.size(); j = i++)
 		{
 			//if (poly[j].y == poly[i].y && (poly[i].y > A.y) != (poly[j].y > A.y))
 			//	return !c;
 			/*else*/ if ((poly[i].y > A.y) != (poly[j].y > A.y) && (A.x < (poly[j].x - poly[i].x) * (A.y - poly[i].y) / (poly[j].y - poly[i].y) + poly[i].x))
-				c= !c;
+				c = !c;
 		}
 	return c;
 }
-bool judgeFieldInOut(double x,double y, vector<Coor>& poly)
+bool judgeFieldInOut(double x, double y, vector <mesh> &poly)
 //judge whether the point is inside the polygon
 //html: https://blog.csdn.net/u011722133/article/details/52813374 
 {
@@ -170,9 +177,9 @@ bool judgeFieldInOut(double x,double y, vector<Coor>& poly)
 	return c;
 }
 
-void polygonPoint(vector <Coor>& poly)
+void polygonPoint(vector <mesh>& poly)
 {
-	Coor c;
+	mesh c;
 	if (poly.size() != 0)
 		poly.clear();
 	//Blunt body problem
@@ -207,8 +214,8 @@ void polygonPoint(vector <Coor>& poly)
 		while (beta < 2 * pi)
 		{
 			beta += pi / 400;
-			c.x = r * cos(beta) + a;
-			c.y = r * sin(beta) + b;
+			c.x = (r + 0.5 * MeshPara::dx) * cos(beta) + a;
+			c.y = (r + 0.5 * MeshPara::dx) * sin(beta) + b;
 			poly.push_back(c);
 		}
 
@@ -285,4 +292,24 @@ mesh getCrossPoint(mesh M, double a, double b, double r)//某点和圆心的连线与圆的
 		P.y = (y0 + y1) / 2;
 	}
 	return P;
+}
+double get_beta(mesh A, mesh B)//求出两个网格点与x轴的夹角
+{
+	double dy = abs(A.y - B.y);
+	double dx = abs(A.x - B.x);
+	double beta = atan(dy / dx);
+	return beta;
+}
+int findNearPoint(mesh A, vector<Coor> &poly)//find the closest point of given grid point
+{
+	int i, n;
+	double maxD = -1;
+	for (int i = 0; i < poly.size(); i++)
+	{
+		if (maxD != max(maxD, distance(A.x, A.y, poly[i].x, poly[i].y)))
+		{
+			maxD =  distance(A.x, A.y, poly[i].x, poly[i].y);
+			n = i;
+		}
+	}
 }

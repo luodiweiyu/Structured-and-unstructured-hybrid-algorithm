@@ -41,6 +41,7 @@ Line getLine(mesh A, mesh B);
 Line getLine(double x1, double y1, double x2, double y2);
 bool judgeFieldInOut(mesh& A, vector<mesh>& Poly);
 bool judgeFieldInOut(double x, double y, vector <mesh> &poly);
+bool judgeFieldInOut(double x, double y);
 
 Line getLine(double theta, mesh A);
 double compute_res();//º∆À„≤–≤Ó

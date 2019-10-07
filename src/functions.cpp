@@ -226,13 +226,19 @@ void record()
 	extern double t_sim;
 	int i, j;
 	vector<mesh>t;
-	for (i = 0; i < AP.size(); i++)
-	{
-		if (t_sim == 0)
+	if (t_sim == 0)
+
+		for (i = 0; i < AP.size(); i++)
+		{
 			Ar.push_back(AP[i]);
-		else
+		}
+	else
+
+#pragma omp parallel for
+		for (i = 0; i < AP.size(); i++)
+		{
 			Ar[i] = AP[i];
-	}
+		}
 
 }
 
@@ -268,27 +274,27 @@ void update_p3(mesh& p)
 		Fll = Flr = Fcl = Fcr = Frl = Frr = { 0 };
 		Gdd = Gdu = Gcd = Gcu = Gud = Guu = { 0 };
 
-		Fll = Fll + VanLeerB(Ar[n3], Ar[id].xix[0], Ar[id].xiy[0], Ar[id].xit[0], Ar[id].J[0]);
-		Flr = Flr + VanLeerA(Ar[n3], Ar[id].xix[0], Ar[id].xiy[0], Ar[id].xit[0], Ar[id].J[0]);
-		Fcl = Fcl + VanLeerB(Ar[id], Ar[id].xix[0], Ar[id].xiy[0], Ar[id].xit[0], Ar[id].J[0]);
-		Fcr = Fcr + VanLeerA(Ar[id], Ar[id].xix[0], Ar[id].xiy[0], Ar[id].xit[0], Ar[id].J[0]);
-		Frl = Frl + VanLeerB(Ar[n1], Ar[id].xix[0], Ar[id].xiy[0], Ar[id].xit[0], Ar[id].J[0]);
-		Frr = Frr + VanLeerA(Ar[n1], Ar[id].xix[0], Ar[id].xiy[0], Ar[id].xit[0], Ar[id].J[0]);
+		Fll = Fll + VanLeerB(Ar[n3], Ar[id].xix[j], Ar[id].xiy[j], Ar[id].xit[j], Ar[id].J[j]) * p.J[j];
+		Flr = Flr + VanLeerA(Ar[n3], Ar[id].xix[j], Ar[id].xiy[j], Ar[id].xit[j], Ar[id].J[j]) * p.J[j];
+		Fcl = Fcl + VanLeerB(Ar[id], Ar[id].xix[j], Ar[id].xiy[j], Ar[id].xit[j], Ar[id].J[j]) * p.J[j];
+		Fcr = Fcr + VanLeerA(Ar[id], Ar[id].xix[j], Ar[id].xiy[j], Ar[id].xit[j], Ar[id].J[j]) * p.J[j];
+		Frl = Frl + VanLeerB(Ar[n1], Ar[id].xix[j], Ar[id].xiy[j], Ar[id].xit[j], Ar[id].J[j]) * p.J[j];
+		Frr = Frr + VanLeerA(Ar[n1], Ar[id].xix[j], Ar[id].xiy[j], Ar[id].xit[j], Ar[id].J[j]) * p.J[j];
 
-		Gdd = Gdd + VanLeerB(Ar[n4], Ar[id].etax[0], Ar[id].etay[0], Ar[id].etat[0], Ar[id].J[0]);
-		Gdu = Gdu + VanLeerA(Ar[n4], Ar[id].etax[0], Ar[id].etay[0], Ar[id].etat[0], Ar[id].J[0]);
-		Gcd = Gcd + VanLeerB(Ar[id], Ar[id].etax[0], Ar[id].etay[0], Ar[id].etat[0], Ar[id].J[0]);
-		Gcu = Gcu + VanLeerA(Ar[id], Ar[id].etax[0], Ar[id].etay[0], Ar[id].etat[0], Ar[id].J[0]);
-		Gud = Gud + VanLeerB(Ar[n2], Ar[id].etax[0], Ar[id].etay[0], Ar[id].etat[0], Ar[id].J[0]);
-		Guu = Guu + VanLeerA(Ar[n2], Ar[id].etax[0], Ar[id].etay[0], Ar[id].etat[0], Ar[id].J[0]);
+		Gdd = Gdd + VanLeerB(Ar[n4], Ar[id].etax[j], Ar[id].etay[j], Ar[id].etat[j], Ar[id].J[j]) * p.J[j];
+		Gdu = Gdu + VanLeerA(Ar[n4], Ar[id].etax[j], Ar[id].etay[j], Ar[id].etat[j], Ar[id].J[j]) * p.J[j];
+		Gcd = Gcd + VanLeerB(Ar[id], Ar[id].etax[j], Ar[id].etay[j], Ar[id].etat[j], Ar[id].J[j]) * p.J[j];
+		Gcu = Gcu + VanLeerA(Ar[id], Ar[id].etax[j], Ar[id].etay[j], Ar[id].etat[j], Ar[id].J[j]) * p.J[j];
+		Gud = Gud + VanLeerB(Ar[n2], Ar[id].etax[j], Ar[id].etay[j], Ar[id].etat[j], Ar[id].J[j]) * p.J[j];
+		Guu = Guu + VanLeerA(Ar[n2], Ar[id].etax[j], Ar[id].etay[j], Ar[id].etat[j], Ar[id].J[j]) * p.J[j];
 	}
 	Fll = Fll / j, Flr = Flr / j, Fcl = Fcl / j, Fcr = Fcr / j, Frl = Frl / j, Frr = Frr / j;
 	Gdd = Gdd / j, Gdu = Gdu / j, Gcd = Gcd / j, Gcu = Gcu / j, Gud = Gud / j, Guu = Guu / j;
 
-	U[0] = U[0] - dt * p.J[0] * (Fcr.f1 - Flr.f1 + Frl.f1 - Fcl.f1 + Gcu.f1 - Gdu.f1 + Gud.f1 - Gcd.f1);
-	U[1] = U[1] - dt * p.J[0] * (Fcr.f2 - Flr.f2 + Frl.f2 - Fcl.f2 + Gcu.f2 - Gdu.f2 + Gud.f2 - Gcd.f2);
-	U[2] = U[2] - dt * p.J[0] * (Fcr.f3 - Flr.f3 + Frl.f3 - Fcl.f3 + Gcu.f3 - Gdu.f3 + Gud.f3 - Gcd.f3);
-	U[3] = U[3] - dt * p.J[0] * (Fcr.f4 - Flr.f4 + Frl.f4 - Fcl.f4 + Gcu.f4 - Gdu.f4 + Gud.f4 - Gcd.f4);
+	U[0] = U[0] - dt * (Fcr.f1 - Flr.f1 + Frl.f1 - Fcl.f1 + Gcu.f1 - Gdu.f1 + Gud.f1 - Gcd.f1);
+	U[1] = U[1] - dt * (Fcr.f2 - Flr.f2 + Frl.f2 - Fcl.f2 + Gcu.f2 - Gdu.f2 + Gud.f2 - Gcd.f2);
+	U[2] = U[2] - dt * (Fcr.f3 - Flr.f3 + Frl.f3 - Fcl.f3 + Gcu.f3 - Gdu.f3 + Gud.f3 - Gcd.f3);
+	U[3] = U[3] - dt * (Fcr.f4 - Flr.f4 + Frl.f4 - Fcl.f4 + Gcu.f4 - Gdu.f4 + Gud.f4 - Gcd.f4);
 	p.rho = U[0];
 	p.u = U[1] / U[0];
 	p.v = U[2] / U[0];
@@ -398,17 +404,19 @@ void update_bound()
 	int i;
 	using namespace Init;
 	extern vector<mesh>AP;
+	int id;
 
 	for (i = 0; i < bl.size(); i++)
 	{
 		bl[i]->rho = rho0;
-		bl[i]->u = 10 * sqrt(ConstPara::gama * p0 / rho0);
+		bl[i]->u = 12 * sqrt(ConstPara::gama * p0 / rho0);
 		bl[i]->v = v0;
 		bl[i]->p = p0;
 	}
+
 	for (i = 0; i < br.size(); i++)
 	{
-		int id = br[i]->id;
+		id = br[i]->id;
 		br[i]->rho = AP[id - 1].rho;
 		br[i]->u = AP[id - 1].u;
 		br[i]->v = AP[id - 1].v;
@@ -416,15 +424,16 @@ void update_bound()
 	}
 	for (i = 0; i < bu.size(); i++)
 	{
-		int id = bu[i]->id;
+		id = bu[i]->id;
 		bu[i]->rho = AP[id - Xnum].rho;
 		bu[i]->u = AP[id - Xnum].u;
 		bu[i]->v = AP[id - Xnum].v;
 		bu[i]->p = AP[id - Xnum].p;
 	}
+
 	for (i = 0; i < bd.size(); i++)
 	{
-		int id = bd[i]->id;
+		id = bd[i]->id;
 		bd[i]->rho = AP[id + Xnum].rho;
 		bd[i]->u = AP[id + Xnum].u;
 		bd[i]->v = AP[id + Xnum].v;
@@ -433,21 +442,39 @@ void update_bound()
 	for (i = 0; i < bb.size(); i++)
 	{
 		double DELTA = 1e-10;
-		double nx = bb[i]->x - a;
-		double ny = bb[i]->y - b;
-		double tx, ty;
-		if (ny > 0)
-		{
-			tx = ny;
-			ty = -nx;
-		}
-		else
-		{
-			tx = -ny;
-			ty = nx;
-		}
-		double n1 = bb[i]->neibor[0]->u;
-		double n2 = bb[i]->neibor[0]->v;
+		double nx, ny, tx, ty, n1, n2;
+		nx = bb[i]->neibor[0]->x - bb[i]->x;
+		ny = bb[i]->neibor[0]->y - bb[i]->y;
+		tx = -ny, ty = nx;
+		//if (bb[i]->x < a)
+		//{
+		//	nx = bb[i]->x - a;
+		//	ny = bb[i]->y - b;
+		//	if (ny > 0)
+		//	{
+		//		tx = ny;
+		//		ty = -nx;
+		//	}
+		//	else
+		//	{
+		//		tx = -ny;
+		//		ty = nx;
+		//	}
+		//}
+		//else if (bb[i]->y > b)
+		//{
+		//	double k = tan(4.6 * ConstPara::pi / 180);
+		//	nx = -k, ny = 1;
+		//	tx = 1, ty = k;
+		//}
+		//else
+		//{
+		//	double k = tan(-4.6 * ConstPara::pi / 180);
+		//	nx = -k, ny = 1;
+		//	tx = 1, ty = k;
+		//}
+		n1 = bb[i]->neibor[0]->u;
+		n2 = bb[i]->neibor[0]->v;
 		if ((abs(n1) < DELTA && abs(n2) < DELTA)/* || (abs(tx) < DELTA || abs(ty) < DELTA)*/)
 		{
 			bb[i]->rho = bb[i]->neibor[0]->rho;
@@ -469,6 +496,15 @@ void update_bound()
 			bb[i]->v = v;
 			bb[i]->p = bb[i]->neibor[0]->p;
 		}
+		//bb[i]->rho = bb[i]->neibor[0]->rho;
+		//bb[i]->u = bb[i]->neibor[0]->u;
+		//bb[i]->v = bb[i]->neibor[0]->v;
+		//bb[i]->p = bb[i]->neibor[0]->p;
+		//bb[i]->rho = rho0;
+		//bb[i]->u = 0;
+		//bb[i]->v = 0;
+		//bb[i]->p = p0;
+
 	}
 
 }
@@ -544,15 +580,27 @@ void sortPoint()
 	extern vector<mesh*> bd;//下边界
 	extern vector<mesh*> bb;//物体边界
 	extern vector <mesh> AP;
+	int n;
 	for (int i = 0; i < AP.size(); i++)
 	{
 		if (AP[i].type == "IN")
-			if (AP[i].neibor.size() == 4 && AP[i].section != -1)
+		{
+			n = 0;
+			for (int j = 0; j < AP[i].neibor.size(); j++)
+				if (AP[i].neibor[j]->type=="Body")
+					n++;
+			if(n==0&& AP[i].neibor.size()==4)
 				ps.push_back(&AP[i]);
-			else if (AP[i].neibor.size() == 3 || AP[i].neibor.size() == 4)
-				pu.push_back(&AP[i]);
 			else
-				std::cout << "not a ps or pu inner point" << std::endl;
+				pu.push_back(&AP[i]);
+		}
+			//if (AP[i].neibor.size() == 4 )
+			//	for
+			//	ps.push_back(&AP[i]);
+			//else if (AP[i].neibor.size() == 3 || AP[i].neibor.size() == 4)
+			//	pu.push_back(&AP[i]);
+			//else
+			//	std::cout << "not a ps or pu inner point" << std::endl;
 		else if (AP[i].type == "L")
 			bl.push_back(&AP[i]);
 		else if (AP[i].type == "R")

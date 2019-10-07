@@ -8,9 +8,9 @@ using ConstPara::t_end;
 
 namespace Init//³õÊ¼Íø¸ñ
 {
-	double rho0 = 1;
+	double rho0 = 10;
 	double v0 = 0;
-	double p0 = 1;
+	double p0 = 10;
 	double u0 = 0 * sqrt(ConstPara::gama * p0 / rho0);
 }
 namespace Normal

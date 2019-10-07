@@ -1,6 +1,7 @@
 #include<iostream>
 #include<fstream>
 #include<cmath>
+#include<omp.h>
 #include"include/const.h"
 #include"include/functions.h"
 #include"include/init.h"
@@ -113,18 +114,21 @@ int main()
 		get_dt();
 		if (t_sim + dt > t_end)
 			dt = t_end - t_sim;
+//#pragma omp parallel for
 		for (i = 0; i < ps.size(); i++)
 		{
-			if (ps[i]->sec_num == 0)
+			if (ps[i]->section != 1)
 				continue;
 			update_p4_s(*ps[i]);
 		}
 		//cout << "******************" << endl;
-
 		for (i = 0; i < pu.size(); i++)
 		{
 			if (pu[i]->neibor.size() == 3)
+			{
 				update_p3(*pu[i]);
+				//cout << 1111 << endl;
+			}
 			else
 				update_p4_u(*pu[i]);
 			AP[pu[i]->connectId] = *pu[i];//replace
@@ -133,7 +137,7 @@ int main()
 		update_bound();
 		step++;
 		t_sim = t_sim + dt;
-		if (step % 100 == 0)
+		if (step % 10 == 0)
 		{
 			cout << t_sim << "  " << dt << "   " << step << endl;
 			ofstream fout;
@@ -143,7 +147,7 @@ int main()
 			for (int i = 0; i < AP.size(); i++)
 			{
 				//if (AP[i].section != 0)
-					fout << AP[i].x << "  " << AP[i].y << "  " << AP[i].section << "  " << AP[i].u << "  " << AP[i].v << "  " << AP[i].p << endl;
+				fout << AP[i].x << "  " << AP[i].y << "  " << AP[i].section << "  " << AP[i].u << "  " << AP[i].v << "  " << AP[i].p << endl;
 			}
 			fout.close();
 			fout.clear();
@@ -236,6 +240,6 @@ int main()
 		//if (step > 1000 && res < 1e-10)
 		//	break;
 	}
-	out_M("mesh/" + methodType + "/step = " + to_string(step));
+	out_M("mesh/step = " + to_string(step));
 	system("PAUSE");
 }

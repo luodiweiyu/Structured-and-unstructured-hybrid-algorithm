@@ -9,7 +9,7 @@ double distance(mesh& a, mesh& b)
 	double dy = a.y - b.y;
 	return sqrt(dx * dx + dy * dy);
 }
-double distance(double x1,double y1,double x2,double y2)
+double distance(double x1, double y1, double x2, double y2)
 {
 	double dx = x1 - x2;
 	double dy = y1 - y2;
@@ -122,7 +122,7 @@ Line getLine(double theta, mesh A)
 	L.A = k, L.B = -1, L.C = b;
 	return L;
 }
-bool judgeFieldInOut(mesh& A, vector <mesh> &poly)
+bool judgeFieldInOut(mesh& A, vector <mesh>& poly)
 //judge whether the point is inside the polygon
 //html: https://blog.csdn.net/u011722133/article/details/52813374 
 {
@@ -149,7 +149,7 @@ bool judgeFieldInOut(mesh& A, vector <mesh> &poly)
 		}
 	return c;
 }
-bool judgeFieldInOut(double x, double y, vector <mesh> &poly)
+bool judgeFieldInOut(double x, double y, vector <mesh>& poly)
 //judge whether the point is inside the polygon
 //html: https://blog.csdn.net/u011722133/article/details/52813374 
 {
@@ -176,50 +176,74 @@ bool judgeFieldInOut(double x, double y, vector <mesh> &poly)
 		}
 	return c;
 }
-
+bool judgeFieldInOut(double x, double y)
+{
+	int c = 0;
+	double r1 = r+MeshPara::dx;
+	if (x <= a)
+	{
+		if ((x - a) * (x - a) + (y - b) * (y - b) > r1 * r1)
+			return c;
+		else
+			return !c;
+	}
+	else
+	{
+		double k1 = tan(4.6 * ConstPara::pi / 180);
+		double k2 = tan(-4.6 * ConstPara::pi / 180);
+		double x1 = a, y1 = b + r1;
+		double x2 = a, y2 = b - r1;
+		double b1 = y1 - k1 * x1;
+		double b2 = y2 - k2 * x2;
+		if (k1 * x + b1 < y || k2 * x + b2 > y)
+			return c;
+		else
+			return !c;
+	}
+}
 void polygonPoint(vector <mesh>& poly)
 {
 	mesh c;
 	if (poly.size() != 0)
 		poly.clear();
 	//Blunt body problem
-	//else
-	//{
-	//	float alpha = 4.6 * pi / 180;
-	//	c.x = 1.0 + r;
-	//	c.y = 1.5 + r;
-	//	poly.push_back(c);
-	//	c.x = 3;
-	//	c.y = (3.0 - 1.0 - r) * tan(alpha) + 1.5 + r;
-	//	poly.push_back(c);
-	//	c.y = (3.0 - 1.0 - r) * tan(-alpha) + 1.5 - r;
-	//	poly.push_back(c);
-	//	c.x = 1.0 + r;
-	//	c.y = 1.5 - r;
-	//	poly.push_back(c);
-	//	float beta = 3 * pi / 2;
-	//	while (beta > pi / 2)
-	//	{
-	//		beta -= pi / 400;
-	//		c.x = r * cos(beta) + a;
-	//		c.y = r * sin(beta) + b;
-	//		poly.push_back(c);
-	//	}
-	//}
-
-	//cylinder problem
 	else
 	{
-		float beta = 0;
-		while (beta < 2 * pi)
+		double alpha = 4.6 * pi / 180;
+		c.x = 1.0 + r;
+		c.y = 1.5 + r;
+		poly.push_back(c);
+		c.x = 3;
+		c.y = (3.0 - 1.0 - r) * tan(alpha) + 1.5 + r;
+		poly.push_back(c);
+		c.y = (3.0 - 1.0 - r) * tan(-alpha) + 1.5 - r;
+		poly.push_back(c);
+		c.x = 1.0 + r;
+		c.y = 1.5 - r;
+		poly.push_back(c);
+		float beta = 3 * pi / 2;
+		while (beta > pi / 2)
 		{
-			beta += pi / 400;
-			c.x = (r + 0.5 * MeshPara::dx) * cos(beta) + a;
-			c.y = (r + 0.5 * MeshPara::dx) * sin(beta) + b;
+			beta -= pi / 400;
+			c.x = r * cos(beta) + a;
+			c.y = r * sin(beta) + b;
 			poly.push_back(c);
 		}
-
 	}
+
+	//cylinder problem
+	//else
+	//{
+	//	float beta = 0;
+	//	while (beta < 2 * pi)
+	//	{
+	//		beta += pi / 400;
+	//		c.x = (r + 0.5 * MeshPara::dx) * cos(beta) + a;
+	//		c.y = (r + 0.5 * MeshPara::dx) * sin(beta) + b;
+	//		poly.push_back(c);
+	//	}
+
+	//}
 }
 mesh getCrossPoint(double theta, double a, double b, double r)
 {
@@ -300,7 +324,7 @@ double get_beta(mesh A, mesh B)//求出两个网格点与x轴的夹角
 	double beta = atan(dy / dx);
 	return beta;
 }
-int findNearPoint(mesh A, vector<Coor> &poly)//find the closest point of given grid point
+int findNearPoint(mesh A, vector<Coor>& poly)//find the closest point of given grid point
 {
 	int i, n;
 	double maxD = -1;
@@ -308,7 +332,7 @@ int findNearPoint(mesh A, vector<Coor> &poly)//find the closest point of given g
 	{
 		if (maxD != max(maxD, distance(A.x, A.y, poly[i].x, poly[i].y)))
 		{
-			maxD =  distance(A.x, A.y, poly[i].x, poly[i].y);
+			maxD = distance(A.x, A.y, poly[i].x, poly[i].y);
 			n = i;
 		}
 	}

@@ -80,19 +80,35 @@ void partition_Point()//Partition existing grid points
 				//if ((xd - a) * (xd - a) + (yd - b) * (yd - b) > r1* r1)
 				//	n4 = 1;
 				//if ((x - a) * (x - a) + (y - b) * (y - b) <= r1 * r1)
-				if (judgeFieldInOut(AP[i], poly))
-					AP[i].section = 0, AP[i].sec_num = 0;
-				else if (!judgeFieldInOut(AP[i], poly))
 
+
+				//if (judgeFieldInOut(AP[i], poly))
+				//	AP[i].section = 0, AP[i].sec_num = 0;
+				//else if (!judgeFieldInOut(AP[i], poly))
+
+				//{
+					//if (!judgeFieldInOut(xl, yl, poly))
+					//	n1 = 1;
+					//if (!judgeFieldInOut(xr, yr, poly))
+					//	n2 = 1;
+					//if (!judgeFieldInOut(xu, yu, poly))
+					//	n3 = 1;
+					//if (!judgeFieldInOut(xd, yd, poly))
+					//	n4 = 1;
+				if (judgeFieldInOut(AP[i].x, AP[i].y))
+					AP[i].section = 0, AP[i].sec_num = 0;
+				else 
 				{
-					if (!judgeFieldInOut(xl, yl, poly))
+
+					if (!judgeFieldInOut(xl, yl))
 						n1 = 1;
-					if (!judgeFieldInOut(xr, yr, poly))
+					if (!judgeFieldInOut(xr, yr))
 						n2 = 1;
-					if (!judgeFieldInOut(xu, yu, poly))
+					if (!judgeFieldInOut(xu, yu))
 						n3 = 1;
-					if (!judgeFieldInOut(xd, yd, poly))
+					if (!judgeFieldInOut(xd, yd))
 						n4 = 1;
+
 					n = n1 + n2 + n3 + n4;
 					if (n == 4)
 						AP[i].section = 1, AP[i].sec_num = 1;
@@ -106,7 +122,30 @@ void partition_Point()//Partition existing grid points
 						AP[i].connectId = size;
 						vector<mesh*> v;
 						AP[size].neibor.swap(v);
-						AP.push_back(getCrossPoint(AP[AP.size() - 1], a, b, r));//create a new point on the body
+						double r1 = r;
+						if (AP[i].x < a)
+						{
+							AP.push_back(getCrossPoint(AP[AP.size() - 1], a, b, r1));//create a new point on the body
+						}
+						else if (AP[i].y > b)
+						{
+							double x0 = a, y0 = b + r1;
+							double k = tan(4.6 * ConstPara::pi / 180);
+							Line L1, L2;
+							L1.A = k, L1.B = -1, L1.C = y0 - k * x0;
+							L2.A = -1 / k, L2.B = -1, L2.C = AP[i].y - (-1 / k) * AP[i].x;
+
+							AP.push_back(getCrossPoint(L1, L2));
+						}
+						else if (AP[i].y < b)
+						{
+							double x0 = a, y0 = b - r1;
+							double k = tan(-4.6 * ConstPara::pi / 180);
+							Line L1, L2;
+							L1.A = k, L1.B = -1, L1.C = y0 - k * x0;
+							L2.A = -1 / k, L2.B = -1, L2.C = AP[i].y - (-1 / k) * AP[i].x;
+							AP.push_back(getCrossPoint(L1, L2));
+						}
 						AP[AP.size() - 1].id = AP.size() - 1;
 						AP[AP.size() - 1].type = "Body";
 						AP[AP.size() - 1].neibor.push_back(&AP[size]);

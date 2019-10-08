@@ -405,14 +405,16 @@ void update_bound()
 	using namespace Init;
 	extern vector<mesh>AP;
 	int id;
+#pragma omp parallel for
 
 	for (i = 0; i < bl.size(); i++)
 	{
 		bl[i]->rho = rho0;
-		bl[i]->u = 12 * sqrt(ConstPara::gama * p0 / rho0);
+		bl[i]->u = 13 * sqrt(ConstPara::gama * p0 / rho0);
 		bl[i]->v = v0;
 		bl[i]->p = p0;
 	}
+#pragma omp parallel for private(id)
 
 	for (i = 0; i < br.size(); i++)
 	{
@@ -422,6 +424,8 @@ void update_bound()
 		br[i]->v = AP[id - 1].v;
 		br[i]->p = AP[id - 1].p;
 	}
+#pragma omp parallel for private(id)
+
 	for (i = 0; i < bu.size(); i++)
 	{
 		id = bu[i]->id;
@@ -430,6 +434,7 @@ void update_bound()
 		bu[i]->v = AP[id - Xnum].v;
 		bu[i]->p = AP[id - Xnum].p;
 	}
+#pragma omp parallel for private(id)
 
 	for (i = 0; i < bd.size(); i++)
 	{
@@ -487,8 +492,8 @@ void update_bound()
 			double costheta = (tx * n1 + ty * n2) / (sqrt(tx * tx + ty * ty) * sqrt(n1 * n1 + n2 * n2));
 			double ex = tx / sqrt(tx * tx + ty * ty);
 			double ey = ty / sqrt(tx * tx + ty * ty);
-			double u = (n1 * n1 + n2 * n2) * costheta * ex;
-			double v = (n1 * n1 + n2 * n2) * costheta * ey;
+			double u = sqrt(n1 * n1 + n2 * n2) * costheta * ex;
+			double v = sqrt(n1 * n1 + n2 * n2) * costheta * ey;
 			//std::cout << costheta << "  " << ex << "  " << ey << std::endl;
 			//std::cout << A0[i].neibor[0]->u << "  " << A0[i].neibor[0]->v << "  " << u << "  " << v << std::endl;
 			bb[i]->rho = bb[i]->neibor[0]->rho;

@@ -114,7 +114,7 @@ int main()
 		get_dt();
 		if (t_sim + dt > t_end)
 			dt = t_end - t_sim;
-//#pragma omp parallel for
+#pragma omp parallel for
 		for (i = 0; i < ps.size(); i++)
 		{
 			if (ps[i]->section != 1)
@@ -137,7 +137,7 @@ int main()
 		update_bound();
 		step++;
 		t_sim = t_sim + dt;
-		if (step % 10 == 0)
+		if (step % 100 == 0)
 		{
 			cout << t_sim << "  " << dt << "   " << step << endl;
 			ofstream fout;

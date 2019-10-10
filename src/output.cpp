@@ -1,8 +1,11 @@
+#include<iostream>
 #include<fstream>
-#include"include/const.h"
 #include<iomanip>
 #include<string>
+#include<algorithm>
+#include"include/const.h"
 #include"include/shockwave.h"
+#include"include/functions.h"
 using namespace std;
 using namespace MeshPara;
 void out_mesh(string name)
@@ -369,7 +372,29 @@ void out_res()
 		fout.open("res.dat", ios::app);
 		fout << t_sim << "   " << res << endl;
 	}
-
+}
+void outNeiborLines(vector<mesh*> m, string filename)
+{
+	int i, j;
+	extern vector<mesh>AP;
+	ofstream fout(filename);
+	int E = 0;
+	for (i = 0; i < m.size(); i++)
+	{
+		for (j = 0; j < m[i]->neibor.size(); j++)
+			E++;
+	}
+	fout << "variables = x,y" << endl;
+	fout << "ZONE N = " << AP.size() << ", E = " << E << ", F = FEPOINT, ET = TRIANGLE" << endl;
+	for (i = 0; i < AP.size(); i++)
+	{
+		fout << AP[i].x << "  " << AP[i].y << endl;
+	}
+	for (i = 0; i < m.size(); i++)
+	{
+		for (j = 0; j < m[i]->neibor.size(); j++)
+			fout << m[i]->id + 1 << "  " << m[i]->id + 1 << "  " << m[i]->neibor[j]->id + 1 << endl;
+	}
 }
 //void outmesh_polygon(string name)
 //{
@@ -464,3 +489,56 @@ void out_res()
 //	}
 //
 //}
+void out_deltat_theta_d()
+{
+	ofstream fout;
+	extern vector<mesh>AP;
+	fout.open(to_string(Xnum) + "X" + to_string(Ynum) + ".dat", ios::app);
+	fout << "variables=theta, delta_theta" << endl;
+	fout << "zone T = \"dr = r +" << to_string(delta_r) + "r\"" << endl;
+	vector <double> delta_theta;
+	vector <double> delta_d;
+	vector<double>theta;
+	for (int i = 0; i < AP.size(); i++)
+	{
+		using namespace ConstPara;
+		if (AP[i].type == "Body")
+		{
+			delta_d.push_back(distance(AP[i], *AP[i].neibor[0]));
+			theta.push_back(get_theta(AP[i].x, AP[i].y, a, b));
+			if (AP[i].x < a && AP[i].y > b)
+				theta[theta.size() - 1] = pi + theta[theta.size() - 1];
+			else if (AP[i].x < a && AP[i].y < b)
+				theta[theta.size() - 1] = pi + theta[theta.size() - 1];
+			else if (AP[i].x > a&& AP[i].y < b)
+				theta[theta.size() - 1] = 2 * pi + theta[theta.size() - 1];
+			else if (AP[i].x == a && AP[i].y > b)
+				theta[theta.size() - 1] = pi / 2;
+			else if (AP[i].x == a && AP[i].y < b)
+				theta[theta.size() - 1] = 3 * pi / 2;
+			else if (AP[i].x > a&& AP[i].y == b)
+				theta[theta.size() - 1] = 0;
+			else if (AP[i].x < a && AP[i].y == b)
+				theta[theta.size() - 1] = pi;
+		}
+		sort(theta.begin(), theta.end());
+		sort(delta_d.begin(), delta_d.end());
+	}
+	using ConstPara::pi;
+
+	for (int i = 0; i < theta.size(); i++)
+	{
+		//fout << theta[i] << endl;
+		if (i != theta.size() - 1)
+			delta_theta.push_back(theta[i + 1] - theta[i]);
+		else
+			delta_theta.push_back(theta[0] + 2 * pi - theta[i]);
+		fout << theta[i] * 180 / pi << "   " << delta_theta[i] * 180 / pi << endl;
+	}
+	fout.close();
+	fout.clear();
+	sort(delta_theta.begin(), delta_theta.end());
+	//cout << delta_theta[0] * 180 / pi << "   " << delta_theta[delta_theta.size() - 1] * 180 / pi << endl;
+	cout << delta_d[0] / dx << "dx   " << delta_d[delta_d.size() - 1] / dx << "dx" << endl;
+
+}

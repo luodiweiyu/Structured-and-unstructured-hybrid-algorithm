@@ -147,6 +147,31 @@ bool judgeFieldInOut(mesh& A, vector <mesh>& poly)
 			/*else*/ if ((poly[i].y > A.y) != (poly[j].y > A.y) && (A.x < (poly[j].x - poly[i].x) * (A.y - poly[i].y) / (poly[j].y - poly[i].y) + poly[i].x))
 				c = !c;
 		}
+	if (c == 0)
+	{
+		int near_id = findNearPoint(A, poly);
+		double  d1, d2, d3;
+		if (near_id == 0)
+		{
+			d1 = distance(A, poly[poly.size() - 1]);
+			d2 = distance(A, poly[0]);
+			d3 = distance(A, poly[1]);
+		}
+		else if (near_id == poly.size() - 1)
+		{
+			d1 = distance(A, poly[poly.size() - 2]);
+			d2 = distance(A, poly[poly.size() - 1]);
+			d3 = distance(A, poly[0]);
+		}
+		else
+		{
+			d1 = distance(A, poly[near_id - 1]);
+			d2 = distance(A, poly[near_id]);
+			d3 = distance(A, poly[near_id + 1]);
+		}
+		if (d2 < 0.5 * MeshPara::dx/*d1 / d2 > 2 || d2 / d1 > 2 || d2 / d3 > 2 || d3 / d2 > 2*/)
+			c = 1;
+	}
 	return c;
 }
 bool judgeFieldInOut(double x, double y, vector <mesh>& poly)
@@ -174,15 +199,40 @@ bool judgeFieldInOut(double x, double y, vector <mesh>& poly)
 			/*else*/ if ((poly[i].y > y) != (poly[j].y > y) && (x < (poly[j].x - poly[i].x) * (y - poly[i].y) / (poly[j].y - poly[i].y) + poly[i].x))
 				c = !c;
 		}
+	if (c == 0)
+	{
+		int near_id = findNearPoint(x, y, poly);
+		double d1, d2, d3;
+		if (near_id == 0)
+		{
+			d1 = distance(x, y, poly[poly.size() - 1].x, poly[poly.size() - 1].y);
+			d2 = distance(x, y, poly[0].x, poly[0].y);
+			d3 = distance(x, y, poly[1].x, poly[1].y);
+		}
+		else if (near_id == poly.size() - 1)
+		{
+			d1 = distance(x, y, poly[poly.size() - 2].x, poly[poly.size() - 2].y);
+			d2 = distance(x, y, poly[poly.size() - 1].x, poly[poly.size() - 1].y);
+			d3 = distance(x, y, poly[0].x, poly[0].y);
+		}
+		else
+		{
+			d1 = distance(x, y, poly[near_id - 1].x, poly[near_id - 1].y);
+			d2 = distance(x, y, poly[near_id].x, poly[near_id].y);
+			d3 = distance(x, y, poly[near_id + 1].x, poly[near_id + 1].y);
+		}
+		if (d2 < 0.5 * MeshPara::dx/*d1 / d2 > 2 || d2 / d1 > 2 || d2 / d3 > 2 || d3 / d2 > 2*/)
+			c =!c;
+	}
 	return c;
 }
 bool judgeFieldInOut(double x, double y)
 {
 	int c = 0;
-	double r1 = r+MeshPara::dx;
+	double r1 = r + 0.5 * MeshPara::dx;
 	if (x <= a)
 	{
-		if ((x - a) * (x - a) + (y - b) * (y - b) > r1 * r1)
+		if ((x - a) * (x - a) + (y - b) * (y - b) > r1* r1)
 			return c;
 		else
 			return !c;
@@ -203,28 +253,59 @@ bool judgeFieldInOut(double x, double y)
 }
 void polygonPoint(vector <mesh>& poly)
 {
-	mesh c;
+	mesh c1, c2, c3, c4, c;
+	VECTOR v1, v2, v3;
+	double S = 400;
 	if (poly.size() != 0)
 		poly.clear();
 	//Blunt body problem
 	else
 	{
 		double alpha = 4.6 * pi / 180;
-		c.x = 1.0 + r;
-		c.y = 1.5 + r;
-		poly.push_back(c);
-		c.x = 3;
-		c.y = (3.0 - 1.0 - r) * tan(alpha) + 1.5 + r;
-		poly.push_back(c);
-		c.y = (3.0 - 1.0 - r) * tan(-alpha) + 1.5 - r;
-		poly.push_back(c);
-		c.x = 1.0 + r;
-		c.y = 1.5 - r;
-		poly.push_back(c);
-		float beta = 3 * pi / 2;
+		c1.x = 1.0 + r;
+		c1.y = 1.5 + r;
+		c2.x = 3;
+		c2.y = (3.0 - 1.0 - r) * tan(alpha) + 1.5 + r;
+		c3.x = 3;
+		c3.y = (3.0 - 1.0 - r) * tan(-alpha) + 1.5 - r;
+		c4.x = 1.0 + r;
+		c4.y = 1.5 - r;
+		v1.x = c2.x - c1.x;
+		v1.y = c2.y - c1.y;
+		v2.x = c3.x - c2.x;
+		v2.y = c3.y - c2.y;
+		v3.x = c4.x - c3.x;
+		v3.y = c4.y - c3.y;
+		poly.push_back(c1);
+		c = c1;
+		while (c.x < c2.x)
+		{
+			if (c.x + v1.x / S > c2.x || c.y + v1.y / S > c2.y)
+				c.x = c2.x, c.y = c2.y;
+			else
+				c.x = c.x + v1.x / S, c.y = c.y + v1.y / S;
+			poly.push_back(c);
+		}
+		while (c.y > c3.y)
+		{
+			if (c.y + v2.y / S < c3.y)
+				c.x = c3.x, c.y = c3.y;
+			else
+				c.x = c.x + v2.x / S, c.y = c.y + v2.y / S;
+			poly.push_back(c);
+		}
+		while (c.x > c4.x)
+		{
+			if (c.x + v3.x / S < c4.x)
+				c.x = c4.x, c.y = c4.y;
+			else
+				c.x = c.x + v3.x / S, c.y = c.y + v3.y / S;
+			poly.push_back(c);
+		}
+		double beta = 3 * pi / 2;
 		while (beta > pi / 2)
 		{
-			beta -= pi / 400;
+			beta -= pi / S;
 			c.x = r * cos(beta) + a;
 			c.y = r * sin(beta) + b;
 			poly.push_back(c);
@@ -324,15 +405,29 @@ double get_beta(mesh A, mesh B)//求出两个网格点与x轴的夹角
 	double beta = atan(dy / dx);
 	return beta;
 }
-int findNearPoint(mesh A, vector<Coor>& poly)//find the closest point of given grid point
+int findNearPoint(mesh A, vector<mesh>& poly)//find the closest point of given grid point
 {
-	int i, n;
-	double maxD = -1;
+	int i, n = -1;
+	double minD = distance(A.x, A.y, poly[0].x, poly[0].y);
 	for (int i = 0; i < poly.size(); i++)
 	{
-		if (maxD != max(maxD, distance(A.x, A.y, poly[i].x, poly[i].y)))
+		if (minD != min(minD, distance(A.x, A.y, poly[i].x, poly[i].y)))
 		{
-			maxD = distance(A.x, A.y, poly[i].x, poly[i].y);
+			minD = distance(A.x, A.y, poly[i].x, poly[i].y);
+			n = i;
+		}
+	}
+	return n;
+}
+int findNearPoint(double x, double y, vector<mesh>& poly)//find the closest point of given grid point
+{
+	int i, n = -1;
+	double minD = distance(x, y, poly[0].x, poly[0].y);
+	for ( i = 0; i < poly.size(); i++)
+	{
+		if (minD != min(minD, distance(x, y, poly[i].x, poly[i].y)))
+		{
+			minD = distance(x, y, poly[i].x, poly[i].y);
 			n = i;
 		}
 	}

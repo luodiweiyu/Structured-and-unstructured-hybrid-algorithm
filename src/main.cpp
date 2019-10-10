@@ -50,62 +50,54 @@ int main()
 	partition_Point();
 	sortPoint();
 	polymesh();
-	//findConnectPoint();
-
+	out_M("mesh/step = " + to_string(step));
+	outNeiborLines(ps, "ps.dat");
+	outNeiborLines(pu, "pu.dat");
 	//out_neighbor();
 	coordinate_trans();
 	initFlow();
 	ofstream fout;
-	fout.open(to_string(Xnum) + "X" + to_string(Ynum) + ".dat", ios::app);
-	fout << "variables=theta, delta_theta" << endl;
-	fout << "zone T = \"dr = r +" << to_string(delta_r) + "r\"" << endl;
-	vector <double> delta_theta;
-	vector <double> delta_d;
-	vector<double>theta;
-	for (int i = 0; i < AP.size(); i++)
+	fout.open("poly.dat");
+	for (int i = 0; i < poly.size(); i++)
+		fout << poly[i].x << "  " << poly[i].y << endl;
+	fout.open("pu_point.dat");
+	fout << "variables = x, y" << endl;
+	for (int i = 0; i < pu.size(); i++)
+		fout << pu[i]->x << "  " << pu[i]->y << endl;
+	fout.close();
+	fout.open("ps_point.dat");
+	fout << "variables = x, y" << endl;
+	for (int i = 0; i < ps.size(); i++)
+		if (ps[i]->section == 0)
+			fout << ps[i]->x << "  " << ps[i]->y << endl;
+	fout.close();
+	fout.open("bb_point.dat");
+	fout << "variables = x, y" << endl;
+	for (int i = 0; i < bb.size(); i++)
+		fout << bb[i]->x << "  " << bb[i]->y << endl;
+	fout.close();
+	fout.open("bb_neighbor.dat");
+	int E = 0;
+	for (int i = 0; i < bb.size(); i++)
 	{
-		using namespace ConstPara;
-		if (AP[i].type == "Body")
-		{
-			delta_d.push_back(distance(AP[i], *AP[i].neibor[0]));
-			theta.push_back(get_theta(AP[i].x, AP[i].y, a, b));
-			if (AP[i].x < a && AP[i].y > b)
-				theta[theta.size() - 1] = pi + theta[theta.size() - 1];
-			else if (AP[i].x < a && AP[i].y < b)
-				theta[theta.size() - 1] = pi + theta[theta.size() - 1];
-			else if (AP[i].x > a&& AP[i].y < b)
-				theta[theta.size() - 1] = 2 * pi + theta[theta.size() - 1];
-			else if (AP[i].x == a && AP[i].y > b)
-				theta[theta.size() - 1] = pi / 2;
-			else if (AP[i].x == a && AP[i].y < b)
-				theta[theta.size() - 1] = 3 * pi / 2;
-			else if (AP[i].x > a&& AP[i].y == b)
-				theta[theta.size() - 1] = 0;
-			else if (AP[i].x < a && AP[i].y == b)
-				theta[theta.size() - 1] = pi;
-		}
-		sort(theta.begin(), theta.end());
-		sort(delta_d.begin(), delta_d.end());
+		for (int j = 0; j < bb[i]->neibor.size(); j++)
+			if (bb[i]->neibor[j]->type == "Body")
+				E++;
 	}
-	using ConstPara::pi;
-
-	for (int i = 0; i < theta.size(); i++)
+	fout << "variables = x,y" << endl;
+	fout << "ZONE N = " << AP.size() << ", E = " << E << ", F = FEPOINT, ET = TRIANGLE" << endl;
+	for (int i = 0; i < AP.size(); i++)
+		fout << AP[i].x << "  " << AP[i].y << endl;
+	for (int i = 0; i < bb.size(); i++)
 	{
-		//fout << theta[i] << endl;
-		if (i != theta.size() - 1)
-			delta_theta.push_back(theta[i + 1] - theta[i]);
-		else
-			delta_theta.push_back(theta[0] + 2 * pi - theta[i]);
-		fout << theta[i] * 180 / pi << "   " << delta_theta[i] * 180 / pi << endl;
+
+		for (int j = 0; j < bb[i]->neibor.size(); j++)
+			if (bb[i]->neibor[j]->type == "Body")
+				fout << bb[i]->id << "  " << bb[i]->id << "  " << bb[i]->neibor[j]->id << endl;
 	}
 	fout.close();
-	fout.clear();
-	sort(delta_theta.begin(), delta_theta.end());
-	//cout << delta_theta[0] * 180 / pi << "   " << delta_theta[delta_theta.size() - 1] * 180 / pi << endl;
-	cout << delta_d[0] / dx << "dx   " << delta_d[delta_d.size() - 1] / dx << "dx" << endl;
 
 
-	//out_M("mesh/" + methodType + "/step = " + to_string(step));
 	start = clock();
 	int i;
 	while (t_sim < t_end)

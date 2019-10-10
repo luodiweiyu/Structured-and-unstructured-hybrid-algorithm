@@ -52,3 +52,4 @@ void update_p4_u(mesh& p);
 void update_bound();
 void polymesh();
 int findNearPoint(mesh A, vector <mesh> &poly);//find the closest point of given grid point
+int findNearPoint(double x, double y, vector<mesh>& poly);//find the closest point of given grid point

@@ -69,7 +69,7 @@ namespace MeshPara
 	};
 	const double delta_r = 1.5;
 	const double xL = 0, xR = 3.0, yU = 3.0, yD = 0;
-	const int Xnum = 400;//x方向点的个数20,40,150
+	const int Xnum = 100;//x方向点的个数20,40,150
 	const int Ynum = Xnum;//y方向点的个数43,87,215
 	const int Pnum = Xnum * Ynum;//一共点的个数
 	const double dx = (xR - xL) / (Xnum - 1);

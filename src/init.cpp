@@ -393,7 +393,7 @@ void init_polygon_mesh()
 {
 
 	extern vector <mesh> AP;
-	extern vector <polygon_mesh> M0;
+	extern vector <polygon_mesh> PM;
 	polygon_mesh t;
 	int i, j;
 	i = 0;
@@ -421,28 +421,28 @@ void init_polygon_mesh()
 				}
 				if (i + 1 + 2 * Xnum > Pnum - 1)
 					continue;
-				M0.push_back(t);
-				int s = int(M0.size()) - 1;
-				M0[s].node.push_back(i);
-				M0[s].node.push_back(i + 1);
-				M0[s].node.push_back(i + 1 + Xnum);
-				M0[s].node.push_back(i + 1 + 2 * Xnum);
-				M0[s].node.push_back(i + 2 * Xnum);
-				M0[s].node.push_back(i + Xnum);
+				PM.push_back(t);
+				int s = int(PM.size()) - 1;
+				PM[s].node.push_back(i);
+				PM[s].node.push_back(i + 1);
+				PM[s].node.push_back(i + 1 + Xnum);
+				PM[s].node.push_back(i + 1 + 2 * Xnum);
+				PM[s].node.push_back(i + 2 * Xnum);
+				PM[s].node.push_back(i + Xnum);
 
-				M0[s].face_start.push_back(i);
-				M0[s].face_start.push_back(i + 1);
-				M0[s].face_start.push_back(i + 1 + Xnum);
-				M0[s].face_start.push_back(i + 1 + 2 * Xnum);
-				M0[s].face_start.push_back(i + 2 * Xnum);
-				M0[s].face_start.push_back(i + Xnum);
+				PM[s].face_start.push_back(i);
+				PM[s].face_start.push_back(i + 1);
+				PM[s].face_start.push_back(i + 1 + Xnum);
+				PM[s].face_start.push_back(i + 1 + 2 * Xnum);
+				PM[s].face_start.push_back(i + 2 * Xnum);
+				PM[s].face_start.push_back(i + Xnum);
 
-				M0[s].face_end.push_back(i + 1);
-				M0[s].face_end.push_back(i + 1 + Xnum);
-				M0[s].face_end.push_back(i + 1 + 2 * Xnum);
-				M0[s].face_end.push_back(i + 2 * Xnum);
-				M0[s].face_end.push_back(i + Xnum);
-				M0[s].face_end.push_back(i);
+				PM[s].face_end.push_back(i + 1);
+				PM[s].face_end.push_back(i + 1 + Xnum);
+				PM[s].face_end.push_back(i + 1 + 2 * Xnum);
+				PM[s].face_end.push_back(i + 2 * Xnum);
+				PM[s].face_end.push_back(i + Xnum);
+				PM[s].face_end.push_back(i);
 				i++;
 			}
 		}
@@ -457,22 +457,22 @@ void init_polygon_mesh()
 				i++;
 				continue;
 			}
-			M0.push_back(t);
-			s = int(M0.size()) - 1;
-			M0[s].node.push_back(i);
-			M0[s].node.push_back(i + 1);
-			M0[s].node.push_back(i + 1 + Xnum);
-			M0[s].node.push_back(i + Xnum);
+			PM.push_back(t);
+			s = int(PM.size()) - 1;
+			PM[s].node.push_back(i);
+			PM[s].node.push_back(i + 1);
+			PM[s].node.push_back(i + 1 + Xnum);
+			PM[s].node.push_back(i + Xnum);
 
-			M0[s].face_start.push_back(i);
-			M0[s].face_start.push_back(i + 1);
-			M0[s].face_start.push_back(i + 1 + Xnum);
-			M0[s].face_start.push_back(i + Xnum);
+			PM[s].face_start.push_back(i);
+			PM[s].face_start.push_back(i + 1);
+			PM[s].face_start.push_back(i + 1 + Xnum);
+			PM[s].face_start.push_back(i + Xnum);
 
-			M0[s].face_end.push_back(i + 1);
-			M0[s].face_end.push_back(i + 1 + Xnum);
-			M0[s].face_end.push_back(i + Xnum);
-			M0[s].face_end.push_back(i);
+			PM[s].face_end.push_back(i + 1);
+			PM[s].face_end.push_back(i + 1 + Xnum);
+			PM[s].face_end.push_back(i + Xnum);
+			PM[s].face_end.push_back(i);
 			i++;
 		}
 

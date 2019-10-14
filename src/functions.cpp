@@ -12,7 +12,7 @@ void get_dt()
 {
 	extern vector<mesh>AP;
 	double maxxi = 0, maxeta = 0;
-	extern double dt;
+	extern double dt,t_sim;
 	double t;
 	int i, j, k;
 	double max1, max2;
@@ -62,6 +62,8 @@ void get_dt()
 	t = CFL / (max1 + max2);
 	//t = CFL / (maxxi + maxeta);
 	dt = min(dt, t);
+	if (t_sim + dt > t_end)
+		dt = t_end - t_sim;
 }
 void update_Vm()
 {
@@ -203,19 +205,16 @@ void clear_Vm()
 }
 double compute_res()//计算残差
 {
-	extern vector<vector <mesh*>> A;
-	extern   vector <mesh> Ar;
+	extern vector <mesh> AP;
+	extern vector <mesh> Ar;
 	extern double dt;
 	int i, j;
 	double res = 0;
 	int n = 0;
-	for (i = 0; i < A.size(); i++)
+	for (i = 0; i < AP.size(); i++)
 	{
-		for (j = 0; j < A[i].size(); j++)
-		{
-			res = max(res, abs(A[i][j]->rho - Ar[A[i][j]->id].rho) / Ar[A[i][j]->id].rho);
+			res = max(res, abs(AP[i].rho - Ar[AP[i].id].rho) / Ar[AP[i].id].rho);
 			n++;
-		}
 	}
 	return res / n;
 }
@@ -234,7 +233,6 @@ void record()
 		}
 	else
 
-#pragma omp parallel for
 		for (i = 0; i < AP.size(); i++)
 		{
 			Ar[i] = AP[i];
@@ -261,7 +259,7 @@ void update_p3(mesh& p)
 	U[2] = Ar[id].rho * p.v;
 	U[3] = 0.5 * Ar[id].rho * (Ar[id].u * Ar[id].u + Ar[id].v * Ar[id].v) + Ar[id].p / (gama - 1);
 
-	for (j = 0; j < 12; j++)
+	for (j = 0; j < 1; j++)
 	{
 		n1 = method[j][0];
 		n2 = method[j][1];
@@ -302,6 +300,7 @@ void update_p3(mesh& p)
 }
 void update_p4_s(mesh& p)
 //structral grid point,4 neighbor points
+//事实上不应该坐标变换
 {
 	extern vector <mesh> Ar;
 	extern double dt;
@@ -339,14 +338,14 @@ void update_p4_s(mesh& p)
 	Gud = VanLeerB(Ar[n2], Ar[id].etax[0], Ar[id].etay[0], Ar[id].etat[0], Ar[id].J[0]);
 	Guu = VanLeerA(Ar[n2], Ar[id].etax[0], Ar[id].etay[0], Ar[id].etat[0], Ar[id].J[0]);
 
-	U[0] = U[0] - dt * p.J[0] * (Fcr.f1 - Flr.f1 + Frl.f1 - Fcl.f1 + Gcu.f1 - Gdu.f1 + Gud.f1 - Gcd.f1);
-	U[1] = U[1] - dt * p.J[0] * (Fcr.f2 - Flr.f2 + Frl.f2 - Fcl.f2 + Gcu.f2 - Gdu.f2 + Gud.f2 - Gcd.f2);
-	U[2] = U[2] - dt * p.J[0] * (Fcr.f3 - Flr.f3 + Frl.f3 - Fcl.f3 + Gcu.f3 - Gdu.f3 + Gud.f3 - Gcd.f3);
-	U[3] = U[3] - dt * p.J[0] * (Fcr.f4 - Flr.f4 + Frl.f4 - Fcl.f4 + Gcu.f4 - Gdu.f4 + Gud.f4 - Gcd.f4);
-	p.rho = U[0] * p.sec_num;
-	p.u = U[1] / U[0] * p.sec_num;
-	p.v = U[2] / U[0] * p.sec_num;
-	p.p = (gama - 1) * (U[3] - 0.5 * p.rho * (p.u * p.u + p.v * p.v)) * p.sec_num;
+	U[0] = U[0] - dt * p.J[0] * p.sec_num * (Fcr.f1 - Flr.f1 + Frl.f1 - Fcl.f1 + Gcu.f1 - Gdu.f1 + Gud.f1 - Gcd.f1);
+	U[1] = U[1] - dt * p.J[0] * p.sec_num * (Fcr.f2 - Flr.f2 + Frl.f2 - Fcl.f2 + Gcu.f2 - Gdu.f2 + Gud.f2 - Gcd.f2);
+	U[2] = U[2] - dt * p.J[0] * p.sec_num * (Fcr.f3 - Flr.f3 + Frl.f3 - Fcl.f3 + Gcu.f3 - Gdu.f3 + Gud.f3 - Gcd.f3);
+	U[3] = U[3] - dt * p.J[0] * p.sec_num * (Fcr.f4 - Flr.f4 + Frl.f4 - Fcl.f4 + Gcu.f4 - Gdu.f4 + Gud.f4 - Gcd.f4);
+	p.rho = U[0];
+	p.u = U[1] / U[0];
+	p.v = U[2] / U[0];
+	p.p = (gama - 1) * (U[3] - 0.5 * p.rho * (p.u * p.u + p.v * p.v));
 }
 void update_p4_u(mesh& p)
 //unstructral grid point,4 neighbor points
@@ -405,7 +404,6 @@ void update_bound()
 	using namespace Init;
 	extern vector<mesh>AP;
 	int id;
-#pragma omp parallel for
 
 	for (i = 0; i < bl.size(); i++)
 	{
@@ -414,7 +412,6 @@ void update_bound()
 		bl[i]->v = v0;
 		bl[i]->p = p0;
 	}
-#pragma omp parallel for private(id)
 
 	for (i = 0; i < br.size(); i++)
 	{
@@ -424,7 +421,6 @@ void update_bound()
 		br[i]->v = AP[id - 1].v;
 		br[i]->p = AP[id - 1].p;
 	}
-#pragma omp parallel for private(id)
 
 	for (i = 0; i < bu.size(); i++)
 	{
@@ -434,7 +430,6 @@ void update_bound()
 		bu[i]->v = AP[id - Xnum].v;
 		bu[i]->p = AP[id - Xnum].p;
 	}
-#pragma omp parallel for private(id)
 
 	for (i = 0; i < bd.size(); i++)
 	{
@@ -501,15 +496,6 @@ void update_bound()
 			bb[i]->v = v;
 			bb[i]->p = bb[i]->neibor[0]->p;
 		}
-		//bb[i]->rho = bb[i]->neibor[0]->rho;
-		//bb[i]->u = bb[i]->neibor[0]->u;
-		//bb[i]->v = bb[i]->neibor[0]->v;
-		//bb[i]->p = bb[i]->neibor[0]->p;
-		//bb[i]->rho = rho0;
-		//bb[i]->u = 0;
-		//bb[i]->v = 0;
-		//bb[i]->p = p0;
-
 	}
 
 }
@@ -517,17 +503,14 @@ void update_bound()
 void movemesh()
 {
 	extern double dt;
-	extern vector<vector<mesh*>> A;
+	extern vector<mesh> AP;
 	int i, j;
 #pragma omp parallel
 
-	for (i = 0; i < A.size(); i++)
+	for (i = 0; i < AP.size(); i++)
 	{
-		for (j = 0; j < A[i].size(); j++)
-		{
-			A[i][j]->x = A[i][j]->x + A[i][j]->um * dt;
-			A[i][j]->y = A[i][j]->y + A[i][j]->vm * dt;
-		}
+			AP[i].x = AP[i].x + AP[i].um * dt;
+			AP[i].y = AP[i].y + AP[i].vm * dt;
 	}
 	//extern double t_sim;
 	//extern int step;
@@ -543,35 +526,6 @@ void movemesh()
 	//	else
 	//		AP[i].x = AP[Xnum - 1].x0 - (AP[Xnum - 1].x0 - AP[i].x0) * ((L0 - L) / L1);
 	//}
-}
-void findNeiborSec()
-{
-	extern vector<vector<mesh*>> A;
-	int i, j, k, m;
-#pragma omp parallel
-
-	for (i = 0; i < A.size(); i++)
-	{
-		if (A.size() == 1)
-			continue;
-		for (j = 0; j < A[i].size(); j++)
-		{
-			for (k = i + 1; k < A.size(); k++)
-			{
-				for (m = 0; m < A[k].size(); m++)
-				{
-					if (A[i][j]->x == A[k][m]->x && A[i][j]->y == A[k][m]->y)
-					{
-						A[i][j]->neiborsec = k;
-						A[i][j]->neiborsec_ad = m;
-						A[k][m]->neiborsec = i;
-						A[k][m]->neiborsec_ad = j;
-					}
-				}
-			}
-
-		}
-	}
 }
 
 void sortPoint()
@@ -592,20 +546,20 @@ void sortPoint()
 		{
 			n = 0;
 			for (int j = 0; j < AP[i].neibor.size(); j++)
-				if (AP[i].neibor[j]->type=="Body")
+				if (AP[i].neibor[j]->type == "Body")
 					n++;
-			if(n==0&& AP[i].neibor.size()==4)
+			if (n == 0 && AP[i].neibor.size() == 4)
 				ps.push_back(&AP[i]);
 			else
 				pu.push_back(&AP[i]);
 		}
-			//if (AP[i].neibor.size() == 4 )
-			//	for
-			//	ps.push_back(&AP[i]);
-			//else if (AP[i].neibor.size() == 3 || AP[i].neibor.size() == 4)
-			//	pu.push_back(&AP[i]);
-			//else
-			//	std::cout << "not a ps or pu inner point" << std::endl;
+		//if (AP[i].neibor.size() == 4 )
+		//	for
+		//	ps.push_back(&AP[i]);
+		//else if (AP[i].neibor.size() == 3 || AP[i].neibor.size() == 4)
+		//	pu.push_back(&AP[i]);
+		//else
+		//	std::cout << "not a ps or pu inner point" << std::endl;
 		else if (AP[i].type == "L")
 			bl.push_back(&AP[i]);
 		else if (AP[i].type == "R")

@@ -89,7 +89,7 @@ void out_polygon_mesh(string name)
 {
 	extern std::vector <mesh> AP;
 	extern double t_sim;
-	extern vector <polygon_mesh> M0;
+	extern vector <polygon_mesh> PM;
 	ofstream fout;
 	fout.open(name + ".dat");
 	int i;
@@ -100,8 +100,8 @@ void out_polygon_mesh(string name)
 	fout << "ZONE T=\"Test\"" << endl;
 	fout << "ZONETYPE=FEPOLYGON" << endl;
 	fout << "Nodes = " << Pnum << endl;
-	fout << "Elements = " << M0.size() << endl;
-	fout << "Faces = " << M0.size() * 6 << endl;
+	fout << "Elements = " << PM.size() << endl;
+	fout << "Faces = " << PM.size() * 6 << endl;
 	fout << "NumConnectedBoundaryFaces=0 " << endl;
 	fout << "TotalNumBoundaryConnections=0 " << endl;
 	fout << "solutiontime = " << t_sim << endl;
@@ -143,24 +143,24 @@ void out_polygon_mesh(string name)
 	}
 	fout << endl;
 
-	for (i = 0; i < M0.size(); i++)
+	for (i = 0; i < PM.size(); i++)
 	{
-		for (int j = 0; j < M0[i].face_start.size(); j++)
+		for (int j = 0; j < PM[i].face_start.size(); j++)
 		{
-			fout << M0[i].face_start[j] + 1 << "   " << M0[i].face_end[j] + 1 << endl;
+			fout << PM[i].face_start[j] + 1 << "   " << PM[i].face_end[j] + 1 << endl;
 		}
 	}
 	fout << endl;
-	for (i = 0; i < M0.size(); i++)
+	for (i = 0; i < PM.size(); i++)
 	{
-		for (int j = 0; j < M0[i].face_start.size(); j++)
+		for (int j = 0; j < PM[i].face_start.size(); j++)
 			fout << i + 1 << "  ";
 		fout << endl;
 	}
 	fout << endl;
-	for (i = 0; i < M0.size(); i++)
+	for (i = 0; i < PM.size(); i++)
 	{
-		for (int j = 0; j < M0[i].face_start.size(); j++)
+		for (int j = 0; j < PM[i].face_start.size(); j++)
 			fout << 0 << "  ";
 		fout << endl;
 	}
@@ -314,7 +314,7 @@ void out_polygon_variables(string name)
 {
 	extern std::vector <mesh> AP;
 	extern double t_sim;
-	extern vector <polygon_mesh> M0;
+	extern vector <polygon_mesh> PM;
 	ofstream fout;
 	fout.open(name + ".dat");
 	int i;
@@ -323,8 +323,8 @@ void out_polygon_variables(string name)
 	fout << "ZONE T=\"Test\"" << endl;
 	fout << "ZONETYPE=FEPOLYGON" << endl;
 	fout << "Nodes = " << Pnum << endl;
-	fout << "Elements = " << M0.size() << endl;
-	fout << "Faces = " << M0.size() * 6 << endl;
+	fout << "Elements = " << PM.size() << endl;
+	fout << "Faces = " << PM.size() * 6 << endl;
 	fout << "NumConnectedBoundaryFaces=0 " << endl;
 	fout << "TotalNumBoundaryConnections=0 " << endl;
 	fout << "solutiontime = " << t_sim << endl;
@@ -357,21 +357,21 @@ void out_polygon_variables(string name)
 }
 void out_res()
 {
-	extern vector<vector <mesh*>> A;
 	extern double res;
 	extern int step;
 	extern double t_sim;
 	ofstream fout;
-	if (step == 0)
+	if (t_sim == 0)
 	{
 		fout.open("res.dat");
 		fout << "Variables= t,res" << endl;
 	}
-	else
+	else if (step % 100 == 0)
 	{
 		fout.open("res.dat", ios::app);
 		fout << t_sim << "   " << res << endl;
 	}
+	fout.close();
 }
 void outNeiborLines(vector<mesh*> m, string filename)
 {
@@ -540,5 +540,60 @@ void out_deltat_theta_d()
 	sort(delta_theta.begin(), delta_theta.end());
 	//cout << delta_theta[0] * 180 / pi << "   " << delta_theta[delta_theta.size() - 1] * 180 / pi << endl;
 	cout << delta_d[0] / dx << "dx   " << delta_d[delta_d.size() - 1] / dx << "dx" << endl;
+
+}
+void out_somepoint()
+{
+	extern vector<mesh*> ps;//结构网格节点
+	extern vector<mesh*> pu;//非结构网格节点
+	extern vector<mesh*> bl;//左边界
+	extern vector<mesh*> br;//右边界
+	extern vector<mesh*> bu;//上边界
+	extern vector<mesh*> bd;//下边界
+	extern vector<mesh*> bb;//物体边界
+	extern vector<mesh> poly;
+	extern vector<mesh>AP;
+	outNeiborLines(ps, "ps.dat");
+	outNeiborLines(pu, "pu.dat");
+	ofstream fout;
+	fout.open("poly.dat");
+	for (int i = 0; i < poly.size(); i++)
+		fout << poly[i].x << "  " << poly[i].y << endl;
+	fout.open("pu_point.dat");
+	fout << "variables = x, y" << endl;
+	for (int i = 0; i < pu.size(); i++)
+		fout << pu[i]->x << "  " << pu[i]->y << endl;
+	fout.close();
+	fout.open("ps_point.dat");
+	fout << "variables = x, y" << endl;
+	for (int i = 0; i < ps.size(); i++)
+		if (ps[i]->section == 0)
+			fout << ps[i]->x << "  " << ps[i]->y << endl;
+	fout.close();
+	fout.open("bb_point.dat");
+	fout << "variables = x, y" << endl;
+	for (int i = 0; i < bb.size(); i++)
+		fout << bb[i]->x << "  " << bb[i]->y << endl;
+	fout.close();
+	fout.open("bb_neighbor.dat");
+	int E = 0;
+	for (int i = 0; i < bb.size(); i++)
+	{
+		for (int j = 0; j < bb[i]->neibor.size(); j++)
+			if (bb[i]->neibor[j]->type == "Body")
+				E++;
+	}
+	fout << "variables = x,y" << endl;
+	fout << "ZONE N = " << AP.size() << ", E = " << E << ", F = FEPOINT, ET = TRIANGLE" << endl;
+	for (int i = 0; i < AP.size(); i++)
+		fout << AP[i].x << "  " << AP[i].y << endl;
+	for (int i = 0; i < bb.size(); i++)
+	{
+
+		for (int j = 0; j < bb[i]->neibor.size(); j++)
+			if (bb[i]->neibor[j]->type == "Body")
+				fout << bb[i]->id << "  " << bb[i]->id << "  " << bb[i]->neibor[j]->id << endl;
+	}
+	fout.close();
 
 }

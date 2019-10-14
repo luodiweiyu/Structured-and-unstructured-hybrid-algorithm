@@ -79,48 +79,27 @@ void coordinate_trans()
 			}
 			if (AP[i].neibor.size() == 3)
 			{
-				AP[i].xxi[0] = 0.5 * (AP[i].neibor[0]->x - AP[i].neibor[2]->x);
-				AP[i].yxi[0] = 0.5 * (AP[i].neibor[0]->y - AP[i].neibor[2]->y);
-				AP[i].xeta[0] = 0.5 * (AP[i].neibor[1]->x - AP[i].neibor[2]->x);
-				AP[i].yeta[0] = 0.5 * (AP[i].neibor[1]->y - AP[i].neibor[2]->y);
-				AP[i].J[0] = 1 / (AP[i].xxi[0] * AP[i].yeta[0] - AP[i].xeta[0] * AP[i].yxi[0]);
-				AP[i].xix[0] = AP[i].yeta[0] * AP[i].J[0];
-				AP[i].xiy[0] = -AP[i].xeta[0] * AP[i].J[0];
-				AP[i].etax[0] = -AP[i].yxi[0] * AP[i].J[0];
-				AP[i].etay[0] = AP[i].xxi[0] * AP[i].J[0];
-				AP[i].xtau[0] = (AP[i].x - Ar[AP[i].id].x) / dt;
-				AP[i].ytau[0] = (AP[i].y - Ar[AP[i].id].y) / dt;
-				AP[i].xit[0] = -AP[i].xtau[0] * AP[i].xix[0] - AP[i].ytau[0] * AP[i].xiy[0];
-				AP[i].etat[0] = -AP[i].xtau[0] * AP[i].etax[0] - AP[i].ytau[0] * AP[i].etay[0];
-
-				AP[i].xxi[1] = 0.5 * (AP[i].neibor[1]->x - AP[i].neibor[0]->x);
-				AP[i].yxi[1] = 0.5 * (AP[i].neibor[1]->y - AP[i].neibor[0]->y);
-				AP[i].xeta[1] = 0.5 * (AP[i].neibor[2]->x - AP[i].neibor[0]->x);
-				AP[i].yeta[1] = 0.5 * (AP[i].neibor[2]->y - AP[i].neibor[0]->y);
-				AP[i].J[1] = 1 / (AP[i].xxi[1] * AP[i].yeta[1] - AP[i].xeta[1] * AP[i].yxi[1]);
-				AP[i].xix[1] = AP[i].yeta[1] * AP[i].J[1];
-				AP[i].xiy[1] = -AP[i].xeta[1] * AP[i].J[1];
-				AP[i].etax[1] = -AP[i].yxi[1] * AP[i].J[1];
-				AP[i].etay[1] = AP[i].xxi[1] * AP[i].J[1];
-				AP[i].xtau[1] = (AP[i].x - Ar[AP[i].id].x) / dt;
-				AP[i].ytau[1] = (AP[i].y - Ar[AP[i].id].y) / dt;
-				AP[i].xit[1] = -AP[i].xtau[1] * AP[i].xix[1] - AP[i].ytau[1] * AP[i].xiy[1];
-				AP[i].etat[1] = -AP[i].xtau[1] * AP[i].etax[1] - AP[i].ytau[1] * AP[i].etay[1];
-
-				AP[i].xxi[2] = 0.5 * (AP[i].neibor[2]->x - AP[i].neibor[1]->x);
-				AP[i].yxi[2] = 0.5 * (AP[i].neibor[2]->y - AP[i].neibor[1]->y);
-				AP[i].xeta[2] = 0.5 * (AP[i].neibor[0]->x - AP[i].neibor[1]->x);
-				AP[i].yeta[2] = 0.5 * (AP[i].neibor[0]->y - AP[i].neibor[1]->y);
-				AP[i].J[2] = 1 / (AP[i].xxi[2] * AP[i].yeta[2] - AP[i].xeta[2] * AP[i].yxi[2]);
-				AP[i].xix[2] = AP[i].yeta[2] * AP[i].J[2];
-				AP[i].xiy[2] = -AP[i].xeta[2] * AP[i].J[2];
-				AP[i].etax[2] = -AP[i].yxi[2] * AP[i].J[2];
-				AP[i].etay[2] = AP[i].xxi[2] * AP[i].J[2];
-				AP[i].xtau[2] = (AP[i].x - Ar[AP[i].id].x) / dt;
-				AP[i].ytau[2] = (AP[i].y - Ar[AP[i].id].y) / dt;
-				AP[i].xit[2] = -AP[i].xtau[2] * AP[i].xix[2] - AP[i].ytau[2] * AP[i].xiy[2];
-				AP[i].etat[2] = -AP[i].xtau[2] * AP[i].etax[2] - AP[i].ytau[2] * AP[i].etay[2];
-
+				using MeshPara::method;
+				for (k = 0; k < 12; k++)
+				{
+					n1 = method[k][0];
+					n2 = method[k][1];
+					n3 = method[k][2];
+					n4 = method[k][3];
+					AP[i].xxi[k]=0.5 * (AP[i].neibor[n1]->x - AP[i].neibor[n3]->x);
+					AP[i].yxi[k]=0.5 * (AP[i].neibor[n1]->y - AP[i].neibor[n3]->y);
+					AP[i].xeta[k]=0.5 * (AP[i].neibor[n2]->x - AP[i].neibor[n4]->x);
+					AP[i].yeta[k]=0.5 * (AP[i].neibor[n2]->y - AP[i].neibor[n4]->y);
+					AP[i].J[k]=1 / (AP[i].xxi[k] * AP[i].yeta[k] - AP[i].xeta[k] * AP[i].yxi[k]);
+					AP[i].xix[k]=AP[i].yeta[k] * AP[i].J[k];
+					AP[i].xiy[k]=-AP[i].xeta[k] * AP[i].J[k];
+					AP[i].etax[k]=-AP[i].yxi[k] * AP[i].J[k];
+					AP[i].etay[k]=AP[i].xxi[k] * AP[i].J[k];
+					AP[i].xtau[k] = (AP[i].x - Ar[AP[i].id].x) / dt;
+					AP[i].ytau[k] = (AP[i].y - Ar[AP[i].id].y) / dt;
+					AP[i].xit[k] = -AP[i].xtau[k] * AP[i].xix[k] - AP[i].ytau[k] * AP[i].xiy[k];
+					AP[i].etat[k] = -AP[i].xtau[k] * AP[i].etax[k] - AP[i].ytau[k] * AP[i].etay[k];
+				}
 			}
 
 		}
